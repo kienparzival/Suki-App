@@ -1,0 +1,169 @@
+import React, { useState } from 'react'
+import { X, CalendarDays, MapPin, Users, Ticket, DollarSign, ExternalLink } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
+import { BuyButton } from './BuyButton.jsx'
+
+function formatVND(n) {
+  return n.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
+}
+
+export default function EventDetail({ event, remaining, onClose }) {
+  const [qty, setQty] = useState(1)
+  const [purchased, setPurchased] = useState(false)
+  const [selectedTier, setSelectedTier] = useState(null)
+
+  // Debug logging
+  console.log('EventDetail - Received event:', event)
+  console.log('EventDetail - Event tiers:', event?.tiers)
+  console.log('EventDetail - Event has tiers array:', Array.isArray(event?.tiers))
+  console.log('EventDetail - Event capacity:', event?.capacity)
+  console.log('EventDetail - Event min_price:', event?.min_price)
+  console.log('EventDetail - Event max_price:', event?.max_price)
+  console.log('EventDetail - Remaining prop:', remaining)
+
+  const start = new Date(event.start_at)
+  const end = new Date(event.end_at)
+
+  // Mock purchase logic removed - now handled by BuyButton component
+
+  const mapsHref = event.venue?.lat && event.venue?.lng
+    ? `https://www.google.com/maps/search/?api=1&query=${event.venue.lat},${event.venue.lng}`
+    : null
+
+  const remainingText = typeof event.remaining === 'number' ? `${Math.max(0, event.remaining)} left` : null
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm grid place-items-center p-4">
+      <div className="w-full max-w-3xl card overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-neutral-200 bg-white">
+          <h2 className="text-xl font-semibold">{event.title}</h2>
+          <button className="btn btn-ghost" onClick={onClose}><X className="size-5"/></button>
+        </div>
+
+        <div className="p-4 grid md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="aspect-video bg-neutral-100 rounded-xl overflow-hidden">
+              {event.cover_url
+                ? <img src={event.cover_url} alt={event.title} className="w-full h-full object-cover" />
+                : <div className="w-full h-full grid place-items-center text-neutral-500">No image</div>
+              }
+            </div>
+            <div className="text-sm text-neutral-700 leading-relaxed">{event.description}</div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-neutral-700"><CalendarDays className="size-4" /> {start.toLocaleString()} – {end.toLocaleTimeString()}</div>
+              <div className="flex items-center gap-2 text-neutral-700"><MapPin className="size-4" /> {event.venue?.name} {mapsHref && (
+                <a className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700" href={mapsHref} target="_blank" rel="noreferrer">
+                  Open in Maps <ExternalLink className="size-3"/>
+                </a>
+              )}</div>
+              <div className="flex items-center gap-2 text-neutral-700"><Users className="size-4" /> Capacity: {(() => {
+                // Calculate total capacity from tiers data if available, otherwise use event.capacity
+                if (event.tiers && event.tiers.length > 0) {
+                  const totalCapacity = event.tiers.reduce((sum, tier) => sum + (tier.quota || 0), 0)
+                  return totalCapacity > 0 ? totalCapacity : event.capacity
+                }
+                return event.capacity
+              })()} {remainingText && <span className="badge ml-2">{remainingText}</span>}</div>
+              <div className="flex items-center gap-2 text-neutral-700"><DollarSign className="size-4" /> 
+                {event.min_price === 0 && event.max_price === 0 ? (
+                  <span className="text-green-600 font-medium">Free</span>
+                ) : (
+                  `${formatVND(event.min_price)} – ${formatVND(event.max_price)}`
+                )}
+              </div>
+            </div>
+
+            {!purchased ? (
+              <div className="space-y-3">
+                {Array.isArray(event.tiers) && event.tiers.length > 0 ? (
+                  <div className="space-y-3">
+                    <div className="text-sm text-neutral-500 font-medium">Select your ticket tier:</div>
+                    <div className="space-y-2">
+                      {event.tiers.map(tier => (
+                        <label key={tier.id} className="flex items-center p-3 rounded-lg border border-neutral-200 hover:border-blue-300 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value={tier.id}
+                            className="mr-3"
+                            onChange={() => setSelectedTier(tier)}
+                            checked={selectedTier?.id === tier.id}
+                          />
+                                                      <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-neutral-900">{tier.name}</span>
+                                <span className="font-semibold text-blue-600">{formatVND(tier.price)}</span>
+                              </div>
+                              <div className="text-xs text-neutral-500 mt-1">
+                                {tier.remaining || tier.quota} available
+                              </div>
+                            </div>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="text-sm text-neutral-500 font-medium">Free Tickets Available:</div>
+                    <div className="p-3 rounded-lg border border-green-200 bg-green-50">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium text-green-900">Free Ticket</span>
+                        <span className="font-semibold text-green-600">Free</span>
+                      </div>
+                      <div className="text-xs text-green-700 mt-1">
+                        {remaining !== undefined ? remaining : (() => {
+                          // Fallback: For free events, try to get remaining from tiers first, then fallback to capacity
+                          if (event.tiers && event.tiers.length > 0) {
+                            const freeTier = event.tiers.find(tier => tier.price === 0) || event.tiers[0]
+                            return freeTier.remaining || freeTier.quota || event.capacity
+                          }
+                          return event.capacity || 0
+                        })()} available
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {selectedTier && (
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-blue-900">{selectedTier.name}</div>
+                      <div className="text-sm text-blue-700">{formatVND(selectedTier.price)} per ticket</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-neutral-700">Quantity</div>
+                      <input 
+                        type="number" 
+                        className="input w-20 text-center" 
+                        min={1} 
+                        max={Math.min(10, selectedTier.remaining || selectedTier.quota)} 
+                        value={qty} 
+                        onChange={e => setQty(Number(e.target.value || 1))} 
+                      />
+                    </div>
+                  </div>
+                )}
+                
+                <BuyButton 
+                  event={event} 
+                  defaultQty={qty} 
+                  chosenTierId={selectedTier?.id}
+                  priceOverride={selectedTier?.price}
+                />
+              </div>
+            ) : (
+              <div className="card p-4 text-center">
+                <p className="mb-2 font-medium text-neutral-800">Ticket saved to <span className="underline">My Tickets</span>.</p>
+                <div className="inline-block bg-white p-2 rounded"><QRCodeCanvas value={"suki://" + event.id} size={120} /></div>
+                <p className="text-sm text-neutral-500 mt-2">Go to My Tickets to view your QR offline.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

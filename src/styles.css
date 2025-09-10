@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #ffffff;
+  --card: #ffffff;
+  --muted: #6b7280;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-white text-neutral-900;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4;
+}
+
+.card {
+  @apply bg-white rounded-2xl shadow-soft border border-neutral-200;
+}
+
+.shadow-soft {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.loading {
+  @apply inline-block;
+}
+
+.loading-spinner {
+  @apply border-2 border-neutral-300 border-t-brand-500 rounded-full animate-spin;
+}
+
+.loading-lg {
+  @apply w-8 h-8;
+}
+
+.checkbox {
+  @apply rounded border-neutral-300 text-brand-500 focus:ring-brand-500/40;
+}
+
+.checkbox-sm {
+  @apply w-4 h-4;
+}
+
+.alert {
+  @apply rounded-xl p-4 border;
+}
+
+.alert-success {
+  @apply bg-green-50 border-green-200 text-green-800;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center rounded-xl px-4 py-2 font-medium transition;
+}
+
+
+
+.btn-primary {
+  @apply bg-brand-500 hover:bg-brand-600 text-white;
+}
+
+.btn-ghost {
+  @apply hover:bg-neutral-100 text-neutral-700;
+}
+
+.btn-outline {
+  @apply border border-neutral-300 hover:bg-neutral-50 text-neutral-700;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.input {
+  @apply rounded-xl bg-white border border-neutral-300 px-3 py-2 outline-none focus:ring-2 focus:ring-brand-500/40;
+}
+
+.badge {
+  @apply text-xs px-2 py-1 rounded-lg bg-neutral-100 border border-neutral-200 text-neutral-700;
+}

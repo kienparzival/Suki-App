@@ -1,0 +1,345 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { useAuth } from './context/AuthContext.jsx'
+import { useLocation } from './context/LocationContext.jsx'
+import Header from './components/Header.jsx'
+import FilterBar from './components/FilterBar.jsx'
+import EventList from './components/EventList.jsx'
+import { supabase } from './lib/supabase.js'
+import './styles.css'
+
+function App() {
+  const { user } = useAuth()
+  const { userLocation } = useLocation()
+  const [events, setEvents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [userCity, setUserCity] = useState('')
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState('all')
+
+  // Preset cities for easy location selection
+  const PRESET_CITIES = {
+    hanoi: { lat: 21.0285, lng: 105.8542 },
+    hcmc: { lat: 10.776889, lng: 106.700806 },
+    danang: { lat: 16.0471, lng: 108.2062 },
+  }
+
+  const setCity = (key) => {
+    const c = PRESET_CITIES[key]
+    if (!c) return
+    setUserLocation({ lat: c.lat, lng: c.lng })
+    loadEvents()
+  }
+
+  // Define loadEvents function first so it can be used by useEffect and refresh button
+  const loadEvents = useCallback(async () => {
+    setLoading(true)
+    try {
+      // Make sure these are numbers or null
+      const lat = userLocation?.lat ?? null
+      const lng = userLocation?.lng ?? null;
+
+      const { data, error } = await supabase.rpc('events_explore', {
+        p_lat: lat,
+        p_lng: lng,
+        p_radius_km: 50,
+        p_start_from: new Date().toISOString(),
+        p_q: searchTerm || null,
+        p_category: selectedCategory === 'all' ? null : selectedCategory,
+        p_price_min: null,
+        p_price_max: null
+      });
+
+      if (error) {
+        console.error('events_explore RPC error', error);
+        setEvents([]);
+        return;
+      }
+      
+
+      // Get live tiers with sold/remaining via RPC (bypasses RLS safely)
+      if (data) {
+        for (const event of data) {
+          const { data: inv, error: invErr } = await supabase.rpc('tier_inventory', { p_event: event.id })
+          
+          if (!invErr && inv) {
+            // Replace the displayed tiers with inventory rows that include sold/remaining
+            event.ticket_tiers = inv.map(t => ({
+              id: t.id,
+              name: t.name,
+              price: t.price,
+              quota: t.quota,
+              sold: Number(t.sold) || 0,
+              remaining: t.remaining
+            }))
+          }
+        }
+      }
+      
+      // Transform RPC data to match expected format
+      const transformedEvents = (data || []).map(event => ({
+        id: event.id,
+        title: event.title,
+        description: event.description,
+        category: event.category,
+        start_at: event.start_at,
+        end_at: event.end_at,
+        venue: {
+          name: event.venue_name || 'TBD',
+          latitude: event.venue_latitude,
+          longitude: event.venue_longitude,
+          address: event.venue_address
+        },
+        capacity: event.capacity || 0,
+        min_price: event.min_price || 0,
+        max_price: event.max_price || 0,
+        cover_url: event.cover_url || '',
+        status: event.status,
+        creator_id: event.creator_id,
+        tiers: event.ticket_tiers || [],
+        distance_m: event.distance_m // Include distance for display
+      }))
+      setEvents(transformedEvents)
+    } catch (error) {
+      console.error('Error loading events:', error)
+      setEvents([])
+    } finally {
+      setLoading(false)
+    }
+  }, [userLocation.lat, userLocation.lng, selectedCategory, searchTerm])
+
+  // Test function to check RPC
+  const testRPC = async () => {
+    console.log('Testing RPC function...');
+    try {
+      const result = await supabase.rpc('events_explore', {
+        user_lat: 21.0285, // Hanoi
+        user_lng: 105.8542,
+        radius_km: 50,
+        category_filter: null,
+        keyword_filter: null,
+        min_price_filter: null,
+        max_price_filter: null
+      });
+      console.log('RPC Test Result:', result);
+    } catch (error) {
+      console.error('RPC Test Error:', error);
+    }
+  }
+
+  // Load events from Supabase
+  useEffect(() => {
+    loadEvents()
+
+    // Listen for events updates
+    const handleEventsUpdate = () => {
+      console.log('Events update event received, reloading events...')
+      loadEvents()
+    }
+
+    // Listen for account switches
+    const handleAccountSwitch = () => {
+      console.log('Account switch detected, reloading events...')
+      loadEvents()
+    }
+
+    window.addEventListener('suki:events_updated', handleEventsUpdate)
+    window.addEventListener('suki:account_switched', handleAccountSwitch)
+    
+    return () => {
+      window.removeEventListener('suki:events_updated', handleEventsUpdate)
+      window.removeEventListener('suki:account_switched', handleAccountSwitch)
+    }
+  }, [loadEvents])
+
+  // Real-time subscription to ticket changes for all events
+  useEffect(() => {
+    const subscription = supabase
+      .channel('all-event-tickets')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tickets'
+        },
+        (payload) => {
+          // Immediately reload events to show updated availability
+          loadEvents()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [loadEvents])
+
+  // Force refresh when page becomes visible (catches missed real-time updates)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadEvents()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [loadEvents])
+
+  // Get user's city for location filtering
+  useEffect(() => {
+    if (user?.user_metadata?.city) {
+      const city = user.user_metadata.city
+      setUserCity(city)
+    }
+  }, [user])
+
+  // Update userCity when userLocation changes (for location filtering)
+  useEffect(() => {
+    setUserCity(userLocation.city)
+  }, [userLocation])
+
+  // Filter events based on time (location, search, and category are now handled by the database)
+  const filtered = useMemo(() => {
+    const filteredEvents = events.filter(event => {
+      // Time filtering based on selectedTimeFilter
+      let matchesTime = true
+      if (selectedTimeFilter !== 'all') {
+        const eventDate = new Date(event.start_at)
+        const now = new Date()
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        
+        if (selectedTimeFilter === 'today') {
+          matchesTime = eventDate >= today && eventDate < tomorrow
+        } else if (selectedTimeFilter === 'weekend') {
+          // Get current day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+          const currentDay = today.getDay()
+          
+          let startOfWeekend, endOfWeekend
+          
+          if (currentDay === 0) { // Sunday
+            // If today is Sunday, weekend is Saturday (yesterday) to Sunday (today)
+            startOfWeekend = new Date(today)
+            startOfWeekend.setDate(startOfWeekend.getDate() - 1) // Saturday
+            endOfWeekend = new Date(today)
+            endOfWeekend.setDate(endOfWeekend.getDate() + 1) // Monday (end of Sunday)
+          } else if (currentDay === 6) { // Saturday
+            // If today is Saturday, weekend is Saturday (today) to Sunday (tomorrow)
+            startOfWeekend = new Date(today)
+            endOfWeekend = new Date(today)
+            endOfWeekend.setDate(endOfWeekend.getDate() + 2) // Monday (end of Sunday)
+          } else {
+            // For Monday-Friday, weekend is the upcoming Saturday-Sunday
+            const daysUntilSaturday = (6 - currentDay + 7) % 7
+            startOfWeekend = new Date(today)
+            startOfWeekend.setDate(startOfWeekend.getDate() + daysUntilSaturday)
+            endOfWeekend = new Date(startOfWeekend)
+            endOfWeekend.setDate(endOfWeekend.getDate() + 2) // Monday (end of Sunday)
+          }
+          
+          matchesTime = eventDate >= startOfWeekend && eventDate < endOfWeekend
+        }
+      }
+      
+      return matchesTime
+    })
+    
+    return filteredEvents
+  }, [events, selectedTimeFilter])
+
+  if (loading) {
+  return (
+      <div className="min-h-screen bg-gray-50">
+        <Header 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="loading loading-spinner loading-lg"></div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <Header 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+      <div className="container mx-auto px-6 py-12">
+        <div className="mb-16">
+          <div className="text-center relative">
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 -z-10">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-brand-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-cyan-100/30 rounded-full blur-2xl"></div>
+              <div className="absolute top-1/2 left-0 w-48 h-48 bg-gradient-to-r from-pink-100/30 to-rose-100/30 rounded-full blur-xl"></div>
+            </div>
+            
+            {/* Main heading with enhanced styling */}
+            <h1 
+              className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
+              style={{ lineHeight: '1.6' }}
+            >
+              Discover Amazing Events
+            </h1>
+            
+            {/* Subtitle with modern typography */}
+            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
+              Find and join events that match your interests, happening 
+              <span className="text-brand-600 font-semibold"> near you </span> 
+              or 
+              <span className="text-purple-600 font-semibold"> online</span>
+            </p>
+            
+            {/* Decorative line */}
+            <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full mb-8"></div>
+          </div>
+        </div>
+        
+        <div className="mb-12">
+          <FilterBar 
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            browsingLocation={userCity || 'All locations'}
+            onLocationChange={(newLocation) => {
+              // Update the userCity when changed from FilterBar
+              if (newLocation.city === 'Online Events') {
+                setUserCity('Online Events')
+              } else if (newLocation.city === 'Current Location') {
+                setUserCity('Current Location')
+              }
+            }}
+            selectedTimeFilter={selectedTimeFilter}
+            onTimeFilterChange={setSelectedTimeFilter}
+          />
+        </div>
+        
+        <div className="mb-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
+              {filtered.length} Event{filtered.length !== 1 ? 's' : ''} Found
+            </h2>
+            {userCity && userCity !== 'All locations' && (
+              <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                in {userCity}
+              </div>
+            )}
+          </div>
+          <EventList events={filtered} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default App
