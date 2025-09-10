@@ -271,8 +271,23 @@ export function AuthProvider({ children }) {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut()
-      if (error) throw error
+      // Check if there's an active session first to avoid 403 from global sign-out
+      const { data: { session } } = await supabase.auth.getSession()
+      try {
+        if (session) {
+          const { error } = await supabase.auth.signOut({ scope: 'global' })
+          if (error) throw error
+        } else {
+          // No active session: clear locally without remote call
+          await supabase.auth.signOut({ scope: 'local' })
+        }
+      } catch (signOutError) {
+        // Ignore missing-session errors; proceed to local cleanup
+        const message = String(signOutError?.message || '')
+        if (!message.toLowerCase().includes('session missing')) {
+          console.warn('Non-fatal sign-out warning:', signOutError)
+        }
+      }
       
       // DON'T clear profile photo from localStorage - keep it for when user signs back in
       // The photo should persist across sign-out/sign-in cycles
