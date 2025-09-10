@@ -282,6 +282,22 @@ export function AuthProvider({ children }) {
       setPendingEmail('')
       setEmailSent(false)
       localStorage.removeItem(STORAGE_KEY)
+
+      // Extra safety: clear Supabase stored session keys if any remain
+      try {
+        const keys = Object.keys(localStorage)
+        keys.forEach((key) => {
+          if (key.startsWith('sb-') && key.includes('auth-token')) {
+            localStorage.removeItem(key)
+          }
+        })
+      } catch (e) {
+        console.warn('Could not clear Supabase cached session keys:', e)
+      }
+
+      // Force a reload to ensure all components reset their state
+      // and to avoid stale session artifacts in memory
+      window.location.assign('/')
     } catch (error) {
       console.error('Sign out error:', error)
     }
