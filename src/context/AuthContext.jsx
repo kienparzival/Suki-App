@@ -161,7 +161,8 @@ export function AuthProvider({ children }) {
       }
 
       // Use Supabase's signInWithOtp (magic link)
-      const redirectUrl = `${window.location.origin}/auth/callback`
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
+      const redirectUrl = `${siteUrl}/auth/callback`
       console.log('[Suki] Magic link redirect URL:', redirectUrl)
       
       const { error } = await supabase.auth.signInWithOtp({
@@ -205,10 +206,11 @@ export function AuthProvider({ children }) {
   const signInWithApple = async () => {
     try {
       setLoading(true)
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${siteUrl}/auth/callback`
         }
       })
       
@@ -226,10 +228,11 @@ export function AuthProvider({ children }) {
   const signInWithFacebook = async () => {
     try {
       setLoading(true)
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${siteUrl}/auth/callback`
         }
       })
       
@@ -247,10 +250,11 @@ export function AuthProvider({ children }) {
   const signInWithGoogle = async () => {
     try {
       setLoading(true)
+      const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${siteUrl}/auth/callback`
         }
       })
       

@@ -26,12 +26,31 @@ export default function AuthCallback() {
           console.warn('[AuthCallback] Warning: Not on expected callback URL')
         }
         
-        // Check for OAuth errors first
+        // Check for OAuth errors or authorization code first
         const oauthError = searchParams.get('error')
         const oauthErrorDescription = searchParams.get('error_description')
+        const code = searchParams.get('code')
         
         if (oauthError) {
           throw new Error(oauthErrorDescription || `Authentication failed: ${oauthError}`)
+        }
+
+        // If we have an OAuth code param, exchange it for a session (PKCE flow)
+        if (code) {
+          console.log('[AuthCallback] OAuth code detected, exchanging for session...')
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(window.location.href)
+          if (exchangeError) {
+            console.error('[AuthCallback] exchangeCodeForSession error:', exchangeError)
+            throw new Error('Failed to complete OAuth sign-in')
+          }
+          const { data: { session } } = await supabase.auth.getSession()
+          if (session?.user) {
+            setStatus('Authentication successful! Redirecting...')
+            setTimeout(() => {
+              navigate('/profile', { replace: true })
+            }, 1000)
+            return
+          }
         }
         
         // For magic links, we need to handle the URL hash tokens
