@@ -15,6 +15,7 @@ const AuthContext = createContext({
   signInWithApple: () => {},
   signInWithFacebook: () => {},
   signInWithGoogle: () => {},
+  cancelEmailFlow: () => {},
 })
 
 export function AuthProvider({ children }) {
@@ -387,6 +388,12 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const cancelEmailFlow = () => {
+    setEmailSent(false)
+    setPendingEmail('')
+    setLoading(false)
+  }
+
   const value = useMemo(() => ({
     user,
     pendingEmail,
@@ -398,6 +405,7 @@ export function AuthProvider({ children }) {
     signInWithApple,
     signInWithFacebook,
     signInWithGoogle,
+    cancelEmailFlow,
   }), [user, pendingEmail, emailSent, loading])
 
   return (

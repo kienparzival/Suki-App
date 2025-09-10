@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 
 export default function AuthPage() {
-  const { user, signInWithEmail, signInWithApple, signInWithFacebook, signInWithGoogle, loading, emailSent } = useAuth()
+  const { user, signInWithEmail, signInWithApple, signInWithFacebook, signInWithGoogle, loading, emailSent, cancelEmailFlow } = useAuth()
   const [email, setEmail] = useState('')
   const [activeTab, setActiveTab] = useState('signup') // 'signup' or 'signin'
   const [error, setError] = useState('')
@@ -62,6 +62,7 @@ export default function AuthPage() {
     setEmail('')
     setError('')
     setSuccessMessage('')
+    if (cancelEmailFlow) cancelEmailFlow()
   }
 
   if (user) {
@@ -206,11 +207,7 @@ export default function AuthPage() {
                 <div className="space-y-3">
                   <button 
                     className="btn btn-link text-sm" 
-                    onClick={() => {
-                      setEmailSent(false)
-                      setEmail('')
-                      setSuccessMessage('')
-                    }}
+                    onClick={handleBackToProviders}
                   >
                     Use a different email
                   </button>
