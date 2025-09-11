@@ -9,6 +9,7 @@ import { Share2, MapPin, Calendar, Clock, Users, ChevronDown, ChevronUp, Heart }
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import DescriptionBlock from '../components/DescriptionBlock.jsx'
 import '../styles.css'
 
 // Fix for default markers in react-leaflet
@@ -557,21 +558,4 @@ export default function EventPage() {
   )
 } 
 
-function DescriptionBlock({ text }) {
-  const [expanded, setExpanded] = useState(false)
-  const safe = typeof text === 'string' ? text : ''
-  const needsClamp = safe.length > 480
-  const shown = expanded || !needsClamp ? safe : (safe.slice(0, 480) + '…')
-  return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <p className="text-gray-700 leading-relaxed text-lg" style={{ whiteSpace: 'pre-wrap' }}>
-        {shown || 'No description provided for this event.'}
-      </p>
-      {needsClamp && (
-        <button className="mt-3 text-blue-600 hover:text-blue-700 font-medium" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'Show less' : 'Read more'}
-        </button>
-      )}
-    </div>
-  )
-}
+// DescriptionBlock moved to components/DescriptionBlock.jsx
