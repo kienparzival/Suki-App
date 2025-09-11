@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
+import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
@@ -36,6 +37,7 @@ export default function EditEvent() {
   const [ticketTiers, setTicketTiers] = useState([])
   const [ticketTiersValid, setTicketTiersValid] = useState(true)
   const [isFree, setIsFree] = useState(false)
+  const [admission, setAdmission] = useState(ADMISSION_TICKETED)
   const [loading, setLoading] = useState(false)
   const [hasSoldPaidTickets, setHasSoldPaidTickets] = useState(false)
 
@@ -136,10 +138,9 @@ export default function EditEvent() {
           setTicketTiers(eventWithTiers.ticket_tiers)
         }
         
-        // Set free status based on pricing
-        if (eventWithTiers.min_price === 0 && eventWithTiers.max_price === 0) {
-          setIsFree(true)
-        }
+        // Set free status based on pricing and admission
+        setIsFree(eventWithTiers.min_price === 0 && eventWithTiers.max_price === 0)
+        setAdmission(eventWithTiers.admission || ADMISSION_TICKETED)
       } catch (error) {
         console.error('Error in loadEventWithTiers:', error)
       }
@@ -358,30 +359,26 @@ export default function EditEvent() {
         }
       }
 
-      // Calculate min/max prices from tiers
-      let minPrice = ticketTiers.length > 0 ? Math.min(...ticketTiers.map(t => Number(t.price) || 0)) : 0
-      let maxPrice = ticketTiers.length > 0 ? Math.max(...ticketTiers.map(t => Number(t.price) || 0)) : 0
-      const totalCapacity = ticketTiers.reduce(
-        (sum, t) => sum + (parseInt(t.quota, 10) || 0),
-        0
-      )
-      
-      // If free tickets option is checked, force all prices to 0
-      if (isFree) {
-        minPrice = 0
-        maxPrice = 0
+      // Admission-based price/capacity
+      let minPrice = 0
+      let maxPrice = 0
+      let finalCapacity = null
+      if (admission === ADMISSION_TICKETED) {
+        if (!isFree && ticketTiers.length > 0) {
+          minPrice = Math.min(...ticketTiers.map(t => Number(t.price) || 0))
+          maxPrice = Math.max(...ticketTiers.map(t => Number(t.price) || 0))
+        }
+
+        const totalFromTiers = ticketTiers.reduce(
+          (sum, t) => sum + (parseInt(t.quota, 10) || 0),
+          0
+        )
+
+        finalCapacity =
+          ticketTiers.length > 0
+            ? (isFree ? (parseInt(capacity, 10) || 0) : totalFromTiers)
+            : (parseInt(capacity, 10) || null)
       }
-
-      // Compute capacity from tiers (paid) vs manual input (free)
-      const totalFromTiers = ticketTiers.reduce(
-        (sum, t) => sum + (parseInt(t.quota, 10) || 0),
-        0
-      )
-
-      const finalCapacity =
-        ticketTiers.length > 0
-          ? (isFree ? (parseInt(capacity, 10) || 0) : totalFromTiers)
-          : (parseInt(capacity, 10) || null)
 
       console.log('Capacity Debug:', {
         capacity: capacity,
@@ -401,6 +398,7 @@ export default function EditEvent() {
           start_at: startAt,
           end_at: endAt,
           venue_id: venue_id, // Use the venue_id we determined above
+          admission,
           capacity: finalCapacity,
           min_price: minPrice,
           max_price: maxPrice,
@@ -416,8 +414,13 @@ export default function EditEvent() {
 
       console.log('Event updated successfully with capacity:', finalCapacity)
 
-      // Update ticket tiers if they exist
-      if (ticketTiers.length > 0) {
+      // Update ticket tiers according to admission
+      if (admission === ADMISSION_OPEN) {
+        await supabase
+          .from('ticket_tiers')
+          .delete()
+          .eq('event_id', event.id)
+      } else if (ticketTiers.length > 0) {
         // SAFETY CHECK 1: Validate that new quotas are not less than tickets already sold
         const validationErrors = []
         
@@ -727,7 +730,40 @@ export default function EditEvent() {
               />
             </section>
 
+            {/* Admission */}
+            <fieldset className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Admission</h2>
+              </div>
+              <div className="space-x-8">
+                <label className="inline-flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="admission"
+                    checked={admission === ADMISSION_TICKETED}
+                    onChange={() => setAdmission(ADMISSION_TICKETED)}
+                  />
+                  <span>Ticketed (paid/free tickets, capacity applies)</span>
+                </label>
+                <label className="inline-flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="admission"
+                    checked={admission === ADMISSION_OPEN}
+                    onChange={() => setAdmission(ADMISSION_OPEN)}
+                  />
+                  <span>Open — no ticket required, unlimited capacity</span>
+                </label>
+              </div>
+            </fieldset>
+
             {/* Capacity and Pricing */}
+            {admission === ADMISSION_TICKETED && (
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -785,6 +821,7 @@ export default function EditEvent() {
               </div>
             </div>
             </section>
+            )}
 
             {/* Cover Image */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">

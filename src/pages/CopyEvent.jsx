@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso } from '../helpers/time'
+import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import '../styles.css'
 
 export default function CopyEvent() {
@@ -23,6 +24,7 @@ export default function CopyEvent() {
   const [capacity, setCapacity] = useState('')
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
+  const [admission, setAdmission] = useState(ADMISSION_TICKETED)
   const [coverUrl, setCoverUrl] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -36,6 +38,7 @@ export default function CopyEvent() {
     setTitle(`${originalEvent.title} (Copy)`)
     setDescription(originalEvent.description || '')
     setCategory(originalEvent.category || '')
+    setAdmission(originalEvent.admission || ADMISSION_TICKETED)
     
     // Set date to tomorrow by default
     const tomorrow = new Date()
@@ -112,6 +115,11 @@ export default function CopyEvent() {
       }
 
       // Create new event
+      const isTicketed = admission === ADMISSION_TICKETED
+      const finalCapacity = isTicketed ? (capacity ? parseInt(capacity) : null) : null
+      const minP = isTicketed ? (minPrice ? parseInt(minPrice) : 0) : 0
+      const maxP = isTicketed ? (maxPrice ? parseInt(maxPrice) : 0) : 0
+
       const { error } = await supabase
         .from('events')
         .insert([{
@@ -121,9 +129,10 @@ export default function CopyEvent() {
           start_at: startAt,
           end_at: endAt,
           venue_id: venueId,
-          capacity: capacity ? parseInt(capacity) : null,
-          min_price: minPrice ? parseInt(minPrice) : 0,
-          max_price: maxPrice ? parseInt(maxPrice) : 0,
+          admission,
+          capacity: finalCapacity,
+          min_price: minP,
+          max_price: maxP,
           cover_url: coverUrl || null,
           status: 'published',
           creator_id: user.id
@@ -256,6 +265,33 @@ export default function CopyEvent() {
               </div>
             </div>
 
+            {/* Admission */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Admission</label>
+              <div className="flex gap-6">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="admission"
+                    checked={admission === ADMISSION_TICKETED}
+                    onChange={() => setAdmission(ADMISSION_TICKETED)}
+                    className="mr-2"
+                  />
+                  Ticketed (paid/free tickets, capacity applies)
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="admission"
+                    checked={admission === ADMISSION_OPEN}
+                    onChange={() => setAdmission(ADMISSION_OPEN)}
+                    className="mr-2"
+                  />
+                  Open — no ticket required, unlimited capacity
+                </label>
+              </div>
+            </div>
+
             {/* Location */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -300,7 +336,8 @@ export default function CopyEvent() {
               </div>
             )}
 
-            {/* Capacity and Pricing */}
+            {/* Capacity and Pricing (ticketed only) */}
+            {admission === ADMISSION_TICKETED && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -342,6 +379,7 @@ export default function CopyEvent() {
                 />
               </div>
             </div>
+            )}
 
             {/* Cover Image */}
             <div>

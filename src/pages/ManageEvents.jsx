@@ -172,10 +172,12 @@ export default function ManageEvents() {
         // Get live tiers with sold/remaining via RPC (bypasses RLS safely)
         if (supabaseEvents && !error) {
           for (const ev of supabaseEvents) {
+            if (ev.admission === 'open') {
+              ev.ticket_tiers = []
+              continue
+            }
             const { data: inv, error: invErr } = await supabase.rpc('tier_inventory', { p_event: ev.id })
-            
             if (!invErr && inv) {
-              // Replace the displayed tiers with inventory rows that include sold/remaining
               ev.ticket_tiers = inv.map(t => ({
                 id: t.id,
                 name: t.name,
@@ -455,7 +457,13 @@ export default function ManageEvents() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {(event.ticket_tiers || []).reduce((s, t) => s + (Number(t.sold) || 0), 0)}/{event.capacity || '∞'} tickets
+                          {event.admission === 'open' ? (
+                            <span className="text-gray-500">Open — no tickets</span>
+                          ) : (
+                            <>
+                              {(event.ticket_tiers || []).reduce((s, t) => s + (Number(t.sold) || 0), 0)}/{event.capacity || '∞'} tickets
+                            </>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {grossSales || 0} VND

@@ -4,6 +4,7 @@ import Header from '../components/Header.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { supabase } from '../lib/supabase'
 import { composeBangkokIso } from '../helpers/time'
+import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 
@@ -51,6 +52,7 @@ export default function CreateEventPage() {
   const [isFree, setIsFree] = useState(false)
   const [capacity, setCapacity] = useState('')
   const [ticketTiers, setTicketTiers] = useState([])
+  const [admission, setAdmission] = useState(ADMISSION_TICKETED)
 
   // Media
   const [images, setImages] = useState([])
@@ -249,15 +251,20 @@ export default function CreateEventPage() {
     else if (locationData.mode === 'tba') venue = { name: 'To be announced' }
     else venue = { name: (locationData.name || '').trim() }
 
-    // Calculate min/max prices from tiers
-    let minPrice = ticketTiers.length > 0 ? Math.min(...ticketTiers.map(t => t.price)) : 0
-    let maxPrice = ticketTiers.length > 0 ? Math.max(...ticketTiers.map(t => t.price)) : 0
-    const totalCapacity = ticketTiers.reduce((sum, tier) => sum + tier.quota, 0)
-    
-    // If free tickets option is checked, force all prices to 0
-    if (isFree) {
-      minPrice = 0
-      maxPrice = 0
+    // Admission-based pricing/capacity
+    let minPrice = 0
+    let maxPrice = 0
+    let totalCapacity = null
+    if (admission === ADMISSION_TICKETED) {
+      if (!isFree && ticketTiers.length > 0) {
+        minPrice = Math.min(...ticketTiers.map(t => t.price))
+        maxPrice = Math.max(...ticketTiers.map(t => t.price))
+      }
+      if (!isFree && ticketTiers.length > 0) {
+        totalCapacity = ticketTiers.reduce((sum, tier) => sum + tier.quota, 0)
+      } else {
+        totalCapacity = Number(capacity || 0) || null
+      }
     }
 
     setPublishing(true)
@@ -318,9 +325,10 @@ export default function CreateEventPage() {
           end_at,
           cover_url: coverImagePreview || images[0] || '',
           status: 'published',
+          admission,
           min_price: minPrice,
           max_price: maxPrice,
-          capacity: totalCapacity || Number(capacity || 0)
+          capacity: totalCapacity
         }])
         .select()
 
@@ -330,8 +338,8 @@ export default function CreateEventPage() {
       } else {
         console.log('Event created successfully:', eventData)
         
-        // Create ticket tiers if any
-        if (ticketTiers.length > 0) {
+        // Create ticket tiers if any (only for ticketed events)
+        if (admission === ADMISSION_TICKETED && ticketTiers.length > 0) {
           const eventId = eventData[0].id
           const tiersToInsert = ticketTiers.map(tier => ({
             event_id: eventId,
@@ -482,6 +490,29 @@ export default function CreateEventPage() {
           </div>
         </section>
 
+        {/* Admission */}
+        <fieldset className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <legend className="text-xl font-semibold text-gray-900 mb-3">Admission</legend>
+          <label className="inline-flex items-center gap-3 mr-8">
+            <input
+              type="radio"
+              name="admission"
+              checked={admission === ADMISSION_TICKETED}
+              onChange={() => setAdmission(ADMISSION_TICKETED)}
+            />
+            <span>Ticketed (paid/free tickets, capacity applies)</span>
+          </label>
+          <label className="inline-flex items-center gap-3">
+            <input
+              type="radio"
+              name="admission"
+              checked={admission === ADMISSION_OPEN}
+              onChange={() => setAdmission(ADMISSION_OPEN)}
+            />
+            <span>Open — no ticket required, unlimited capacity</span>
+          </label>
+        </fieldset>
+
         {/* Location */}
           <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
             <div className="flex items-center gap-3 mb-6">
@@ -519,6 +550,7 @@ export default function CreateEventPage() {
         </section>
 
                 {/* Event Capacity */}
+        {admission === ADMISSION_TICKETED && (
         <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -554,8 +586,10 @@ export default function CreateEventPage() {
             )}
           </div>
         </section>
+        )}
 
         {/* Ticket Pricing */}
+        {admission === ADMISSION_TICKETED && (
         <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -631,6 +665,7 @@ export default function CreateEventPage() {
             </div>
           )}
         </section>
+        )}
 
         {/* Cover Image */}
           <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
