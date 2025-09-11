@@ -520,7 +520,11 @@ export default function CreateEventPage() {
                 name="admission"
                 className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
                 checked={admission === ADMISSION_OPEN}
-                onChange={() => setAdmission(ADMISSION_OPEN)}
+                onChange={() => {
+                  setAdmission(ADMISSION_OPEN)
+                  setTicketTiers([])
+                  setCapacity('')
+                }}
               />
               <div>
                 <div className="text-gray-900 font-medium">Open</div>
