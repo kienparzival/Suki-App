@@ -1,6 +1,7 @@
 // Timezone helpers for Asia/Bangkok (GMT+7)
 // This ensures all date/time operations are consistent across the app
 
+export const TZ = "Asia/Bangkok";
 export const TZ_OFFSET = "+07:00"; // Asia/Bangkok
 export const BANGKOK_MINUTES = 7 * 60; // 7 hours in minutes
 
@@ -38,7 +39,7 @@ export function isoToBangkokLocalInput(iso: string): string {
  */
 export function formatBangkokLabel(iso: string, options: Intl.DateTimeFormatOptions = {}): string {
   const defaultOptions: Intl.DateTimeFormatOptions = {
-    timeZone: "Asia/Bangkok",
+    timeZone: TZ,
     weekday: "short",
     year: "numeric",
     month: "short",
@@ -105,4 +106,28 @@ export function getCurrentTimeBangkok(): string {
 export function parseDatetimeLocalToBangkokIso(datetimeLocal: string): string {
   const [date, time] = datetimeLocal.split('T');
   return composeBangkokIso(date, time);
+}
+
+/**
+ * Convert stored ISO (UTC instant) -> "YYYY-MM-DD" in Bangkok
+ */
+export function extractBangkokDate(iso: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(iso));
+}
+
+/**
+ * Convert stored ISO (UTC instant) -> "HH:mm" in Bangkok
+ */
+export function extractBangkokTime(iso: string): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    timeZone: TZ,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
 }

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
-import { composeBangkokIso } from '../helpers/time'
+import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
@@ -96,18 +96,15 @@ export default function EditEvent() {
         setDescription(eventWithTiers.description || '')
         setCategory(eventWithTiers.category || '')
         
-        // Avoid timezone shifts by parsing the stored ISO string directly
+        // Prefill using Bangkok timezone helpers to avoid UTC shifts
         const startAtStr = eventWithTiers.start_at
         if (startAtStr) {
-          const [startDatePart, startTimePart] = startAtStr.split('T')
-          setDate(startDatePart)
-          setStartTime((startTimePart || '').slice(0, 5))
+          setDate(extractBangkokDate(startAtStr))
+          setStartTime(extractBangkokTime(startAtStr))
         }
-        
+
         if (eventWithTiers.end_at) {
-          const endAtStr = eventWithTiers.end_at
-          const [, endTimePart] = endAtStr.split('T')
-          setEndTime((endTimePart || '').slice(0, 5))
+          setEndTime(extractBangkokTime(eventWithTiers.end_at))
         }
         
         if (eventWithTiers.venue && eventWithTiers.venue.name && eventWithTiers.venue.name !== 'TBD') {
