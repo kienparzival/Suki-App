@@ -179,7 +179,7 @@ export default function CreateEventPage() {
     )
   }
 
-  const descMax = 100
+  const descMax = 4000
   const descCount = (description || '').length
 
   const onSelectMedia = async (e) => {
@@ -437,12 +437,12 @@ export default function CreateEventPage() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">Description</h2>
             </div>
-            <p className="text-gray-600 mb-6">Grab people's attention with a short description about your event. (100 characters max)</p>
+            <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
             <textarea 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
-              rows={3} 
+              rows={8} 
               maxLength={descMax} 
-              placeholder="Describe your event in a few words" 
+              placeholder="About this event (up to 4,000 characters)"
               value={description} 
               onChange={e => setDescription(e.target.value)} 
             />

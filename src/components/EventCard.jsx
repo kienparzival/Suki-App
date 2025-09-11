@@ -7,6 +7,7 @@ const FALLBACK_COVER = 'https://images.unsplash.com/photo-1544025162-d7669426594
 
 export default function EventCard({ event }) {
   const dateFmt = formatBangkokLabel(event.start_at, { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+  const teaser = (event.description || '').slice(0, 160)
 
   return (
     <article className="card overflow-hidden hover:border-neutral-300 transition">
@@ -40,7 +41,7 @@ export default function EventCard({ event }) {
         </div>
         <Link to={`/events/${event.id}`} className="block">
           <h3 className="text-lg font-semibold text-neutral-900">{event.title}</h3>
-          <p className="text-sm text-neutral-600 line-clamp-2">{event.description}</p>
+          <p className="text-sm text-neutral-600 line-clamp-2">{teaser}{(event.description || '').length > 160 ? '…' : ''}</p>
           <div className="flex items-center gap-4 text-sm text-neutral-700">
           <div className="flex items-center gap-1"><CalendarDays className="size-4" /> {dateFmt}</div>
           <div className="flex items-start gap-1">

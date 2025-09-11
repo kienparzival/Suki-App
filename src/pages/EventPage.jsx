@@ -127,7 +127,7 @@ export default function EventPage() {
         console.log('Venue data from database:', data.venue)
         
 
-        
+
         // Transform Supabase data to match expected format
         const transformedEvent = {
           id: data.id,
@@ -393,11 +393,7 @@ export default function EventPage() {
             {/* About Section */}
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About this event</h2>
-              <div className="prose prose-gray max-w-none">
-                <p className="text-gray-700 leading-relaxed text-lg">
-                  {event.description || 'No description provided for this event.'}
-                </p>
-              </div>
+              <DescriptionBlock text={event.description} />
             </section>
 
             {/* Event Details */}
@@ -409,9 +405,9 @@ export default function EventPage() {
                   <div>
                     <div className="font-medium text-gray-900">Date & Time</div>
                     <div className="text-gray-600">{dateFmt}</div>
-                  </div>
-                </div>
-                
+              </div>
+            </div>
+
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-blue-600" />
                   <div>
@@ -428,7 +424,7 @@ export default function EventPage() {
                   </div>
                 </div>
               </div>
-            </section>
+                </section>
 
             {/* Location Section */}
             <section>
@@ -503,7 +499,7 @@ export default function EventPage() {
                 </div>
               </div>
             </section>
-          </div>
+              </div>
 
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
@@ -560,3 +556,22 @@ export default function EventPage() {
     </div>
   )
 } 
+
+function DescriptionBlock({ text }) {
+  const [expanded, setExpanded] = useState(false)
+  const safe = typeof text === 'string' ? text : ''
+  const needsClamp = safe.length > 480
+  const shown = expanded || !needsClamp ? safe : (safe.slice(0, 480) + '…')
+  return (
+    <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <p className="text-gray-700 leading-relaxed text-lg" style={{ whiteSpace: 'pre-wrap' }}>
+        {shown || 'No description provided for this event.'}
+      </p>
+      {needsClamp && (
+        <button className="mt-3 text-blue-600 hover:text-blue-700 font-medium" onClick={() => setExpanded(!expanded)}>
+          {expanded ? 'Show less' : 'Read more'}
+        </button>
+      )}
+    </div>
+  )
+}
