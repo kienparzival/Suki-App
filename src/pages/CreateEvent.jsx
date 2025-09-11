@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { supabase } from '../lib/supabase'
+import { toIsoInGMT7 } from '../lib/timezone'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 
@@ -227,10 +228,8 @@ export default function CreateEventPage() {
   }
 
   const toIso = (d, t) => {
-    // Combine yyyy-mm-dd and HH:mm into a Date and return ISO
-    if (!d || !t) return ''
-    const iso = new Date(`${d}T${t}:00`)
-    return iso.toISOString()
+    // Use GMT+7 timezone utility to prevent timezone shifts
+    return toIsoInGMT7(d, t)
   }
 
   const publish = async () => {

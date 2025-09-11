@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import EventDetail from '../components/EventDetail.jsx'
 import { supabase } from '../lib/supabase.js'
+import { parseFromGMT7, formatDateTimeGMT7 } from '../lib/timezone'
 import { Share2, MapPin, Calendar, Clock, Users, ChevronDown, ChevronUp, Heart } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
@@ -280,18 +281,10 @@ export default function EventPage() {
     )
   }
 
-  // Parse ISO-like string (YYYY-MM-DDTHH:mm:ss) as local time to avoid timezone shifts
-  const parseLocalDateTime = (s) => {
-    if (!s || typeof s !== 'string') return new Date(NaN)
-    const [d, t = '00:00:00'] = s.split('T')
-    const [y, m, day] = d.split('-').map(n => parseInt(n, 10))
-    const [hh, mm, ss] = t.split(':').map(n => parseInt(n, 10) || 0)
-    return new Date(y, (m || 1) - 1, day || 1, hh || 0, mm || 0, ss || 0)
-  }
-
-  const start = parseLocalDateTime(event.start_at)
-  const end = parseLocalDateTime(event.end_at || event.start_at)
-  const dateFmt = start.toLocaleString([], { weekday: 'long', day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })
+  // Parse dates using GMT+7 timezone utility
+  const start = parseFromGMT7(event.start_at)
+  const end = parseFromGMT7(event.end_at || event.start_at)
+  const dateFmt = formatDateTimeGMT7(event.start_at)
   const durationHours = Math.max(1, Math.round((end - start) / (1000*60*60)))
   const isOnline = (event.venue?.name || '').toLowerCase().includes('online')
 

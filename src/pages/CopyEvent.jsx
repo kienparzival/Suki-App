@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
+import { toIsoInGMT7 } from '../lib/timezone'
 import '../styles.css'
 
 export default function CopyEvent() {
@@ -95,8 +96,8 @@ export default function CopyEvent() {
     setLoading(true)
 
     try {
-      const startAt = new Date(`${date}T${startTime}`).toISOString()
-      const endAt = endTime ? new Date(`${date}T${endTime}`).toISOString() : startAt
+      const startAt = toIsoInGMT7(date, startTime)
+      const endAt = endTime ? toIsoInGMT7(date, endTime) : startAt
 
       // Create venue if needed
       let venueId = null

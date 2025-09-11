@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { Edit, Trash2, Eye, Calendar, MapPin, Users, DollarSign, MoreVertical, List, CalendarDays, Copy, Link, Copy as CopyIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { parseFromGMT7, formatDateTimeGMT7, formatDateGMT7 } from '../lib/timezone'
 import { useNavigate } from 'react-router-dom'
 
 export default function ManageEvents() {
@@ -282,25 +283,15 @@ export default function ManageEvents() {
   }
 
   const parseLocalDateTime = (s) => {
-    if (!s || typeof s !== 'string') return new Date(NaN)
-    const [d, t = '00:00:00'] = s.split('T')
-    const [y, m, day] = d.split('-').map(n => parseInt(n, 10))
-    const [hh, mm, ss] = t.split(':').map(n => parseInt(n, 10) || 0)
-    return new Date(y, (m || 1) - 1, day || 1, hh || 0, mm || 0, ss || 0)
+    return parseFromGMT7(s)
   }
 
   const formatDate = (dateString) => {
-    const date = parseLocalDateTime(dateString)
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
+    return formatDateGMT7(dateString)
   }
 
   const formatDateTime = (dateString) => {
-    const date = parseLocalDateTime(dateString)
-    return date.toLocaleDateString('en-US', {
+    return formatDateTimeGMT7(dateString, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

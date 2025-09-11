@@ -4,6 +4,7 @@ import { QRCodeCanvas } from 'qrcode.react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useLocation } from '../context/LocationContext'
+import { parseFromGMT7, formatDateTimeGMT7, formatDateGMT7 } from '../lib/timezone'
 
 // Offline storage keys
 const OFFLINE_TICKETS_KEY = 'suki_offline_tickets'
@@ -235,8 +236,8 @@ export default function Tickets() {
                 </div>
                 
                 <div className="text-sm text-neutral-600">
-                  <p>{new Date(ticket.events.start_at).toLocaleDateString()}</p>
-                  <p>{new Date(ticket.events.start_at).toLocaleTimeString()} - {new Date(ticket.events.end_at).toLocaleTimeString()}</p>
+                  <p>{formatDateGMT7(ticket.events.start_at)}</p>
+                  <p>{formatDateTimeGMT7(ticket.events.start_at, { hour: '2-digit', minute: '2-digit' })} - {formatDateTimeGMT7(ticket.events.end_at, { hour: '2-digit', minute: '2-digit' })}</p>
                   <p className="text-neutral-500">{ticket.events.venues?.name || 'TBD'}</p>
                   {ticket.ticket_tiers && (
                     <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
@@ -255,7 +256,7 @@ export default function Tickets() {
                 <div className="text-xs text-neutral-500">
                   <p>Order: #{ticket.orders.id}</p>
                   <p>Ticket ID: {ticket.id}</p>
-                  <p>Purchased: {new Date(ticket.orders.created_at).toLocaleDateString()}</p>
+                  <p>Purchased: {formatDateGMT7(ticket.orders.created_at)}</p>
                 </div>
               </article>
             ))}

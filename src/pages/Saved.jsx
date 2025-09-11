@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
+import { parseFromGMT7, formatDateTimeGMT7 } from '../lib/timezone'
 import { Link } from 'react-router-dom'
 import { Heart, Share2 } from 'lucide-react'
 import '../styles.css'
@@ -127,13 +128,13 @@ export default function SavedPage() {
         ) : (
           <div className="space-y-6">
             {savedEvents.map(e => {
-              const startDate = new Date(e.start_at)
-              const dateStr = startDate.toLocaleDateString('en-US', { 
+              const startDate = parseFromGMT7(e.start_at)
+              const dateStr = formatDateTimeGMT7(e.start_at, { 
                 weekday: 'short', 
                 month: 'short', 
                 day: 'numeric' 
               })
-              const timeStr = startDate.toLocaleTimeString('en-US', { 
+              const timeStr = formatDateTimeGMT7(e.start_at, { 
                 hour: 'numeric', 
                 minute: '2-digit',
                 hour12: true 

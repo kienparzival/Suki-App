@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { X, CalendarDays, MapPin, Users, Ticket, DollarSign, ExternalLink } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
 import { BuyButton } from './BuyButton.jsx'
+import { parseFromGMT7, formatDateTimeGMT7 } from '../lib/timezone'
 
 function formatVND(n) {
   return n.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })
@@ -21,8 +22,8 @@ export default function EventDetail({ event, remaining, onClose }) {
   console.log('EventDetail - Event max_price:', event?.max_price)
   console.log('EventDetail - Remaining prop:', remaining)
 
-  const start = new Date(event.start_at)
-  const end = new Date(event.end_at)
+  const start = parseFromGMT7(event.start_at)
+  const end = parseFromGMT7(event.end_at || event.start_at)
 
   // Mock purchase logic removed - now handled by BuyButton component
 
@@ -53,7 +54,7 @@ export default function EventDetail({ event, remaining, onClose }) {
 
           <div className="space-y-4">
             <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-neutral-700"><CalendarDays className="size-4" /> {start.toLocaleString()} – {end.toLocaleTimeString()}</div>
+              <div className="flex items-center gap-2 text-neutral-700"><CalendarDays className="size-4" /> {formatDateTimeGMT7(event.start_at)} – {formatDateTimeGMT7(event.end_at || event.start_at, { hour: '2-digit', minute: '2-digit' })}</div>
               <div className="flex items-center gap-2 text-neutral-700"><MapPin className="size-4" /> {event.venue?.name} {mapsHref && (
                 <a className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700" href={mapsHref} target="_blank" rel="noreferrer">
                   Open in Maps <ExternalLink className="size-3"/>
