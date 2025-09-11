@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import Header from '../components/Header.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import { supabase } from '../lib/supabase'
-import { toIsoInGMT7 } from '../lib/timezone'
+import { composeBangkokIso } from '../helpers/time'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 
@@ -228,8 +228,8 @@ export default function CreateEventPage() {
   }
 
   const toIso = (d, t) => {
-    // Use GMT+7 timezone utility to prevent timezone shifts
-    return toIsoInGMT7(d, t)
+    // Use Bangkok timezone utility with explicit +07:00 offset
+    return composeBangkokIso(d, t)
   }
 
   const publish = async () => {

@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { Edit, Trash2, Eye, Calendar, MapPin, Users, DollarSign, MoreVertical, List, CalendarDays, Copy, Link, Copy as CopyIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { parseFromGMT7, formatDateTimeGMT7, formatDateGMT7 } from '../lib/timezone'
+import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
 
 export default function ManageEvents() {
@@ -283,15 +283,15 @@ export default function ManageEvents() {
   }
 
   const parseLocalDateTime = (s) => {
-    return parseFromGMT7(s)
+    return new Date(s)
   }
 
   const formatDate = (dateString) => {
-    return formatDateGMT7(dateString)
+    return formatBangkokDate(dateString)
   }
 
   const formatDateTime = (dateString) => {
-    return formatDateTimeGMT7(dateString, {
+    return formatBangkokLabel(dateString, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

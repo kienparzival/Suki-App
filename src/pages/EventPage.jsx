@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import EventDetail from '../components/EventDetail.jsx'
 import { supabase } from '../lib/supabase.js'
-import { parseFromGMT7, formatDateTimeGMT7 } from '../lib/timezone'
+import { formatBangkokLabel } from '../helpers/time'
 import { Share2, MapPin, Calendar, Clock, Users, ChevronDown, ChevronUp, Heart } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet'
@@ -281,10 +281,10 @@ export default function EventPage() {
     )
   }
 
-  // Parse dates using GMT+7 timezone utility
-  const start = parseFromGMT7(event.start_at)
-  const end = parseFromGMT7(event.end_at || event.start_at)
-  const dateFmt = formatDateTimeGMT7(event.start_at)
+  // Format dates using Asia/Bangkok timezone
+  const dateFmt = formatBangkokLabel(event.start_at)
+  const start = new Date(event.start_at)
+  const end = new Date(event.end_at || event.start_at)
   const durationHours = Math.max(1, Math.round((end - start) / (1000*60*60)))
   const isOnline = (event.venue?.name || '').toLowerCase().includes('online')
 

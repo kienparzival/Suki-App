@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
-import { toIsoInGMT7 } from '../lib/timezone'
+import { composeBangkokIso } from '../helpers/time'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
@@ -308,9 +308,9 @@ export default function EditEvent() {
     setLoading(true)
 
     try {
-      // Build timestamp strings using GMT+7 timezone utility to avoid timezone shifts
-      const startAt = date && startTime ? toIsoInGMT7(date, startTime) : null
-      const endAt = endTime ? toIsoInGMT7(date, endTime) : startAt
+      // Build timestamp strings using Bangkok timezone utility with explicit +07:00 offset
+      const startAt = date && startTime ? composeBangkokIso(date, startTime) : null
+      const endAt = endTime ? composeBangkokIso(date, endTime) : startAt
 
       // Handle venue updates - create venue if needed and get venue_id
       let venue_id = null

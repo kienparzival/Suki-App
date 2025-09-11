@@ -62,7 +62,10 @@ export default function AuthPage() {
     setEmail('')
     setError('')
     setSuccessMessage('')
-    if (cancelEmailFlow) cancelEmailFlow()
+    // Reset the email flow state in the context
+    if (cancelEmailFlow) {
+      cancelEmailFlow()
+    }
   }
 
   if (user) {
@@ -206,12 +209,14 @@ export default function AuthPage() {
                 
                 <div className="space-y-3">
                   <button 
+                    type="button"
                     className="btn btn-link text-sm" 
                     onClick={handleBackToProviders}
                   >
                     Use a different email
                   </button>
                   <button 
+                    type="button"
                     className="btn btn-link text-sm" 
                     onClick={handleSend}
                     disabled={loading}

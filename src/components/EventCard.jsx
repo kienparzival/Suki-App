@@ -1,13 +1,12 @@
 import React from 'react'
 import { CalendarDays, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { parseFromGMT7, formatDateTimeGMT7 } from '../lib/timezone'
+import { formatBangkokLabel } from '../helpers/time'
 
 const FALLBACK_COVER = 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop'
 
 export default function EventCard({ event }) {
-  const start = parseFromGMT7(event.start_at)
-  const dateFmt = formatDateTimeGMT7(event.start_at, { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
+  const dateFmt = formatBangkokLabel(event.start_at, { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })
 
   return (
     <article className="card overflow-hidden hover:border-neutral-300 transition">

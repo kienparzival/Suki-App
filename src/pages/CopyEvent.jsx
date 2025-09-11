@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
-import { toIsoInGMT7 } from '../lib/timezone'
+import { composeBangkokIso } from '../helpers/time'
 import '../styles.css'
 
 export default function CopyEvent() {
@@ -96,8 +96,8 @@ export default function CopyEvent() {
     setLoading(true)
 
     try {
-      const startAt = toIsoInGMT7(date, startTime)
-      const endAt = endTime ? toIsoInGMT7(date, endTime) : startAt
+      const startAt = composeBangkokIso(date, startTime)
+      const endAt = endTime ? composeBangkokIso(date, endTime) : startAt
 
       // Create venue if needed
       let venueId = null
