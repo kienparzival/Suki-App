@@ -731,7 +731,7 @@ export default function EditEvent() {
             </section>
 
             {/* Admission */}
-            <fieldset className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
                   <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -740,27 +740,35 @@ export default function EditEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Admission</h2>
               </div>
-              <div className="space-x-8">
-                <label className="inline-flex items-center gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_TICKETED ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
                   <input
                     type="radio"
                     name="admission"
+                    className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
                     checked={admission === ADMISSION_TICKETED}
                     onChange={() => setAdmission(ADMISSION_TICKETED)}
                   />
-                  <span>Ticketed (paid/free tickets, capacity applies)</span>
+                  <div>
+                    <div className="text-gray-900 font-medium">Ticketed</div>
+                    <p className="text-sm text-gray-600">Paid/free tickets, capacity applies</p>
+                  </div>
                 </label>
-                <label className="inline-flex items-center gap-3">
+                <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_OPEN ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
                   <input
                     type="radio"
                     name="admission"
+                    className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
                     checked={admission === ADMISSION_OPEN}
                     onChange={() => setAdmission(ADMISSION_OPEN)}
                   />
-                  <span>Open — no ticket required, unlimited capacity</span>
+                  <div>
+                    <div className="text-gray-900 font-medium">Open</div>
+                    <p className="text-sm text-gray-600">No ticket required, unlimited capacity</p>
+                  </div>
                 </label>
               </div>
-            </fieldset>
+            </section>
 
             {/* Capacity and Pricing */}
             {admission === ADMISSION_TICKETED && (
