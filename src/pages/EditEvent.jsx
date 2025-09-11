@@ -363,13 +363,14 @@ export default function EditEvent() {
       let minPrice = 0
       let maxPrice = 0
       let finalCapacity = null
+      let totalFromTiers = 0
       if (admission === ADMISSION_TICKETED) {
         if (!isFree && ticketTiers.length > 0) {
           minPrice = Math.min(...ticketTiers.map(t => Number(t.price) || 0))
           maxPrice = Math.max(...ticketTiers.map(t => Number(t.price) || 0))
         }
 
-        const totalFromTiers = ticketTiers.reduce(
+        totalFromTiers = ticketTiers.reduce(
           (sum, t) => sum + (parseInt(t.quota, 10) || 0),
           0
         )
@@ -381,11 +382,12 @@ export default function EditEvent() {
       }
 
       console.log('Capacity Debug:', {
-        capacity: capacity,
+        capacity,
         ticketTiers: ticketTiers.length,
-        totalCapacity: totalCapacity,
-        finalCapacity: finalCapacity,
-        isFree: isFree
+        totalFromTiers,
+        finalCapacity,
+        isFree,
+        admission
       })
 
       // Update event
