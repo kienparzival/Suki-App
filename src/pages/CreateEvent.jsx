@@ -239,6 +239,15 @@ export default function CreateEventPage() {
     if (!title.trim()) { alert('Please enter a title'); return }
     if (!date || !startTime) { alert('Please select a date and start time'); return }
     if (categories.length === 0) { alert('Please select at least one category'); return }
+    if (!coverImagePreview && (!images || images.length === 0)) { alert('Please upload a cover image'); return }
+    if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
+      alert('Please enter a venue name or select "To be announced"'); 
+      return 
+    }
+    if (admission === ADMISSION_TICKETED && !capacity && (!ticketTiers || ticketTiers.length === 0)) { 
+      alert('Please set capacity for ticketed events'); 
+      return 
+    }
 
     const start_at = toIso(date, startTime)
     const effectiveEndDate = endDate || date
@@ -420,7 +429,7 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Event Title</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Event Title <span className="text-red-500">*</span></h2>
             </div>
             <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
             <input 

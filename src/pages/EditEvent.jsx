@@ -316,9 +316,34 @@ export default function EditEvent() {
     e.preventDefault()
     setLoading(true)
 
-    // Validate categories
+    // Validate required fields
+    if (!title.trim()) {
+      alert('Please enter a title')
+      setLoading(false)
+      return
+    }
+    if (!date || !startTime) {
+      alert('Please select a date and start time')
+      setLoading(false)
+      return
+    }
     if (categories.length === 0) {
       alert('Please select at least one category')
+      setLoading(false)
+      return
+    }
+    if (!coverImagePreview && !coverUrl) {
+      alert('Please upload a cover image')
+      setLoading(false)
+      return
+    }
+    if (locationData.mode === 'venue' && !locationData.name?.trim()) {
+      alert('Please enter a venue name or select "To be announced"')
+      setLoading(false)
+      return
+    }
+    if (admission === ADMISSION_TICKETED && !capacity && (!ticketTiers || ticketTiers.length === 0)) {
+      alert('Please set capacity for ticketed events')
       setLoading(false)
       return
     }
