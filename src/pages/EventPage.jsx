@@ -309,9 +309,22 @@ export default function EventPage() {
         {/* Event Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-              {event.category}
-            </span>
+            {/* Category chips */}
+            {Array.isArray(event.categories) && event.categories.length > 0 ? (
+              <div className="flex flex-wrap gap-1">
+                {event.categories.map(c => (
+                  <span key={c} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                    {c}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              event.category && (
+                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                  {event.category}
+                </span>
+              )
+            )}
             <span>•</span>
             <span>{event.status}</span>
           </div>
@@ -529,8 +542,20 @@ export default function EventPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Info</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Category</span>
-                  <span className="font-medium text-gray-900">{event.category}</span>
+                  <span className="text-gray-600">Categories</span>
+                  <div className="text-right">
+                    {Array.isArray(event.categories) && event.categories.length > 0 ? (
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {event.categories.map(c => (
+                          <span key={c} className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                            {c}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="font-medium text-gray-900">{event.category || 'N/A'}</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Status</span>

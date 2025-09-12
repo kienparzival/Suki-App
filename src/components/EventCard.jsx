@@ -34,7 +34,23 @@ export default function EventCard({ event }) {
       </Link>
       <div className="p-4 space-y-3">
         <div className="flex items-center gap-2">
-          <span className="badge">{event.category}</span>
+          {/* Category chips */}
+          {Array.isArray(event.categories) && event.categories.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {event.categories.slice(0, 2).map(c => (
+                <span key={c} className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                  {c}
+                </span>
+              ))}
+              {event.categories.length > 2 && (
+                <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">
+                  +{event.categories.length - 2}
+                </span>
+              )}
+            </div>
+          ) : (
+            event.category && <span className="badge">{event.category}</span>
+          )}
           {event.distance_m != null && <span className="badge">{(event.distance_m/1000).toFixed(1)} km</span>}
           <span className="badge">{Math.max(0, event.remaining ?? 0)} left</span>
           <span className="ml-auto text-sm text-neutral-600">From {(event.min_price/1000).toFixed(0)}k VND</span>
