@@ -330,8 +330,8 @@ export default function CreateEventPage() {
           venue_id,
           title: title.trim(),
           description: description.trim(),
-          category: categories[0] || null,
           categories,
+          category: categories?.[0] ?? null,
           start_at,
           end_at,
           cover_url: coverImagePreview || images[0] || '',
@@ -538,7 +538,7 @@ export default function CreateEventPage() {
               </div>
             </label>
             <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_OPEN ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
-              <input
+              <input 
                 type="radio"
                 name="admission"
                 className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"

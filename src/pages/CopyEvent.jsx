@@ -156,8 +156,8 @@ export default function CopyEvent() {
         .insert([{
           title,
           description,
-          category: categories[0] || null,
           categories,
+          category: categories?.[0] ?? null,
           start_at: startAt,
           end_at: endAt,
           venue_id: venueId,

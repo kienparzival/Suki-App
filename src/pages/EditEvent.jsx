@@ -120,7 +120,7 @@ export default function EditEvent() {
           setDate(extractBangkokDate(startAtStr))
           setStartTime(extractBangkokTime(startAtStr))
         }
-
+        
         if (eventWithTiers.end_at) {
           setEndDate(extractBangkokDate(eventWithTiers.end_at))
           setEndTime(extractBangkokTime(eventWithTiers.end_at))
@@ -428,8 +428,8 @@ export default function EditEvent() {
         .update({
           title,
           description,
-          category: categories[0] || null,
           categories,
+          category: categories?.[0] ?? null,
           start_at: startAt,
           end_at: endAt,
           venue_id: venue_id, // Use the venue_id we determined above
@@ -527,7 +527,7 @@ export default function EditEvent() {
           .from('ticket_tiers')
           .delete()
           .eq('event_id', event.id)
-
+        
         if (deleteAllError) {
           console.error('Error deleting all tiers for paid event with no tiers:', deleteAllError)
           throw deleteAllError
@@ -605,8 +605,8 @@ export default function EditEvent() {
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-brand-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-cyan-100/30 rounded-full blur-2xl"></div>
               <div className="absolute top-1/2 left-0 w-48 h-48 bg-gradient-to-r from-pink-100/30 to-rose-100/30 rounded-full blur-xl"></div>
-            </div>
-            
+          </div>
+
             {/* Main heading with enhanced styling */}
             <h1 
               className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
@@ -701,7 +701,7 @@ export default function EditEvent() {
                     </button>
                   )
                 })}
-              </div>
+            </div>
               {categories.length === 0 && (
                 <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
               )}
@@ -809,7 +809,7 @@ export default function EditEvent() {
                     checked={admission === ADMISSION_OPEN}
                     onChange={() => setAdmission(ADMISSION_OPEN)}
                   />
-                  <div>
+              <div>
                     <div className="text-gray-900 font-medium">Open</div>
                     <p className="text-sm text-gray-600">No ticket required, unlimited capacity</p>
                   </div>
@@ -897,7 +897,7 @@ export default function EditEvent() {
                       <img src={event.cover_url} alt="Current cover" className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
                       <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
                         Current Cover
-                      </div>
+                    </div>
                     </div>
                   )}
                   <EventCoverUploader
@@ -907,18 +907,18 @@ export default function EditEvent() {
                       setCoverImagePreview(url)
                     }}
                   />
-                </div>
-              ) : (
+                  </div>
+                ) : (
                 <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
                   <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
                     <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
+                      </svg>
+                    </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Cover Image Upload</h3>
                   <p className="text-gray-500">Save the event first to upload a cover image</p>
-                </div>
-              )}
+                  </div>
+                )}
             </section>
 
             {/* Ticket Tiers */}
@@ -928,7 +928,7 @@ export default function EditEvent() {
                   <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                   </svg>
-                </div>
+              </div>
                 <h2 className="text-2xl font-bold text-gray-900">Ticket Tiers</h2>
               </div>
               <p className="text-gray-600 mb-6">
@@ -938,7 +938,7 @@ export default function EditEvent() {
               {/* Free Tickets Option */}
               <div className="mb-6">
                 <label className="inline-flex items-center gap-3 text-gray-700">
-                  <input 
+                  <input
                     type="checkbox" 
                     className={`w-5 h-5 text-brand-600 rounded focus:ring-brand-500 ${
                       hasSoldPaidTickets && !isFree ? 'opacity-50 cursor-not-allowed' : ''
@@ -985,17 +985,17 @@ export default function EditEvent() {
                     'Check this if you want to offer all tickets for free. No tiering options will be available.'
                   )}
                 </p>
-              </div>
+            </div>
 
               {/* Show TicketTierManager only when not free */}
               {!isFree && (
-                <TicketTierManager 
-                  tiers={ticketTiers} 
+              <TicketTierManager 
+                tiers={ticketTiers} 
                   onChange={handleTicketTiersChange}
-                  eventId={event.id}
-                  originalEvent={event}
-                  isEditing={true}
-                />
+                eventId={event.id}
+                originalEvent={event}
+                isEditing={true}
+              />
               )}
               
               {/* Show message when free tickets are selected */}
@@ -1009,8 +1009,8 @@ export default function EditEvent() {
                   <h3 className="text-lg font-semibold text-green-800 mb-2">Free Event</h3>
                   <p className="text-green-700">
                     Your event will be completely free for all attendees. No ticket tiers or pricing needed!
-                  </p>
-            </div>
+                </p>
+              </div>
               )}
             </section>
 
