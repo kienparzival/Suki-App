@@ -5,14 +5,8 @@ import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
+import { CATEGORIES } from '../constants/categories'
 import '../styles.css'
-
-const DISPLAY_CATEGORIES = [
-  'Music','Business & Professional','Food & Drink','Community & Culture','Performing & Visual Arts',
-  'Film, Media & Entertainment','Sports & Fitness','Health & Wellness','Science & Technology','Travel & Outdoor',
-  'Charity & Causes','Religion & Spirituality','Family & Education','Seasonal & Holiday','Government & Politics',
-  'Fashion & Beauty','Home & Lifestyle','Hobbies & Special Interests','School Activities','Others'
-]
 
 export default function CopyEvent() {
   const { user } = useAuth()
@@ -156,10 +150,9 @@ export default function CopyEvent() {
         .insert([{
           title,
           description,
-          categories,
-          category: categories?.[0] ?? null,
           start_at: startAt,
           end_at: endAt,
+          categories,
           venue_id: venueId,
           admission,
           capacity: finalCapacity,
@@ -231,7 +224,7 @@ export default function CopyEvent() {
               </label>
               <p className="text-sm text-gray-600 mb-3">Select one or more categories that best describe your event.</p>
               <div className="flex flex-wrap gap-2">
-                {DISPLAY_CATEGORIES.map(opt => {
+                {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
                   return (
                     <button

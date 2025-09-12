@@ -5,15 +5,9 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { supabase } from '../lib/supabase'
 import { composeBangkokIso } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
+import { CATEGORIES } from '../constants/categories'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
-
-const DISPLAY_CATEGORIES = [
-  'Music','Business & Professional','Food & Drink','Community & Culture','Performing & Visual Arts',
-  'Film, Media & Entertainment','Sports & Fitness','Health & Wellness','Science & Technology','Travel & Outdoor',
-  'Charity & Causes','Religion & Spirituality','Family & Education','Seasonal & Holiday','Government & Politics',
-  'Fashion & Beauty','Home & Lifestyle','Hobbies & Special Interests','School Activities','Others'
-]
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -330,10 +324,9 @@ export default function CreateEventPage() {
           venue_id,
           title: title.trim(),
           description: description.trim(),
-          categories,
-          category: categories?.[0] ?? null,
           start_at,
           end_at,
+          categories,
           cover_url: coverImagePreview || images[0] || '',
           status: 'published',
           admission,
@@ -586,7 +579,7 @@ export default function CreateEventPage() {
             </div>
             <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
             <div className="flex flex-wrap gap-2">
-              {DISPLAY_CATEGORIES.map(opt => {
+              {CATEGORIES.map(opt => {
                 const selected = categories.includes(opt)
                 return (
                   <button

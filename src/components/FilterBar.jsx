@@ -1,19 +1,13 @@
 import React, { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
+import { CATEGORIES } from '../constants/categories'
 
 export default function FilterBar({ selectedCategory, onCategoryChange, browsingLocation, onLocationChange, selectedTimeFilter, onTimeFilterChange }) {
 	const [showAllCategories, setShowAllCategories] = useState(false)
 	const [showLocationDropdown, setShowLocationDropdown] = useState(false)
 	
-	// Fixed display category list in required order
-	const allCategories = [
-		'Music', 'Business & Professional', 'Food & Drink', 'Community & Culture',
-		'Performing & Visual Arts', 'Film, Media & Entertainment', 'Sports & Fitness',
-		'Health & Wellness', 'Science & Technology', 'Travel & Outdoor', 'Charity & Causes',
-		'Religion & Spirituality', 'Family & Education', 'Seasonal & Holiday',
-		'Government & Politics', 'Fashion & Beauty', 'Home & Lifestyle',
-		'Hobbies & Special Interests', 'School Activities', 'Others'
-	]
+	// Use categories from constants
+	const allCategories = CATEGORIES
 	
 	const visibleCategories = showAllCategories ? allCategories : allCategories.slice(0, 8)
 

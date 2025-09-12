@@ -5,17 +5,11 @@ import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
+import { CATEGORIES } from '../constants/categories'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import '../styles.css'
-
-const DISPLAY_CATEGORIES = [
-  'Music','Business & Professional','Food & Drink','Community & Culture','Performing & Visual Arts',
-  'Film, Media & Entertainment','Sports & Fitness','Health & Wellness','Science & Technology','Travel & Outdoor',
-  'Charity & Causes','Religion & Spirituality','Family & Education','Seasonal & Holiday','Government & Politics',
-  'Fashion & Beauty','Home & Lifestyle','Hobbies & Special Interests','School Activities','Others'
-]
 
 export default function EditEvent() {
   const { user } = useAuth()
@@ -428,10 +422,9 @@ export default function EditEvent() {
         .update({
           title,
           description,
-          categories,
-          category: categories?.[0] ?? null,
           start_at: startAt,
           end_at: endAt,
+          categories,
           venue_id: venue_id, // Use the venue_id we determined above
           admission,
           capacity: finalCapacity,
@@ -679,7 +672,7 @@ export default function EditEvent() {
               </div>
               <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
               <div className="flex flex-wrap gap-2">
-                {DISPLAY_CATEGORIES.map(opt => {
+                {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
                   return (
                     <button

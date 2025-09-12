@@ -4,6 +4,7 @@ import { useLocation } from '../context/LocationContext.jsx'
 import Header from '../components/Header.jsx'
 import AvatarUploader from '../components/AvatarUploader.jsx'
 import { supabase } from '../lib/supabase.js'
+import { CATEGORIES } from '../constants/categories'
 
 export default function Profile() {
   const { user, signOut, updateProfile } = useAuth()
@@ -545,14 +546,7 @@ export default function Profile() {
                   )}
                 </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {[
-                    'Music', 'Business & Professional', 'Food & Drink', 'Community & Culture',
-                    'Performing & Visual Arts', 'Film, Media & Entertainment', 'Sports & Fitness',
-                    'Health & Wellness', 'Science & Technology', 'Travel & Outdoor', 'Charity & Causes',
-                    'Religion & Spirituality', 'Family & Education', 'Seasonal & Holiday',
-                    'Government & Politics', 'Fashion & Beauty', 'Home & Lifestyle',
-                    'Hobbies & Special Interests', 'School Activities', 'Others'
-                  ].map(category => (
+                  {CATEGORIES.map(category => (
                       <label key={category} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
                       <input
                         type="checkbox"
