@@ -355,11 +355,7 @@ export default function EventPage() {
           </div>
           
           <div className="flex items-center gap-4">
-            {isOpen ? (
-              <span className="px-6 py-3 rounded-lg font-medium bg-green-50 text-green-700 border border-green-200">
-                Open event — no ticket required
-              </span>
-            ) : (
+            {!isOpen && (
               <button 
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 onClick={() => setOpenBuy(true)}
@@ -526,24 +522,26 @@ export default function EventPage() {
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Pricing Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Pricing</h3>
-              <div className="text-center">
-                {event.min_price === 0 && event.max_price === 0 ? (
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    {isOpen ? 'Open — No ticket' : 'FREE'}
-                  </div>
-                ) : event.min_price === event.max_price ? (
-                  <div className="text-3xl font-bold text-gray-900 mb-2">
-                    {(event.min_price/1000).toFixed(0)}k VND
-                  </div>
-                ) : (
-                  <div className="text-3xl font-bold text-gray-900 mb-2">
-                    {(event.min_price/1000).toFixed(0)}k - {(event.max_price/1000).toFixed(0)}k VND
-                  </div>
-                )}
+            {!isOpen && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Pricing</h3>
+                <div className="text-center">
+                  {event.min_price === 0 && event.max_price === 0 ? (
+                    <div className="text-3xl font-bold text-green-600 mb-2">
+                      FREE
+                    </div>
+                  ) : event.min_price === event.max_price ? (
+                    <div className="text-3xl font-bold text-gray-900 mb-2">
+                      {(event.min_price/1000).toFixed(0)}k VND
+                    </div>
+                  ) : (
+                    <div className="text-3xl font-bold text-gray-900 mb-2">
+                      {(event.min_price/1000).toFixed(0)}k - {(event.max_price/1000).toFixed(0)}k VND
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quick Info Card */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
