@@ -348,10 +348,10 @@ export default function Profile() {
                 Sign Out
               </button>
             </div>
+            </div>
           </div>
-        </div>
 
-        {message && (
+          {message && (
           <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
             <div className="flex items-center">
               <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,9 +359,9 @@ export default function Profile() {
               </svg>
               <span className="text-green-800 font-medium">{message}</span>
             </div>
-          </div>
-        )}
-
+            </div>
+          )}
+          
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Profile Photo */}
           <div className="lg:col-span-1">
@@ -373,7 +373,7 @@ export default function Profile() {
                   <div className="mb-6">
                     <img 
                       src={profile.avatar_url || profile.profilePhoto} 
-                      alt="Profile" 
+                    alt="Profile" 
                       className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mx-auto"
                     />
                   </div>
@@ -398,8 +398,8 @@ export default function Profile() {
                   />
                 )}
               </div>
+              </div>
             </div>
-          </div>
 
           {/* Right Column - Profile Information */}
           <div className="lg:col-span-2">
@@ -408,54 +408,54 @@ export default function Profile() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+            <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Prefix</label>
-                    <select 
+                  <select 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.prefix}
-                      onChange={(e) => handleInputChange('prefix', e.target.value)}
-                      disabled={!isEditing}
-                    >
-                      <option value="Mr.">Mr.</option>
-                      <option value="Ms.">Ms.</option>
-                      <option value="Mrs.">Mrs.</option>
-                      <option value="Dr.">Dr.</option>
-                      <option value="Prof.">Prof.</option>
-                    </select>
-                  </div>
-                  <div>
+                    value={profile.prefix}
+                    onChange={(e) => handleInputChange('prefix', e.target.value)}
+                    disabled={!isEditing}
+                  >
+                    <option value="Mr.">Mr.</option>
+                    <option value="Ms.">Ms.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Dr.">Dr.</option>
+                    <option value="Prof.">Prof.</option>
+                  </select>
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
-                    <input 
-                      type="text" 
+                  <input 
+                    type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.firstName}
-                      onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="First Name"
-                    />
-                  </div>
-                  <div>
+                    value={profile.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="First Name"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
-                    <input 
-                      type="text" 
+                  <input 
+                    type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.lastName}
-                      onChange={(e) => handleInputChange('lastName', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Last Name"
-                    />
-                  </div>
-                  <div>
+                    value={profile.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Last Name"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Suffix</label>
-                    <input 
-                      type="text" 
+                  <input 
+                    type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.suffix}
-                      onChange={(e) => handleInputChange('suffix', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Suffix"
-                    />
-                  </div>
+                    value={profile.suffix}
+                    onChange={(e) => handleInputChange('suffix', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Suffix"
+                  />
+                </div>
                 </div>
               </div>
 
@@ -463,213 +463,213 @@ export default function Profile() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Home Phone</label>
-                    <input 
-                      type="tel" 
+                  <input 
+                    type="tel" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.homePhone}
-                      onChange={(e) => handleInputChange('homePhone', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Home Phone"
-                    />
-                  </div>
-                  <div>
+                    value={profile.homePhone}
+                    onChange={(e) => handleInputChange('homePhone', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Home Phone"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Cell Phone</label>
-                    <input 
-                      type="tel" 
+                  <input 
+                    type="tel" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.cellPhone}
-                      onChange={(e) => handleInputChange('cellPhone', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Cell Phone"
-                    />
-                  </div>
-                  <div>
+                    value={profile.cellPhone}
+                    onChange={(e) => handleInputChange('cellPhone', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Cell Phone"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
-                    <input 
-                      type="text" 
+                  <input 
+                    type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.jobTitle}
-                      onChange={(e) => handleInputChange('jobTitle', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Job Title"
-                    />
-                  </div>
-                  <div>
+                    value={profile.jobTitle}
+                    onChange={(e) => handleInputChange('jobTitle', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Job Title"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Company / Organization</label>
-                    <input 
-                      type="text" 
+                  <input 
+                    type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.company}
-                      onChange={(e) => handleInputChange('company', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Company / Organization"
-                    />
-                  </div>
-                  <div>
+                    value={profile.company}
+                    onChange={(e) => handleInputChange('company', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Company / Organization"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
-                    <input 
-                      type="url" 
+                  <input 
+                    type="url" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.website}
-                      onChange={(e) => handleInputChange('website', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Website"
-                    />
-                  </div>
-                  <div>
+                    value={profile.website}
+                    onChange={(e) => handleInputChange('website', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Website"
+                  />
+                </div>
+                <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Blog</label>
-                    <input 
-                      type="url" 
+                  <input 
+                    type="url" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.blog}
-                      onChange={(e) => handleInputChange('blog', e.target.value)}
-                      disabled={!isEditing}
-                      placeholder="Blog"
-                    />
-                  </div>
+                    value={profile.blog}
+                    onChange={(e) => handleInputChange('blog', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Blog"
+                  />
                 </div>
               </div>
+            </div>
 
-              {/* Interests */}
+            {/* Interests */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Interests</h2>
-                <div>
+            <div>
                   <label className="block text-sm font-medium text-gray-700 mb-4">
-                    Select your interests 
-                    {profile.interests.length > 0 && (
-                      <span className="ml-2 text-sm font-normal text-gray-500">
-                        ({profile.interests.length} selected)
-                      </span>
-                    )}
-                  </label>
+                  Select your interests 
+                  {profile.interests.length > 0 && (
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      ({profile.interests.length} selected)
+                    </span>
+                  )}
+                </label>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {[
-                      'Music', 'Business & Professional', 'Food & Drink', 'Community & Culture',
-                      'Performing & Visual Arts', 'Film, Media & Entertainment', 'Sports & Fitness',
-                      'Health & Wellness', 'Science & Technology', 'Travel & Outdoor', 'Charity & Causes',
-                      'Religion & Spirituality', 'Family & Education', 'Seasonal & Holiday',
-                      'Government & Politics', 'Fashion & Beauty', 'Home & Lifestyle',
-                      'Hobbies & Special Interests', 'School Activities', 'Others'
-                    ].map(category => (
+                  {[
+                    'Music', 'Business & Professional', 'Food & Drink', 'Community & Culture',
+                    'Performing & Visual Arts', 'Film, Media & Entertainment', 'Sports & Fitness',
+                    'Health & Wellness', 'Science & Technology', 'Travel & Outdoor', 'Charity & Causes',
+                    'Religion & Spirituality', 'Family & Education', 'Seasonal & Holiday',
+                    'Government & Politics', 'Fashion & Beauty', 'Home & Lifestyle',
+                    'Hobbies & Special Interests', 'School Activities', 'Others'
+                  ].map(category => (
                       <label key={category} className="flex items-center space-x-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 transition-colors">
-                        <input
-                          type="checkbox"
+                      <input
+                        type="checkbox"
                           className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                          checked={profile.interests.includes(category)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              handleInputChange('interests', [...profile.interests, category])
-                            } else {
-                              handleInputChange('interests', profile.interests.filter(interest => interest !== category))
-                            }
-                          }}
-                          disabled={!isEditing}
-                        />
-                        <span className="text-sm text-gray-700">{category}</span>
-                      </label>
-                    ))}
-                  </div>
+                        checked={profile.interests.includes(category)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            handleInputChange('interests', [...profile.interests, category])
+                          } else {
+                            handleInputChange('interests', profile.interests.filter(interest => interest !== category))
+                          }
+                        }}
+                        disabled={!isEditing}
+                      />
+                      <span className="text-sm text-gray-700">{category}</span>
+                    </label>
+                  ))}
                 </div>
-              </div>
+                </div>
+            </div>
 
               {/* Address */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Address</h2>
                 <div className="space-y-6">
-                  <div>
+            <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <input 
+                    type="text" 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    value={profile.address}
+                    onChange={(e) => handleInputChange('address', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Address"
+                  />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address 2</label>
+                  <input 
+                    type="text" 
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                    value={profile.address2}
+                    onChange={(e) => handleInputChange('address2', e.target.value)}
+                    disabled={!isEditing}
+                    placeholder="Address 2"
+                  />
+                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                     <input 
                       type="text" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.address}
-                      onChange={(e) => handleInputChange('address', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                      value={profile.city}
+                      onChange={(e) => handleInputChange('city', e.target.value)}
                       disabled={!isEditing}
-                      placeholder="Address"
+                      placeholder="City"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Address 2</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
                     <input 
                       type="text" 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                      value={profile.address2}
-                      onChange={(e) => handleInputChange('address2', e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                      value={profile.country}
+                      onChange={(e) => handleInputChange('country', e.target.value)}
                       disabled={!isEditing}
-                      placeholder="Address 2"
+                      placeholder="Country"
                     />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                        value={profile.city}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
-                        disabled={!isEditing}
-                        placeholder="City"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
-                      <input 
-                        type="text" 
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                        value={profile.country}
-                        onChange={(e) => handleInputChange('country', e.target.value)}
-                        disabled={!isEditing}
-                        placeholder="Country"
-                      />
-                    </div>
-                    <div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Zip/Postal Code</label>
-                      <input 
-                        type="text" 
+                    <input 
+                      type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                        value={profile.zipCode}
-                        onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                        disabled={!isEditing}
-                        placeholder="Zip/Postal Code"
-                      />
-                    </div>
-                    <div>
+                      value={profile.zipCode}
+                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                      disabled={!isEditing}
+                      placeholder="Zip/Postal Code"
+                    />
+                  </div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
-                      <input 
-                        type="text" 
+                    <input 
+                      type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                        value={profile.state}
-                        onChange={(e) => handleInputChange('state', e.target.value)}
-                        disabled={!isEditing}
-                        placeholder="State"
-                      />
-                    </div>
+                      value={profile.state}
+                      onChange={(e) => handleInputChange('state', e.target.value)}
+                      disabled={!isEditing}
+                      placeholder="State"
+                    />
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              {isEditing && (
+            {/* Action Buttons */}
+            {isEditing && (
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <div className="flex gap-4">
-                    <button 
+                <button 
                       className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium" 
-                      onClick={handleSave}
-                      disabled={saving}
-                    >
-                      {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
-                    <button 
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+                <button 
                       className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium" 
-                      onClick={() => setIsEditing(false)}
-                      disabled={saving}
-                    >
-                      Cancel
-                    </button>
+                  onClick={() => setIsEditing(false)}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
                   </div>
-                </div>
-              )}
+              </div>
+            )}
             </div>
           </div>
         </div>
