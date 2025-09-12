@@ -3,9 +3,16 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
-import { composeBangkokIso } from '../helpers/time'
+import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import '../styles.css'
+
+const DISPLAY_CATEGORIES = [
+  'Music','Business & Professional','Food & Drink','Community & Culture','Performing & Visual Arts',
+  'Film, Media & Entertainment','Sports & Fitness','Health & Wellness','Science & Technology','Travel & Outdoor',
+  'Charity & Causes','Religion & Spirituality','Family & Education','Seasonal & Holiday','Government & Politics',
+  'Fashion & Beauty','Home & Lifestyle','Hobbies & Special Interests','School Activities','Others'
+]
 
 export default function CopyEvent() {
   const { user } = useAuth()
@@ -16,8 +23,10 @@ export default function CopyEvent() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState([])
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [endTime, setEndTime] = useState('')
   const [locationMode, setLocationMode] = useState('venue')
   const [venueName, setVenueName] = useState('')
@@ -40,17 +49,24 @@ export default function CopyEvent() {
     setCategory(originalEvent.category || '')
     setAdmission(originalEvent.admission || ADMISSION_TICKETED)
     
+    // Prefill categories (multi-category support)
+    setCategories(
+      Array.isArray(originalEvent.categories) && originalEvent.categories.length
+        ? originalEvent.categories
+        : (originalEvent.category ? [originalEvent.category] : [])
+    )
+    
     // Set date to tomorrow by default
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
     setDate(tomorrow.toISOString().split('T')[0])
     
-    const startDate = new Date(originalEvent.start_at)
-    setStartTime(startDate.toTimeString().slice(0, 5))
+    // Use timezone helpers to extract date/time properly
+    setStartTime(extractBangkokTime(originalEvent.start_at))
     
     if (originalEvent.end_at) {
-      const endDate = new Date(originalEvent.end_at)
-      setEndTime(endDate.toTimeString().slice(0, 5))
+      setEndDate(extractBangkokDate(originalEvent.end_at))
+      setEndTime(extractBangkokTime(originalEvent.end_at))
     }
     
     if (originalEvent.venue && originalEvent.venue.name && originalEvent.venue.name !== 'TBD') {
@@ -98,9 +114,24 @@ export default function CopyEvent() {
     e.preventDefault()
     setLoading(true)
 
+    // Validate categories
+    if (categories.length === 0) {
+      alert('Please select at least one category')
+      setLoading(false)
+      return
+    }
+
     try {
       const startAt = composeBangkokIso(date, startTime)
-      const endAt = endTime ? composeBangkokIso(date, endTime) : startAt
+      const effectiveEndDate = endDate || date
+      const endAt = endTime ? composeBangkokIso(effectiveEndDate, endTime) : startAt
+
+      // Validate timeline
+      if (new Date(endAt) < new Date(startAt)) {
+        alert('End must be after start')
+        setLoading(false)
+        return
+      }
 
       // Create venue if needed
       let venueId = null
@@ -125,7 +156,8 @@ export default function CopyEvent() {
         .insert([{
           title,
           description,
-          category,
+          category: categories[0] || null,
+          categories,
           start_at: startAt,
           end_at: endAt,
           venue_id: venueId,
@@ -192,45 +224,46 @@ export default function CopyEvent() {
               />
             </div>
 
-            {/* Category */}
+            {/* Categories */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
+                Categories
               </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select a category</option>
-                <option value="Music">Music</option>
-                <option value="Business & Professional">Business & Professional</option>
-                <option value="Food & Drink">Food & Drink</option>
-                <option value="Community & Culture">Community & Culture</option>
-                <option value="Performing & Visual Arts">Performing & Visual Arts</option>
-                <option value="Film, Media & Entertainment">Film, Media & Entertainment</option>
-                <option value="Sports & Fitness">Sports & Fitness</option>
-                <option value="Health & Wellness">Health & Wellness</option>
-                <option value="Science & Technology">Science & Technology</option>
-                <option value="Travel & Outdoor">Travel & Outdoor</option>
-                <option value="Charity & Causes">Charity & Causes</option>
-                <option value="Religion & Spirituality">Religion & Spirituality</option>
-                <option value="Family & Education">Family & Education</option>
-                <option value="Seasonal & Holiday">Seasonal & Holiday</option>
-                <option value="Government & Politics">Government & Politics</option>
-                <option value="Fashion & Beauty">Fashion & Beauty</option>
-                <option value="Home & Lifestyle">Home & Lifestyle</option>
-                <option value="Hobbies & Special Interests">Hobbies & Special Interests</option>
-                <option value="School Activities">School Activities</option>
-                <option value="Others">Others</option>
-              </select>
+              <p className="text-sm text-gray-600 mb-3">Select one or more categories that best describe your event.</p>
+              <div className="flex flex-wrap gap-2">
+                {DISPLAY_CATEGORIES.map(opt => {
+                  const selected = categories.includes(opt)
+                  return (
+                    <button
+                      type="button"
+                      key={opt}
+                      onClick={() =>
+                        setCategories(prev =>
+                          prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt]
+                        )
+                      }
+                      className={`px-3 py-1 rounded-full border transition-colors ${
+                        selected 
+                          ? 'bg-blue-600 text-white border-blue-600' 
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-300'
+                      }`}
+                      aria-pressed={selected}
+                    >
+                      {opt}
+                    </button>
+                  )
+                })}
+              </div>
+              {categories.length === 0 && (
+                <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+              )}
             </div>
 
             {/* Date and Time */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date *
+                  Start Date *
                 </label>
                 <input
                   type="date"
@@ -249,6 +282,18 @@ export default function CopyEvent() {
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={date}
+                  onChange={(e) => setEndDate(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>

@@ -33,10 +33,12 @@ export default function CreateEventPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('Music')
+  const [categories, setCategories] = useState([])
 
   // Schedule
   const [date, setDate] = useState('')          // yyyy-mm-dd
   const [startTime, setStartTime] = useState('') // HH:mm
+  const [endDate, setEndDate] = useState('')     // yyyy-mm-dd
   const [endTime, setEndTime] = useState('')     // HH:mm
 
   // Location
@@ -242,9 +244,17 @@ export default function CreateEventPage() {
 
     if (!title.trim()) { alert('Please enter a title'); return }
     if (!date || !startTime) { alert('Please select a date and start time'); return }
+    if (categories.length === 0) { alert('Please select at least one category'); return }
 
     const start_at = toIso(date, startTime)
-    const end_at = endTime ? toIso(date, endTime) : start_at
+    const effectiveEndDate = endDate || date
+    const end_at = endTime ? toIso(effectiveEndDate, endTime) : start_at
+
+    // Validate timeline
+    if (new Date(end_at) < new Date(start_at)) {
+      alert('End must be after start')
+      return
+    }
 
     let venue
     if (locationData.mode === 'online') venue = { name: 'Online' }
@@ -320,7 +330,8 @@ export default function CreateEventPage() {
           venue_id,
           title: title.trim(),
           description: description.trim(),
-          category,
+          category: categories[0] || null,
+          categories,
           start_at,
           end_at,
           cover_url: coverImagePreview || images[0] || '',
@@ -459,23 +470,35 @@ export default function CreateEventPage() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">When & Where</h2>
             </div>
-            <div className="grid md:grid-cols-3 gap-6 mb-6">
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">Date</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">Start date *</label>
                 <input 
                   type="date" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
                   value={date} 
                   onChange={e => setDate(e.target.value)} 
+                  required
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">Start time</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">Start time *</label>
                 <input 
                   type="time" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
                   value={startTime} 
                   onChange={e => setStartTime(e.target.value)} 
+                  required
+                />
+            </div>
+            <div>
+                <label className="text-sm font-medium text-gray-700 block mb-2">End date</label>
+                <input 
+                  type="date" 
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
+                  value={endDate} 
+                  min={date}
+                  onChange={e => setEndDate(e.target.value)} 
                 />
             </div>
             <div>
@@ -551,7 +574,7 @@ export default function CreateEventPage() {
             />
           </section>
 
-          {/* Category */}
+          {/* Categories */}
           <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -559,15 +582,36 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Category</h2>
-          </div>
-            <select 
-              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
-              value={category} 
-              onChange={e => setCategory(e.target.value)}
-            >
-              {DISPLAY_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+              <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
+            </div>
+            <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
+            <div className="flex flex-wrap gap-2">
+              {DISPLAY_CATEGORIES.map(opt => {
+                const selected = categories.includes(opt)
+                return (
+                  <button
+                    type="button"
+                    key={opt}
+                    onClick={() =>
+                      setCategories(prev =>
+                        prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt]
+                      )
+                    }
+                    className={`px-3 py-1 rounded-full border transition-colors ${
+                      selected 
+                        ? 'bg-brand-600 text-white border-brand-600' 
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300'
+                    }`}
+                    aria-pressed={selected}
+                  >
+                    {opt}
+                  </button>
+                )
+              })}
+            </div>
+            {categories.length === 0 && (
+              <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+            )}
         </section>
 
                 {/* Event Capacity */}

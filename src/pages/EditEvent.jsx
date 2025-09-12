@@ -10,6 +10,13 @@ import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import '../styles.css'
 
+const DISPLAY_CATEGORIES = [
+  'Music','Business & Professional','Food & Drink','Community & Culture','Performing & Visual Arts',
+  'Film, Media & Entertainment','Sports & Fitness','Health & Wellness','Science & Technology','Travel & Outdoor',
+  'Charity & Causes','Religion & Spirituality','Family & Education','Seasonal & Holiday','Government & Politics',
+  'Fashion & Beauty','Home & Lifestyle','Hobbies & Special Interests','School Activities','Others'
+]
+
 export default function EditEvent() {
   const { user } = useAuth()
   const location = useLocation()
@@ -19,8 +26,10 @@ export default function EditEvent() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
+  const [categories, setCategories] = useState([])
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [endTime, setEndTime] = useState('')
   const [locationData, setLocationData] = useState({
     mode: 'venue',
@@ -98,6 +107,13 @@ export default function EditEvent() {
         setDescription(eventWithTiers.description || '')
         setCategory(eventWithTiers.category || '')
         
+        // Prefill categories (multi-category support)
+        setCategories(
+          Array.isArray(eventWithTiers.categories) && eventWithTiers.categories.length
+            ? eventWithTiers.categories
+            : (eventWithTiers.category ? [eventWithTiers.category] : [])
+        )
+        
         // Prefill using Bangkok timezone helpers to avoid UTC shifts
         const startAtStr = eventWithTiers.start_at
         if (startAtStr) {
@@ -106,6 +122,7 @@ export default function EditEvent() {
         }
 
         if (eventWithTiers.end_at) {
+          setEndDate(extractBangkokDate(eventWithTiers.end_at))
           setEndTime(extractBangkokTime(eventWithTiers.end_at))
         }
         
@@ -305,10 +322,25 @@ export default function EditEvent() {
     e.preventDefault()
     setLoading(true)
 
+    // Validate categories
+    if (categories.length === 0) {
+      alert('Please select at least one category')
+      setLoading(false)
+      return
+    }
+
     try {
       // Build timestamp strings using Bangkok timezone utility with explicit +07:00 offset
       const startAt = date && startTime ? composeBangkokIso(date, startTime) : null
-      const endAt = endTime ? composeBangkokIso(date, endTime) : startAt
+      const effectiveEndDate = endDate || date
+      const endAt = endTime ? composeBangkokIso(effectiveEndDate, endTime) : startAt
+
+      // Validate timeline
+      if (startAt && endAt && new Date(endAt) < new Date(startAt)) {
+        alert('End must be after start')
+        setLoading(false)
+        return
+      }
 
       // Handle venue updates - create venue if needed and get venue_id
       let venue_id = null
@@ -396,7 +428,8 @@ export default function EditEvent() {
         .update({
           title,
           description,
-          category,
+          category: categories[0] || null,
+          categories,
           start_at: startAt,
           end_at: endAt,
           venue_id: venue_id, // Use the venue_id we determined above
@@ -634,7 +667,7 @@ export default function EditEvent() {
               />
             </section>
 
-            {/* Category */}
+            {/* Categories */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -642,35 +675,36 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Category</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
               </div>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg"
-              >
-                <option value="">Select a category</option>
-                <option value="Music">Music</option>
-                <option value="Business & Professional">Business & Professional</option>
-                <option value="Food & Drink">Food & Drink</option>
-                <option value="Community & Culture">Community & Culture</option>
-                <option value="Performing & Visual Arts">Performing & Visual Arts</option>
-                <option value="Film, Media & Entertainment">Film, Media & Entertainment</option>
-                <option value="Sports & Fitness">Sports & Fitness</option>
-                <option value="Health & Wellness">Health & Wellness</option>
-                <option value="Science & Technology">Science & Technology</option>
-                <option value="Travel & Outdoor">Travel & Outdoor</option>
-                <option value="Charity & Causes">Charity & Causes</option>
-                <option value="Religion & Spirituality">Religion & Spirituality</option>
-                <option value="Family & Education">Family & Education</option>
-                <option value="Seasonal & Holiday">Seasonal & Holiday</option>
-                <option value="Government & Politics">Government & Politics</option>
-                <option value="Fashion & Beauty">Fashion & Beauty</option>
-                <option value="Home & Lifestyle">Home & Lifestyle</option>
-                <option value="Hobbies & Special Interests">Hobbies & Special Interests</option>
-                <option value="School Activities">School Activities</option>
-                <option value="Others">Others</option>
-              </select>
+              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
+              <div className="flex flex-wrap gap-2">
+                {DISPLAY_CATEGORIES.map(opt => {
+                  const selected = categories.includes(opt)
+                  return (
+                    <button
+                      type="button"
+                      key={opt}
+                      onClick={() =>
+                        setCategories(prev =>
+                          prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt]
+                        )
+                      }
+                      className={`px-3 py-1 rounded-full border transition-colors ${
+                        selected 
+                          ? 'bg-brand-600 text-white border-brand-600' 
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-brand-300'
+                      }`}
+                      aria-pressed={selected}
+                    >
+                      {opt}
+                    </button>
+                  )
+                })}
+              </div>
+              {categories.length === 0 && (
+                <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+              )}
             </section>
 
             {/* Date and Time */}
@@ -683,9 +717,9 @@ export default function EditEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Date & Time</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
                 <input
                   type="date"
                   value={date}
@@ -701,6 +735,16 @@ export default function EditEvent() {
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   required
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
+                />
+              </div>
+              <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  min={date}
+                  onChange={(e) => setEndDate(e.target.value)}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
                 />
               </div>
