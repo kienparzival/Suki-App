@@ -144,6 +144,7 @@ export default function EventPage() {
           cover_url: data.cover_url || '',
           status: data.status,
           creator_id: data.creator_id,
+          admission: data.admission || 'ticketed',
           organizer: { name: 'Organizer' }, // Default organizer info
           tiers: tiersWithSoldCounts
         }
@@ -288,6 +289,7 @@ export default function EventPage() {
   const end = new Date(event.end_at || event.start_at)
   const durationHours = Math.max(1, Math.round((end - start) / (1000*60*60)))
   const isOnline = (event.venue?.name || '').toLowerCase().includes('online')
+  const isOpen = event.admission === 'open'
 
   const share = async () => {
     const url = `${window.location.origin}/events/${event.id}`
@@ -348,17 +350,23 @@ export default function EventPage() {
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <Users className="w-5 h-5" />
-              <span>{remaining} tickets remaining</span>
+              {!isOpen && <span>{remaining} tickets remaining</span>}
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <button 
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              onClick={() => setOpenBuy(true)}
-            >
-              Buy Ticket
-            </button>
+            {isOpen ? (
+              <span className="px-6 py-3 rounded-lg font-medium bg-green-50 text-green-700 border border-green-200">
+                Open event — no ticket required
+              </span>
+            ) : (
+              <button 
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                onClick={() => setOpenBuy(true)}
+              >
+                Buy Ticket
+              </button>
+            )}
             <button 
               className={`px-6 py-3 border rounded-lg font-medium transition-colors flex items-center gap-2 ${
                 isSaved 
@@ -523,7 +531,7 @@ export default function EventPage() {
               <div className="text-center">
                 {event.min_price === 0 && event.max_price === 0 ? (
                   <div className="text-3xl font-bold text-green-600 mb-2">
-                    FREE
+                    {isOpen ? 'Open — No ticket' : 'FREE'}
                   </div>
                 ) : event.min_price === event.max_price ? (
                   <div className="text-3xl font-bold text-gray-900 mb-2">
@@ -563,7 +571,9 @@ export default function EventPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Available</span>
-                  <span className="font-medium text-gray-900">{remaining} tickets</span>
+                  <span className="font-medium text-gray-900">
+                    {isOpen ? 'Open access' : `${remaining} tickets`}
+                  </span>
                 </div>
               </div>
             </div>
@@ -572,7 +582,7 @@ export default function EventPage() {
       </div>
       
       {/* EventDetail Modal for Buying Tickets */}
-      {openBuy && event && (
+      {openBuy && event && !isOpen && (
         <EventDetail 
           event={event} 
           remaining={remaining}

@@ -4,12 +4,20 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOverride = null }) {
+  if (event?.admission === 'open') {
+    return null; // Open events don't sell tickets
+  }
+
   const { user } = useAuth()
   const navigate = useNavigate()
   const [buying, setBuying] = useState(false)
   const [error, setError] = useState('')
 
   async function handleBuy() {
+    if (event?.admission === 'open') {
+      alert('This event is open — no tickets required.');
+      return;
+    }
     if (!user) { alert('Please sign in first.'); return }
     
     // Clear any previous errors

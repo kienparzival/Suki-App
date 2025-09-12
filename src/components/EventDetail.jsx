@@ -41,7 +41,8 @@ export default function EventDetail({ event, remaining, onClose }) {
           <button className="btn btn-ghost" onClick={onClose}><X className="size-5"/></button>
         </div>
 
-        <div className="p-4 grid md:grid-cols-2 gap-4">
+        <div className="max-h-[75vh] overflow-y-auto">
+          <div className="p-4 grid md:grid-cols-2 gap-4">
           <div className="space-y-3">
             <div className="aspect-video bg-neutral-100 rounded-xl overflow-hidden">
               {event.cover_url
@@ -49,7 +50,9 @@ export default function EventDetail({ event, remaining, onClose }) {
                 : <div className="w-full h-full grid place-items-center text-neutral-500">No image</div>
               }
             </div>
-            <div className="text-sm text-neutral-700 leading-relaxed">{event.description}</div>
+            <div className="text-sm text-neutral-700 leading-relaxed break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+              {(event.description || '').slice(0, 240)}{(event.description || '').length > 240 ? '…' : ''}
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -162,6 +165,7 @@ export default function EventDetail({ event, remaining, onClose }) {
                 <p className="text-sm text-neutral-500 mt-2">Go to My Tickets to view your QR offline.</p>
               </div>
             )}
+          </div>
           </div>
         </div>
       </div>
