@@ -90,6 +90,7 @@ function App() {
           longitude: event.venue_longitude,
           address: event.venue_address
         },
+        venue_id: event.venue_id, // <-- add this
         capacity: event.capacity || 0,
         min_price: event.min_price || 0,
         max_price: event.max_price || 0,
@@ -185,16 +186,20 @@ function App() {
   }, [userLocation])
 
   // helper to detect online mode
-  const isOnlineMode = userCity === 'Online Events' || userLocation?.city === 'Online Events'
+  const isOnlineMode = userLocation?.mode === 'online' || userCity === 'Online Events' || userLocation?.city === 'Online Events'
 
   // helper to detect an online event
   const isEventOnline = (evt) => {
     const name = (evt?.venue?.name || '').toLowerCase()
     const hasCoords = evt?.venue?.latitude != null && evt?.venue?.longitude != null
-    // Heuristics:
-    // - venue name contains 'online'
-    // - OR venue has no coordinates stored
-    return name.includes('online') || !hasCoords
+    const hasAddress = !!(evt?.venue?.address && evt.venue.address.trim().length > 0)
+    const noVenueId = evt?.venue_id == null
+    // Strict rule: true online must be explicitly labeled OR clearly has no physical venue
+    return (
+      name.includes('online') ||
+      noVenueId ||
+      (!hasCoords && !hasAddress)
+    )
   }
 
   // Filter events based on time (location, search, and category are now handled by the database)
