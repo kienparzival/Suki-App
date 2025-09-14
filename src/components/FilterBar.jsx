@@ -115,7 +115,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
           
           onLocationChange({
             mode: 'current',
-            city: 'Current Location',
+            city: cityName,
             lat: latitude,
             lng: longitude,
           });

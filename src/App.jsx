@@ -318,9 +318,9 @@ function App() {
                     setUserLocation({
                       lat: pos.coords.latitude,
                       lng: pos.coords.longitude,
-                      city: 'Current Location'
+                      city: loc.city || 'Current Location'
                     })
-                    setUserCity('Current Location')
+                    setUserCity(loc.city || 'Current Location')
                   },
                   () => {
                     // permission denied or error → no geofilter
