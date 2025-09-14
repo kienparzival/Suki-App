@@ -9,7 +9,7 @@ import './styles.css'
 
 function App() {
   const { user } = useAuth()
-  const { userLocation } = useLocation()
+  const { userLocation, setUserLocation } = useLocation()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -106,26 +106,7 @@ function App() {
     } finally {
       setLoading(false)
     }
-  }, [userLocation.lat, userLocation.lng, selectedCategory, searchTerm])
-
-  // Test function to check RPC
-  const testRPC = async () => {
-    console.log('Testing RPC function...');
-    try {
-      const result = await supabase.rpc('events_explore', {
-        user_lat: 21.0285, // Hanoi
-        user_lng: 105.8542,
-        radius_km: 50,
-        category_filter: null,
-        keyword_filter: null,
-        min_price_filter: null,
-        max_price_filter: null
-      });
-      console.log('RPC Test Result:', result);
-    } catch (error) {
-      console.error('RPC Test Error:', error);
-    }
-  }
+  }, [userLocation?.lat, userLocation?.lng, selectedCategory, searchTerm])
 
   // Load events from Supabase
   useEffect(() => {
@@ -311,12 +292,42 @@ function App() {
             selectedCategory={selectedCategory}
             onCategoryChange={setSelectedCategory}
             browsingLocation={userCity || 'All locations'}
-            onLocationChange={(newLocation) => {
-              // Update the userCity when changed from FilterBar
-              if (newLocation.city === 'Online Events') {
+            onLocationChange={async (loc) => {
+              // Expected shapes from FilterBar:
+              // - Current location: { mode: 'current', city: 'Current Location', lat, lng }
+              // - Preset/clicked on map: { mode: 'preset'|'manual', city: 'Hanoi', lat, lng }
+              // - Online: { mode: 'online', city: 'Online Events' }
+
+              if (loc?.mode === 'online' || loc?.city === 'Online Events') {
+                setUserLocation({ lat: null, lng: null, city: 'Online Events' })
                 setUserCity('Online Events')
-              } else if (newLocation.city === 'Current Location') {
-                setUserCity('Current Location')
+                return
+              }
+
+              // If coords already provided, use them
+              if (typeof loc?.lat === 'number' && typeof loc?.lng === 'number') {
+                setUserLocation({ lat: loc.lat, lng: loc.lng, city: loc.city || 'Current Location' })
+                setUserCity(loc.city || 'Current Location')
+                return
+              }
+
+              // Fallback: try browser geolocation
+              if (loc?.mode === 'current' && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    setUserLocation({
+                      lat: pos.coords.latitude,
+                      lng: pos.coords.longitude,
+                      city: 'Current Location'
+                    })
+                    setUserCity('Current Location')
+                  },
+                  () => {
+                    // permission denied or error → no geofilter
+                    setUserLocation({ lat: null, lng: null, city: '' })
+                    setUserCity('')
+                  }
+                )
               }
             }}
             selectedTimeFilter={selectedTimeFilter}

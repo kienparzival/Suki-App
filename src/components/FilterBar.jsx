@@ -114,7 +114,8 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
           const cityName = getCityFromCoordinates(latitude, longitude);
           
           onLocationChange({
-            city: cityName,
+            mode: 'current',
+            city: 'Current Location',
             lat: latitude,
             lng: longitude,
           });
@@ -134,7 +135,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
   };
 
   const handleBrowseOnline = () => {
-    onLocationChange({ city: 'Online Events', lat: 0, lng: 0 });
+    onLocationChange({ mode: 'online', city: 'Online Events' });
     setShowLocationDropdown(false);
   };
 
