@@ -184,11 +184,27 @@ function App() {
     setUserCity(userLocation.city)
   }, [userLocation])
 
+  // helper to detect online mode
+  const isOnlineMode = userCity === 'Online Events' || userLocation?.city === 'Online Events'
+
+  // helper to detect an online event
+  const isEventOnline = (evt) => {
+    const name = (evt?.venue?.name || '').toLowerCase()
+    const hasCoords = evt?.venue?.latitude != null && evt?.venue?.longitude != null
+    // Heuristics:
+    // - venue name contains 'online'
+    // - OR venue has no coordinates stored
+    return name.includes('online') || !hasCoords
+  }
+
   // Filter events based on time (location, search, and category are now handled by the database)
   const filtered = useMemo(() => {
-    const filteredEvents = events.filter(event => {
-      // Time filtering based on selectedTimeFilter
-      let matchesTime = true
+    const filteredEvents = events
+      // If browsing "Online Events", keep only online-looking events
+      .filter(evt => !isOnlineMode || isEventOnline(evt))
+      .filter(event => {
+        // Time filtering based on selectedTimeFilter
+        let matchesTime = true
       if (selectedTimeFilter !== 'all') {
         const eventDate = new Date(event.start_at)
         const now = new Date()
@@ -232,7 +248,7 @@ function App() {
     })
     
     return filteredEvents
-  }, [events, selectedTimeFilter])
+  }, [events, selectedTimeFilter, isOnlineMode])
 
   if (loading) {
   return (

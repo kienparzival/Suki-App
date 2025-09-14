@@ -94,6 +94,12 @@ export default function Header({ searchTerm, setSearchTerm }) {
     if (savedLocation) {
       try {
         const parsedLocation = JSON.parse(savedLocation)
+        // normalize old saved values where online used {lat:0,lng:0}
+        if (parsedLocation?.city === 'Online Events') {
+          parsedLocation.lat = null
+          parsedLocation.lng = null
+          parsedLocation.mode = 'online'
+        }
         console.log('Loading saved location:', parsedLocation);
         setUserLocation(parsedLocation)
         setLocationInput(parsedLocation.city)
@@ -284,8 +290,10 @@ export default function Header({ searchTerm, setSearchTerm }) {
   };
 
   const setOnlineLocation = () => {
-    setUserLocation({ city: 'Online Events', lat: 0, lng: 0 });
+    const onlineLoc = { city: 'Online Events', lat: null, lng: null, mode: 'online' }
+    setUserLocation(onlineLoc);
     setLocationInput('Online Events');
+    localStorage.setItem('suki_user_location', JSON.stringify(onlineLoc));
     setOpen(false);
   };
 
