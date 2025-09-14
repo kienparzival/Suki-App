@@ -38,6 +38,7 @@ function App() {
       // Make sure these are numbers or null
       const lat = userLocation?.lat ?? null
       const lng = userLocation?.lng ?? null;
+      const onlineOnly = userLocation?.mode === 'online' || userLocation?.city === 'Online Events'
 
       const { data, error } = await supabase.rpc('events_explore', {
         p_lat: lat,
@@ -47,7 +48,8 @@ function App() {
         p_q: searchTerm || null,
         p_category: selectedCategory === 'all' ? null : selectedCategory,
         p_price_min: null,
-        p_price_max: null
+        p_price_max: null,
+        p_online_only: onlineOnly
       });
 
       if (error) {
@@ -107,7 +109,7 @@ function App() {
     } finally {
       setLoading(false)
     }
-  }, [userLocation?.lat, userLocation?.lng, selectedCategory, searchTerm])
+  }, [userLocation?.lat, userLocation?.lng, userLocation?.mode, userLocation?.city, selectedCategory, searchTerm])
 
   // Load events from Supabase
   useEffect(() => {
@@ -185,29 +187,9 @@ function App() {
     setUserCity(userLocation.city)
   }, [userLocation])
 
-  // helper to detect online mode
-  const isOnlineMode = userLocation?.mode === 'online' || userCity === 'Online Events' || userLocation?.city === 'Online Events'
-
-  // helper to detect an online event
-  const isEventOnline = (evt) => {
-    const name = (evt?.venue?.name || '').toLowerCase()
-    const hasCoords = evt?.venue?.latitude != null && evt?.venue?.longitude != null
-    const hasAddress = !!(evt?.venue?.address && evt.venue.address.trim().length > 0)
-    const noVenueId = evt?.venue_id == null
-    // Strict rule: true online must be explicitly labeled OR clearly has no physical venue
-    return (
-      name.includes('online') ||
-      noVenueId ||
-      (!hasCoords && !hasAddress)
-    )
-  }
-
   // Filter events based on time (location, search, and category are now handled by the database)
   const filtered = useMemo(() => {
-    const filteredEvents = events
-      // If browsing "Online Events", keep only online-looking events
-      .filter(evt => !isOnlineMode || isEventOnline(evt))
-      .filter(event => {
+    const filteredEvents = events.filter(event => {
         // Time filtering based on selectedTimeFilter
         let matchesTime = true
       if (selectedTimeFilter !== 'all') {
@@ -253,7 +235,7 @@ function App() {
     })
     
     return filteredEvents
-  }, [events, selectedTimeFilter, isOnlineMode])
+  }, [events, selectedTimeFilter])
 
   if (loading) {
   return (
