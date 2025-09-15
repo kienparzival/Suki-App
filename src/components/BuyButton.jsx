@@ -3,6 +3,51 @@ import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+function isUuid(v) {
+  return typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)
+}
+
+async function resolveTierId({ event, chosenTierId }) {
+  // 1) If a tier was chosen, ensure it's a real UUID and exists for this event
+  if (chosenTierId && isUuid(chosenTierId)) {
+    const { data, error } = await supabase
+      .from('ticket_tiers')
+      .select('id')
+      .eq('id', chosenTierId)
+      .eq('event_id', event.id)
+      .maybeSingle()
+    if (!error && data?.id) return data.id
+  }
+
+  // 2) If event has exactly one tier coming from the server, prefer that
+  const tiers = Array.isArray(event.tiers) ? event.tiers : []
+  if (tiers.length === 1 && isUuid(tiers[0].id)) {
+    // sanity-check it exists in DB
+    const { data, error } = await supabase
+      .from('ticket_tiers')
+      .select('id')
+      .eq('id', tiers[0].id)
+      .eq('event_id', event.id)
+      .maybeSingle()
+    if (!error && data?.id) return data.id
+  }
+
+  // 3) Free event fallback: look up a free tier (price = 0) in DB
+  if ((event.min_price === 0) && (event.max_price === 0)) {
+    const { data: freeTier, error: tErr } = await supabase
+      .from('ticket_tiers')
+      .select('id')
+      .eq('event_id', event.id)
+      .eq('price', 0)
+      .limit(1)
+      .maybeSingle()
+    if (!tErr && freeTier?.id) return freeTier.id
+  }
+
+  // 4) Nothing valid found
+  return null
+}
+
 export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOverride = null }) {
   if (event?.admission === 'open') {
     return null; // Open events don't sell tickets
@@ -23,10 +68,8 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
     // Clear any previous errors
     setError('')
     
-    // Check if event has multiple tiers and no tier is selected
-    const hasMultipleTiers = event.tiers && event.tiers.length > 1
-    const isFreeEvent = event.min_price === 0 && event.max_price === 0
-    
+    // Validate tier selection early for multi-tier events
+    const hasMultipleTiers = Array.isArray(event.tiers) && event.tiers.length > 1
     if (hasMultipleTiers && !chosenTierId) {
       setError('Please select a ticket tier')
       return
@@ -48,49 +91,12 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
         .single()
       if (orderErr) throw orderErr
 
-      // 2) Create N tickets for this event (one per quantity)
-      // With the database trigger, free events will always have a "General Admission (Free)" tier
-      const hasTiers = (event.tiers?.length ?? 0) > 0
-      const selectedTier = hasTiers ? event.tiers.find(t => t.id === chosenTierId) : null
-      
-      console.log('BuyButton Debug - Event:', {
-        id: event.id,
-        min_price: event.min_price,
-        max_price: event.max_price,
-        chosenTierId: chosenTierId,
-        hasTiers: hasTiers,
-        selectedTier: selectedTier
-      })
-      
-      // For free events without a selected tier, find the free tier
-      let tierIdToUse = chosenTierId
-      if (!chosenTierId && (event.min_price === 0 && event.max_price === 0)) {
-        console.log('BuyButton Debug - Finding free tier for free event')
-        
-        // Find the free tier (should exist due to database trigger)
-        const { data: freeTiers, error: tiersError } = await supabase
-          .from('ticket_tiers')
-          .select('id')
-          .eq('event_id', event.id)
-          .eq('price', 0)
-          .limit(1)
-        
-        console.log('BuyButton Debug - Free tiers check:', { freeTiers, tiersError })
-        
-        if (tiersError) {
-          console.error('Error checking free tiers:', tiersError)
-          throw tiersError
-        }
-        
-        if (freeTiers && freeTiers.length > 0) {
-          tierIdToUse = freeTiers[0].id
-          console.log('BuyButton Debug - Using free tier:', tierIdToUse)
-        } else {
-          throw new Error('No free tier found for free event. Database trigger may not be working.')
-        }
+      // 2) Resolve a REAL tier id (UUID) that exists in DB
+      const tierIdToUse = await resolveTierId({ event, chosenTierId })
+      if (!tierIdToUse) {
+        // For multi-tier: they must choose a tier; for 1-tier / free: we failed resolving a real id.
+        throw new Error('Unable to resolve a valid ticket tier. Please select a tier or refresh the page.')
       }
-      
-      console.log('BuyButton Debug - Final tierIdToUse:', tierIdToUse)
       
       // Build ticket payload
       const payload = {
@@ -98,18 +104,12 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
         event_id: event.id,
         qr_token: crypto.randomUUID()
       }
-      
-      // Only include tier_id when it's a real UUID
-      if (tierIdToUse) {
-        payload.tier_id = tierIdToUse
-      }
+      payload.tier_id = tierIdToUse // always set; DB FK requires a real tier
       
       const rows = Array.from({ length: qty }, () => ({
         ...payload,
         qr_token: crypto.randomUUID() // Generate unique QR token for each ticket
       }))
-      
-      console.log('BuyButton Debug - Ticket rows to insert:', rows)
 
       const { error: ticketsErr } = await supabase
         .from('tickets')
@@ -132,7 +132,12 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
       navigate('/tickets')
     } catch (e) {
       console.error(e)
-      alert('Could not complete purchase: ' + (e?.message || 'Unknown error'))
+      const msg = (e?.message || '').toLowerCase()
+      if (msg.includes('unable to resolve a valid ticket tier')) {
+        alert('Please select a ticket tier (or refresh the page). If the issue persists, the organizer needs to add a tier.')
+      } else {
+        alert('Could not complete purchase: ' + (e?.message || 'Unknown error'))
+      }
     } finally {
       setBuying(false)
     }
