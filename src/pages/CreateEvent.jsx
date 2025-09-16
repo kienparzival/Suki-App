@@ -8,6 +8,7 @@ import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import { CATEGORIES } from '../constants/categories'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
+import { PAYMENTS_ENABLED } from '../config/payments'
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -265,14 +266,10 @@ export default function CreateEventPage() {
     else venue = { name: (locationData.name || '').trim() }
 
     // Admission-based pricing/capacity
-    let minPrice = 0
-    let maxPrice = 0
+    const minPrice = 0
+    const maxPrice = 0
     let totalCapacity = null
     if (admission === ADMISSION_TICKETED) {
-      if (!isFree && ticketTiers.length > 0) {
-        minPrice = Math.min(...ticketTiers.map(t => t.price))
-        maxPrice = Math.max(...ticketTiers.map(t => t.price))
-      }
       if (!isFree && ticketTiers.length > 0) {
         totalCapacity = ticketTiers.reduce((sum, tier) => sum + tier.quota, 0)
       } else {
@@ -357,7 +354,7 @@ export default function CreateEventPage() {
           const tiersToInsert = ticketTiers.map(tier => ({
             event_id: eventId,
             name: tier.name,
-            price: isFree ? 0 : tier.price, // Force price to 0 if free tickets option is checked
+            price: 0,
             quota: tier.quota
             // Note: description field removed as it doesn't exist in the database schema
           }))

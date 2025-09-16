@@ -9,6 +9,7 @@ import { CATEGORIES } from '../constants/categories'
 import TicketTierManager from '../components/TicketTierManager.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
+import { PAYMENTS_ENABLED } from '../config/payments'
 import '../styles.css'
 
 export default function EditEvent() {
@@ -297,7 +298,7 @@ export default function EditEvent() {
       const tiersToInsert = ticketTiers.map(tier => ({
         event_id: event.id,
         name: tier.name,
-        price: parseFloat(tier.price) || 0,
+        price: 0,
         quota: parseInt(tier.quota) || 0
       }))
 
@@ -411,16 +412,11 @@ export default function EditEvent() {
       }
 
       // Admission-based price/capacity
-      let minPrice = 0
-      let maxPrice = 0
+      const minPrice = 0
+      const maxPrice = 0
       let finalCapacity = null
       let totalFromTiers = 0
       if (admission === ADMISSION_TICKETED) {
-        if (!isFree && ticketTiers.length > 0) {
-          minPrice = Math.min(...ticketTiers.map(t => Number(t.price) || 0))
-          maxPrice = Math.max(...ticketTiers.map(t => Number(t.price) || 0))
-        }
-
         totalFromTiers = ticketTiers.reduce(
           (sum, t) => sum + (parseInt(t.quota, 10) || 0),
           0
@@ -532,7 +528,7 @@ export default function EditEvent() {
         if (isFree) {
           // Converting to free: remove all paid tiers, keep/create free tier
           await handleConversionToFree(finalCapacity)
-        } else {
+        } else if (PAYMENTS_ENABLED) {
           // Converting to paid or updating paid tiers
           await handlePaidTierManagement()
         }

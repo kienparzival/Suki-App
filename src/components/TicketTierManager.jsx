@@ -39,7 +39,7 @@ export default function TicketTierManager({ tiers = [], onChange, eventId = null
     const tier = {
       id: `temp-${Date.now()}`,
       name: newTier.name.trim(),
-      price: Number(newTier.price) || 0,
+      price: PAYMENTS_ENABLED ? (Number(newTier.price) || 0) : 0,
       quota: Number(newTier.quota),
       sold: 0
     }
@@ -104,7 +104,7 @@ export default function TicketTierManager({ tiers = [], onChange, eventId = null
   const addSuggestedTier = (suggestedTier) => {
     const tier = {
       name: suggestedTier.name,
-      price: suggestedTier.price,
+      price: PAYMENTS_ENABLED ? suggestedTier.price : 0,
       quota: suggestedTier.quota,
       id: `temp-${Date.now()}`,
       sold: 0
@@ -231,7 +231,7 @@ export default function TicketTierManager({ tiers = [], onChange, eventId = null
                 onClick={() => addSuggestedTier(tier)}
               >
                 <div className="font-medium">{tier.name}</div>
-                <div className="text-blue-600">{tier.price === 0 ? 'Free' : `${tier.price.toLocaleString()} VND`}</div>
+                <div className="text-blue-600">{(!PAYMENTS_ENABLED || tier.price === 0) ? 'Free' : `${tier.price.toLocaleString()} VND`}</div>
                 <div className="text-blue-500">{tier.quota} tickets</div>
               </button>
             ))}
