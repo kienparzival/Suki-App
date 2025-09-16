@@ -80,6 +80,9 @@ export default function Tickets() {
                 id,
                 qr_token,
                 created_at,
+                is_confirmed,
+                payment_code,
+                expires_at,
                 event_id,
                 tier_id,
                 orders!inner(
@@ -250,14 +253,23 @@ export default function Tickets() {
                   )}
                 </div>
                 
-                <div className="bg-white inline-block p-2 rounded border border-neutral-200">
-                  <QRCodeCanvas value={ticket.qr_token || `ticket-${ticket.id}`} size={120} />
-                </div>
+                {ticket.is_confirmed ? (
+                  <div className="bg-white inline-block p-2 rounded border border-neutral-200">
+                    <QRCodeCanvas value={ticket.qr_token || `ticket-${ticket.id}`} size={120} />
+                  </div>
+                ) : (
+                  <div className="p-2 rounded border border-yellow-200 bg-yellow-50 text-yellow-800 text-sm">
+                    Pending approval • Payment Code: <span className="font-mono font-semibold">{ticket.payment_code || '—'}</span>
+                  </div>
+                )}
                 
                 <div className="text-xs text-neutral-500">
                   <p>Order: #{ticket.orders.id}</p>
                   <p>Ticket ID: {ticket.id}</p>
                   <p>Purchased: {formatBangkokDate(ticket.orders.created_at)}</p>
+                  {!ticket.is_confirmed && ticket.expires_at && (
+                    <p>Expires: {formatBangkokDate(ticket.expires_at)}</p>
+                  )}
                 </div>
               </article>
             ))}

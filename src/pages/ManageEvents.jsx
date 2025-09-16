@@ -556,6 +556,90 @@ export default function ManageEvents() {
             <p className="text-gray-600">Calendar view coming soon! Use list view for now.</p>
           </div>
         )}
+
+        {/* Approvals Section */}
+        <ApprovalsSection userId={user?.id} />
+      </div>
+    </div>
+  )
+}
+
+function ApprovalsSection({ userId }) {
+  const [pending, setPending] = React.useState([])
+  const [loading, setLoading] = React.useState(false)
+
+  const loadPending = async () => {
+    if (!userId) return
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select(`
+          id,
+          payment_code,
+          created_at,
+          expires_at,
+          is_confirmed,
+          events!inner(id, title, creator_id)
+        `)
+        .eq('is_confirmed', false)
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      // Filter to events created by current user
+      const mine = (data || []).filter(t => t.events?.creator_id === userId)
+      setPending(mine)
+    } catch (e) {
+      console.error('Error loading pending approvals:', e)
+      setPending([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  React.useEffect(() => { loadPending() }, [userId])
+
+  const approve = async (ticketId) => {
+    const { error } = await supabase
+      .from('tickets')
+      .update({ is_confirmed: true })
+      .eq('id', ticketId)
+    if (!error) loadPending()
+  }
+  const cancel = async (ticketId) => {
+    const { error } = await supabase
+      .from('tickets')
+      .delete()
+      .eq('id', ticketId)
+    if (!error) loadPending()
+  }
+
+  return (
+    <div className="mt-10">
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">Approvals</h2>
+      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 12 hours.</p>
+      <div className="bg-white rounded-lg shadow">
+        {loading ? (
+          <div className="p-6">Loading…</div>
+        ) : pending.length === 0 ? (
+          <div className="p-6 text-gray-600">No pending reservations.</div>
+        ) : (
+          <div className="divide-y">
+            {pending.map(t => (
+              <div key={t.id} className="p-4 flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-gray-900">{t.events?.title}</div>
+                  <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span></div>
+                  <div className="text-xs text-gray-500">Reserved: {formatBangkokDate(t.created_at)} • Expires: {formatBangkokDate(t.expires_at)}</div>
+                </div>
+                <div className="flex gap-2">
+                  <button className="btn btn-sm btn-success" onClick={() => approve(t.id)}>Approve</button>
+                  <button className="btn btn-sm btn-ghost text-red-600" onClick={() => cancel(t.id)}>Cancel</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

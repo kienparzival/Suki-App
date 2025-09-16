@@ -361,7 +361,7 @@ export default function EventPage() {
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 onClick={() => setOpenBuy(true)}
               >
-                {(PAYMENTS_ENABLED && event.max_price > 0) ? 'Buy ticket' : 'Get free ticket'}
+                Reserve spot (payment required)
               </button>
             )}
             <button 
@@ -540,6 +540,7 @@ export default function EventPage() {
                   ) : (
                     <div className="text-3xl font-bold text-green-600 mb-2">FREE</div>
                   )}
+                  <div className="text-xs text-neutral-500 mt-2">Unpaid reservations expire in 12 hours.</div>
                 </div>
               </div>
             )}

@@ -79,15 +79,30 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
     setBuying(true)
 
     try {
+      // Block if user already has a ticket for this event
+      const { data: existing, error: existErr } = await supabase
+        .from('tickets')
+        .select('id, orders!inner(user_id)')
+        .eq('orders.user_id', user.id)
+        .eq('event_id', event.id)
+        .limit(1)
+        .maybeSingle()
+      if (existErr) throw existErr
+      if (existing) {
+        setError('You already reserved a spot for this event.')
+        setBuying(false)
+        return
+      }
+
       const qty = defaultQty
       // Determine price: free when payments disabled
       const unitPrice = PAYMENTS_ENABLED ? (priceOverride ?? (event?.min_price ?? 0)) : 0
       const total = unitPrice * qty
 
-      // 1) Create an order for the current user (status 'paid' so it appears immediately)
+      // 1) Create an order for the current user (status 'pending' for approval flow)
       const { data: order, error: orderErr } = await supabase
         .from('orders')
-        .insert({ user_id: user.id, total_amount: total, status: 'paid' })
+        .insert({ user_id: user.id, total_amount: total, status: 'pending' })
         .select('id')
         .single()
       if (orderErr) throw orderErr
@@ -99,11 +114,17 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
         throw new Error('Unable to resolve a valid ticket tier. Please select a tier or refresh the page.')
       }
       
-      // Build ticket payload
+      // Build ticket payload (pending approval)
+      const shortCode = () => Math.random().toString(36).substring(2, 10).toUpperCase()
+      const paymentCode = shortCode()
+      const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
       const payload = {
         order_id: order.id,
         event_id: event.id,
-        qr_token: crypto.randomUUID()
+        qr_token: crypto.randomUUID(),
+        is_confirmed: false,
+        payment_code: paymentCode,
+        expires_at: expiresAt
       }
       payload.tier_id = tierIdToUse // always set; DB FK requires a real tier
       
@@ -112,9 +133,29 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
         qr_token: crypto.randomUUID() // Generate unique QR token for each ticket
       }))
 
-      const { error: ticketsErr } = await supabase
-        .from('tickets')
-        .insert(rows)
+      let ticketsErr = null
+      {
+        const { error } = await supabase.from('tickets').insert(rows)
+        ticketsErr = error || null
+      }
+      // If schema doesn't yet include pending fields, retry without them (soft fallback)
+      if (ticketsErr && (ticketsErr.code === '42703' || /column .* does not exist/i.test(ticketsErr.message || ''))) {
+        const fallbackRows = rows.map(({ is_confirmed, payment_code, expires_at, ...rest }) => rest)
+        const { error: err2 } = await supabase.from('tickets').insert(fallbackRows)
+        if (err2) {
+          console.error('Error inserting tickets (fallback failed):', err2)
+          throw err2
+        }
+      } else if (ticketsErr) {
+        // Handle uniqueness violation as already-reserved
+        if ((ticketsErr.code === '23505') || /duplicate key|unique/i.test(ticketsErr.message || '')) {
+          setError('You already reserved a spot for this event.')
+          setBuying(false)
+          return
+        }
+        console.error('Error inserting tickets:', ticketsErr)
+        throw ticketsErr
+      }
       
       if (ticketsErr) {
         console.error('Error inserting tickets:', ticketsErr)
@@ -125,7 +166,7 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
       // You may need to add this column to your Supabase schema or implement a different tracking method
 
       // 4) Go to My Tickets
-      console.log('Purchase successful! Order:', order.id, 'Tickets created:', rows.length)
+      console.log('Reservation placed. Pending approval. Order:', order.id, 'Tickets created:', rows.length)
       
       // Dispatch event for other components to update
       window.dispatchEvent(new CustomEvent('suki:events_updated'))
