@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase'
 import { composeBangkokIso } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import { CATEGORIES } from '../constants/categories'
-import TicketTierManager from '../components/TicketTierManager.jsx'
+// Removed TicketTierManager – free-only single tier is auto-managed
 import LocationSelector from '../components/LocationSelector.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
 
@@ -44,11 +44,8 @@ export default function CreateEventPage() {
     address: null
   })
 
-  // Tickets & capacity
-  const [price, setPrice] = useState('')
-  const [isFree, setIsFree] = useState(false)
+  // Capacity (for ticketed events)
   const [capacity, setCapacity] = useState('')
-  const [ticketTiers, setTicketTiers] = useState([])
   const [admission, setAdmission] = useState(ADMISSION_TICKETED)
 
   // Media
@@ -58,13 +55,7 @@ export default function CreateEventPage() {
   const [coverImagePreview, setCoverImagePreview] = useState('')
   const [publishing, setPublishing] = useState(false)
 
-  // Auto-update capacity when ticket tiers change
-  React.useEffect(() => {
-    const totalCapacity = ticketTiers.reduce((sum, tier) => sum + tier.quota, 0)
-    if (totalCapacity > 0) {
-      setCapacity(totalCapacity.toString())
-    }
-  }, [ticketTiers])
+  // No tiers UI; capacity is directly input
 
   const handleGetStarted = () => {
     navigate('/auth')
@@ -245,8 +236,8 @@ export default function CreateEventPage() {
       alert('Please enter a venue name or select "To be announced"'); 
       return 
     }
-    if (admission === ADMISSION_TICKETED && !capacity && (!ticketTiers || ticketTiers.length === 0)) { 
-      alert('Please set capacity for ticketed events'); 
+    if (admission === ADMISSION_TICKETED && (!capacity || Number(capacity) <= 0)) { 
+      alert('Please set capacity (greater than 0) for ticketed events'); 
       return 
     }
 
@@ -265,17 +256,10 @@ export default function CreateEventPage() {
     else if (locationData.mode === 'tba') venue = { name: 'To be announced' }
     else venue = { name: (locationData.name || '').trim() }
 
-    // Admission-based pricing/capacity
+    // Pricing/capacity (free-only)
     const minPrice = 0
     const maxPrice = 0
-    let totalCapacity = null
-    if (admission === ADMISSION_TICKETED) {
-      if (!isFree && ticketTiers.length > 0) {
-        totalCapacity = ticketTiers.reduce((sum, tier) => sum + tier.quota, 0)
-      } else {
-        totalCapacity = Number(capacity || 0) || null
-      }
-    }
+    const totalCapacity = admission === ADMISSION_TICKETED ? Number(capacity) : null
 
     setPublishing(true)
 
@@ -348,26 +332,20 @@ export default function CreateEventPage() {
       } else {
         console.log('Event created successfully:', eventData)
         
-        // Create ticket tiers if any (only for ticketed events)
-        if (admission === ADMISSION_TICKETED && ticketTiers.length > 0) {
+        // Auto-create a single free tier for ticketed events
+        if (admission === ADMISSION_TICKETED) {
           const eventId = eventData[0].id
-          const tiersToInsert = ticketTiers.map(tier => ({
-            event_id: eventId,
-            name: tier.name,
-            price: 0,
-            quota: tier.quota
-            // Note: description field removed as it doesn't exist in the database schema
-          }))
-          
           const { error: tiersError } = await supabase
             .from('ticket_tiers')
-            .insert(tiersToInsert)
-          
+            .insert([{ 
+              event_id: eventId,
+              name: 'General Admission (Free)',
+              price: 0,
+              quota: Number(capacity)
+            }])
           if (tiersError) {
-            console.error('Error creating ticket tiers:', tiersError)
-            alert('Event created but failed to create ticket tiers: ' + tiersError.message)
-          } else {
-            console.log('Ticket tiers created successfully')
+            console.error('Error creating free ticket tier:', tiersError)
+            alert('Event created but failed to create ticket tier: ' + tiersError.message)
           }
         }
         
@@ -652,84 +630,7 @@ export default function CreateEventPage() {
         </section>
         )}
 
-        {/* Ticket Pricing */}
-        {admission === ADMISSION_TICKETED && (
-        <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-              <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Ticket Pricing</h2>
-          </div>
-          <p className="text-gray-600 mb-6">Create different ticket types with different prices and quantities. You can have free and paid tiers.</p>
-          
-          {/* Free Tickets Option */}
-          <div className="mb-6">
-            <label className="inline-flex items-center gap-3 text-gray-700">
-              <input 
-                type="checkbox" 
-                className="w-5 h-5 text-brand-600 rounded focus:ring-brand-500" 
-                checked={isFree} 
-                onChange={e => {
-                  setIsFree(e.target.checked)
-                  // Clear ticket tiers when switching to free
-                  if (e.target.checked) {
-                    setTicketTiers([])
-                  }
-                }} 
-              />
-              <span className="font-medium">My tickets are free</span>
-            </label>
-            <p className="text-sm text-gray-500 mt-2">
-              Check this if you want to offer all tickets for free. No tiering options will be available.
-            </p>
-          </div>
-
-          {/* Show TicketTierManager only when not free */}
-          {!isFree && (
-            <div className="space-y-6">
-              <TicketTierManager 
-                tiers={ticketTiers} 
-                onChange={setTicketTiers}
-              />
-              
-              {/* Display total capacity for paid events */}
-              {ticketTiers.length > 0 && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <div className="flex items-center gap-3">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <div>
-                      <h4 className="text-sm font-medium text-blue-800">Total Event Capacity</h4>
-                      <p className="text-sm text-blue-700">
-                        {capacity} {capacity === '1' ? 'attendee' : 'attendees'} (automatically calculated from ticket tiers)
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Show message when free tickets are selected */}
-          {isFree && (
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-green-800 mb-2">Free Event</h3>
-              <p className="text-green-700">
-                Your event will be completely free for all attendees. No ticket tiers or pricing needed!
-              </p>
-            </div>
-          )}
-        </section>
-        )}
+        {/* Ticketing removed: capacity-only for Ticketed admission */}
 
         {/* Cover Image */}
           <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">

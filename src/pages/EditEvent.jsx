@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import { CATEGORIES } from '../constants/categories'
-import TicketTierManager from '../components/TicketTierManager.jsx'
+// Removed TicketTierManager – keep a single free tier automatically
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
@@ -38,33 +38,14 @@ export default function EditEvent() {
   const [coverUrl, setCoverUrl] = useState('')
   const [coverImage, setCoverImage] = useState(null)
   const [coverImagePreview, setCoverImagePreview] = useState('')
-  const [ticketTiers, setTicketTiers] = useState([])
-  const [ticketTiersValid, setTicketTiersValid] = useState(true)
-  const [isFree, setIsFree] = useState(false)
+  // No tiers UI; capacity-only for ticketed events
   const [admission, setAdmission] = useState(ADMISSION_TICKETED)
   const [loading, setLoading] = useState(false)
   const [hasSoldPaidTickets, setHasSoldPaidTickets] = useState(false)
 
-  // Handle ticket tiers change
-  const handleTicketTiersChange = useCallback((tiers) => {
-    if (tiers === null) {
-      setTicketTiersValid(false)
-    } else {
-      setTicketTiers(tiers)
-      setTicketTiersValid(true)
-    }
-  }, [])
+  // No tier editor
 
-  // Auto-update capacity when ticket tiers change (only for paid events)
-  useEffect(() => {
-    if (!isFree && ticketTiers.length > 0) {
-      const totalCapacity = ticketTiers.reduce(
-        (sum, t) => sum + (parseInt(t.quota, 10) || 0),
-        0
-      )
-      setCapacity(totalCapacity.toString())
-    }
-  }, [ticketTiers, isFree])
+  // Capacity is directly edited
 
   useEffect(() => {
     if (!event) {
@@ -145,13 +126,7 @@ export default function EditEvent() {
         setCoverUrl(eventWithTiers.cover_url || '')
         setCoverImagePreview(eventWithTiers.cover_url || '')
         
-        // Load ticket tiers if they exist
-        if (eventWithTiers.ticket_tiers && eventWithTiers.ticket_tiers.length > 0) {
-          setTicketTiers(eventWithTiers.ticket_tiers)
-        }
-        
-        // Set free status based on pricing and admission
-        setIsFree(eventWithTiers.min_price === 0 && eventWithTiers.max_price === 0)
+        // Ignore tiers; free-only system
         setAdmission(eventWithTiers.admission || ADMISSION_TICKETED)
       } catch (error) {
         console.error('Error in loadEventWithTiers:', error)
@@ -280,38 +255,7 @@ export default function EditEvent() {
     }
   }
 
-  const handlePaidTierManagement = async () => {
-    if (ticketTiers.length > 0) {
-      // For paid events, eliminate ALL previous tiers (including any free tier),
-      // then insert exactly the tiers specified in the editor
-      const { error: deleteError } = await supabase
-        .from('ticket_tiers')
-        .delete()
-        .eq('event_id', event.id)
-
-      if (deleteError) {
-        console.error('Error deleting existing ticket tiers:', deleteError)
-        throw deleteError
-      }
-
-      // Insert new paid tiers
-      const tiersToInsert = ticketTiers.map(tier => ({
-        event_id: event.id,
-        name: tier.name,
-        price: 0,
-        quota: parseInt(tier.quota) || 0
-      }))
-
-      const { error: tiersError } = await supabase
-        .from('ticket_tiers')
-        .insert(tiersToInsert)
-
-      if (tiersError) {
-        console.error('Error inserting new paid tiers:', tiersError)
-        throw tiersError
-      }
-    }
-  }
+  // Removed paid tiers management; edit path will enforce single free tier
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -343,8 +287,8 @@ export default function EditEvent() {
       setLoading(false)
       return
     }
-    if (admission === ADMISSION_TICKETED && !capacity && (!ticketTiers || ticketTiers.length === 0)) {
-      alert('Please set capacity for ticketed events')
+    if (admission === ADMISSION_TICKETED && (!capacity || Number(capacity) <= 0)) {
+      alert('Please set capacity (greater than 0) for ticketed events')
       setLoading(false)
       return
     }
@@ -415,27 +359,11 @@ export default function EditEvent() {
       const minPrice = 0
       const maxPrice = 0
       let finalCapacity = null
-      let totalFromTiers = 0
       if (admission === ADMISSION_TICKETED) {
-        totalFromTiers = ticketTiers.reduce(
-          (sum, t) => sum + (parseInt(t.quota, 10) || 0),
-          0
-        )
-
-        finalCapacity =
-          ticketTiers.length > 0
-            ? (isFree ? (parseInt(capacity, 10) || 0) : totalFromTiers)
-            : (parseInt(capacity, 10) || null)
+        finalCapacity = parseInt(capacity, 10) || 0
       }
 
-      console.log('Capacity Debug:', {
-        capacity,
-        ticketTiers: ticketTiers.length,
-        totalFromTiers,
-        finalCapacity,
-        isFree,
-        admission
-      })
+      console.log('Capacity Debug:', { capacity, finalCapacity, admission })
 
       // Update event
       const { error } = await supabase
@@ -465,87 +393,39 @@ export default function EditEvent() {
 
       // Update ticket tiers according to admission
       if (admission === ADMISSION_OPEN) {
-        await supabase
+        await supabase.from('ticket_tiers').delete().eq('event_id', event.id)
+      } else {
+        // Safety: prevent reducing capacity below tickets issued
+        const { data: tierIds } = await supabase
           .from('ticket_tiers')
-          .delete()
+          .select('id')
           .eq('event_id', event.id)
-      } else if (ticketTiers.length > 0) {
-        // SAFETY CHECK 1: Validate that new quotas are not less than tickets already sold
-        const validationErrors = []
-        
-        for (const newTier of ticketTiers) {
-          // Find the original tier to get current sales
-          const originalTier = event.ticket_tiers?.find(t => t.name === newTier.name)
-          
-          if (originalTier && newTier.quota < originalTier.quota) {
-            // Check if reducing quota would cause issues
-            const { data: soldTickets } = await supabase
-              .from('tickets')
-              .select('id')
-              .eq('tier_id', originalTier.id)
-            
-            const ticketsSold = soldTickets?.length || 0
-            
-            if (newTier.quota < ticketsSold) {
-              validationErrors.push(
-                `Cannot reduce "${newTier.name}" quota to ${newTier.quota} - ${ticketsSold} tickets already sold`
-              )
-            }
-          }
+        const idList = (tierIds || []).map(t => t.id)
+        let issued = 0
+        if (idList.length > 0) {
+          const { count } = await supabase
+            .from('tickets')
+            .select('id', { head: true, count: 'exact' })
+            .in('tier_id', idList)
+          issued = count || 0
         }
-        
-        // SAFETY CHECK 2: Validate that no tiers with sold tickets are being deleted
-        const originalTierNames = event.ticket_tiers?.map(t => t.name) || []
-        const newTierNames = ticketTiers.map(t => t.name)
-        const deletedTierNames = originalTierNames.filter(name => !newTierNames.includes(name))
-        
-        for (const deletedTierName of deletedTierNames) {
-          const deletedTier = event.ticket_tiers?.find(t => t.name === deletedTierName)
-          
-          if (deletedTier) {
-            // Check if this deleted tier has sold tickets
-            const { data: soldTickets } = await supabase
-              .from('tickets')
-              .select('id')
-              .eq('tier_id', deletedTier.id)
-            
-            const ticketsSold = soldTickets?.length || 0
-            
-            if (ticketsSold > 0) {
-              validationErrors.push(
-                `Cannot delete "${deletedTierName}" tier - ${ticketsSold} tickets already sold`
-              )
-            }
-          }
-        }
-        
-        if (validationErrors.length > 0) {
-          alert('Cannot update event: ' + validationErrors.join('\n'))
+        if (Number(finalCapacity) < issued) {
+          alert('Capacity cannot be less than tickets issued')
+          setLoading(false)
           return
         }
 
-        // Handle tier conversion logic
-        if (isFree) {
-          // Converting to free: remove all paid tiers, keep/create free tier
-          await handleConversionToFree(finalCapacity)
-        } else if (PAYMENTS_ENABLED) {
-          // Converting to paid or updating paid tiers
-          await handlePaidTierManagement()
-        }
-      } else if (isFree) {
-        // No tiers provided but event is marked as free - create free tier
-        await handleConversionToFree(finalCapacity)
-      } else if (!isFree) {
-        // Paid event with no tiers: remove all existing tiers so none show up
-        const { error: deleteAllError } = await supabase
+        // Wipe all tiers and create one free pool
+        await supabase.from('ticket_tiers').delete().eq('event_id', event.id)
+        const { error: insErr } = await supabase
           .from('ticket_tiers')
-          .delete()
-          .eq('event_id', event.id)
-        
-        if (deleteAllError) {
-          console.error('Error deleting all tiers for paid event with no tiers:', deleteAllError)
-          throw deleteAllError
-        }
+          .insert({
+            event_id: event.id,
+            name: 'General Admission (Free)',
+            price: 0,
+            quota: Number(finalCapacity) || 0
+          })
+        if (insErr) throw insErr
       }
 
       // Reload the event data to ensure we have the latest venue information
@@ -844,27 +724,16 @@ export default function EditEvent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
                 <input
                   type="number"
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                   min="1"
-                  disabled={!isFree && ticketTiers.length > 0}
-                    className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors ${
-                    !isFree && ticketTiers.length > 0 ? 'bg-gray-100 cursor-not-allowed' : ''
-                  }`}
-                  placeholder="Unlimited"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
+                  placeholder="Enter capacity"
                 />
-                {(!isFree && ticketTiers.length > 0) ? (
-                  <p className="text-xs text-neutral-500 mt-1">
-                    Capacity is the sum of tier quotas. Edit the tiers above to change capacity.
-                  </p>
-                ) : (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Set the maximum number of people who can attend your event.
-                  </p>
-                )}
+                <p className="text-xs text-gray-500 mt-1">One free General Admission pool will be created automatically.</p>
               </div>
               <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Min Price (VND)</label>
