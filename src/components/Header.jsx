@@ -299,7 +299,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-neutral-200/80 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[env(safe-area-inset-top)] py-3">
+      <div className="w-full pt-[env(safe-area-inset-top)] py-3">
         {/* Row 1 — brand + desktop search/location + actions */}
         <div className="flex items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2">
