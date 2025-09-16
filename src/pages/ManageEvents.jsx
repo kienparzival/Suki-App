@@ -617,7 +617,7 @@ function ApprovalsSection({ userId }) {
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Approvals</h2>
-      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 12 hours.</p>
+      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 15 minutes.</p>
       <div className="bg-white rounded-lg shadow">
         {loading ? (
           <div className="p-6">Loading…</div>

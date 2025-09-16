@@ -540,7 +540,7 @@ export default function EventPage() {
                   ) : (
                     <div className="text-3xl font-bold text-green-600 mb-2">FREE</div>
                   )}
-                  <div className="text-xs text-neutral-500 mt-2">Unpaid reservations expire in 12 hours.</div>
+                  <div className="text-xs text-neutral-500 mt-2">Unpaid reservations expire in 15 minutes.</div>
                 </div>
               </div>
             )}

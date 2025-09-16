@@ -79,20 +79,7 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
     setBuying(true)
 
     try {
-      // Block if user already has a ticket for this event
-      const { data: existing, error: existErr } = await supabase
-        .from('tickets')
-        .select('id, orders!inner(user_id)')
-        .eq('orders.user_id', user.id)
-        .eq('event_id', event.id)
-        .limit(1)
-        .maybeSingle()
-      if (existErr) throw existErr
-      if (existing) {
-        setError('You already reserved a spot for this event.')
-        setBuying(false)
-        return
-      }
+      // Allow multiple reservations per account; capacity safeguarded by confirmed-only counts and 15-min expiry
 
       const qty = defaultQty
       // Determine price: free when payments disabled
