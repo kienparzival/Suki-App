@@ -271,7 +271,7 @@ function App() {
             
             {/* Main heading with enhanced styling */}
             <h1 
-              className="text-3xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight"
+              className="text-3xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-6 sm:mb-8 leading-[1.15] inline-block pb-0.5"
             >
               Discover Amazing Events
             </h1>
@@ -285,7 +285,7 @@ function App() {
             </p>
             
             {/* Decorative line */}
-            <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full mb-8"></div>
+            <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full my-8"></div>
           </div>
         </div>
         
