@@ -558,13 +558,22 @@ export default function ManageEvents() {
         )}
 
         {/* Approvals Section */}
-        <ApprovalsSection userId={user?.id} eventIds={(myEvents || []).map(ev => ev.id)} />
+        {(() => {
+          const eventsById = Object.fromEntries((myEvents || []).map(ev => [ev.id, ev]))
+          return (
+            <ApprovalsSection
+              userId={user?.id}
+              eventIds={(myEvents || []).map(ev => ev.id)}
+              eventsById={eventsById}
+            />
+          )
+        })()}
       </div>
     </div>
   )
 }
 
-function ApprovalsSection({ userId, eventIds = [] }) {
+function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
   const [pending, setPending] = React.useState([])
   const [expired, setExpired] = React.useState([])
   const [loading, setLoading] = React.useState(false)
@@ -580,16 +589,7 @@ function ApprovalsSection({ userId, eventIds = [] }) {
     try {
       const { data, error } = await supabase
         .from('tickets')
-        .select(`
-          id,
-          payment_code,
-          created_at,
-          expires_at,
-          is_confirmed,
-          canceled_at,
-          event_id,
-          events(title)
-        `)
+        .select('id, payment_code, created_at, expires_at, is_confirmed, canceled_at, event_id')
         .eq('is_confirmed', false)
         .is('canceled_at', null)
         .in('event_id', eventIds)
@@ -614,7 +614,7 @@ function ApprovalsSection({ userId, eventIds = [] }) {
     try {
       const { data, error } = await supabase
         .from('tickets')
-        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id, events(title)')
+        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id')
         .eq('is_confirmed', false)
         .not('canceled_at', 'is', null)
         .in('event_id', eventIds)
@@ -630,7 +630,7 @@ function ApprovalsSection({ userId, eventIds = [] }) {
     }
   }
 
-  React.useEffect(() => { loadPending() }, [userId])
+  React.useEffect(() => { loadPending() }, [userId, JSON.stringify(eventIds)])
 
   const approve = async (ticketId) => {
     const { error } = await supabase.rpc('approve_ticket', { p_ticket_id: ticketId })
@@ -690,7 +690,7 @@ function ApprovalsSection({ userId, eventIds = [] }) {
     if (tab === 'pending') loadPending()
     if (tab === 'expired') loadExpired()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab])
+  }, [tab, JSON.stringify(eventIds), userId])
 
   return (
     <div className="mt-10">
@@ -713,7 +713,7 @@ function ApprovalsSection({ userId, eventIds = [] }) {
               {pending.map(t => (
                 <div key={t.id} className="p-4 flex items-center justify-between">
                   <div>
-                    <div className="font-medium text-gray-900">{t.events?.title}</div>
+                    <div className="font-medium text-gray-900">{eventsById?.[t.event_id]?.title ?? 'Untitled Event'}</div>
                     <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span></div>
                     <div className="text-xs text-gray-500">
                       Reserved: {formatBangkokLabel(t.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
