@@ -804,97 +804,20 @@ export default function EditEvent() {
                 )}
             </section>
 
-            {/* Ticket Tiers */}
+            {/* Ticketing (free-only) */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
                   <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                   </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Ticketing</h2>
               </div>
-                <h2 className="text-2xl font-bold text-gray-900">Ticket Tiers</h2>
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+                <h3 className="text-lg font-semibold text-green-800 mb-1">Free Ticketed Event</h3>
+                <p className="text-green-700">A single free General Admission pool will be maintained automatically.</p>
               </div>
-              <p className="text-gray-600 mb-6">
-                Manage your ticket types, prices, and quantities. You can have free and paid tiers.
-              </p>
-              
-              {/* Free Tickets Option */}
-              <div className="mb-6">
-                <label className="inline-flex items-center gap-3 text-gray-700">
-                  <input
-                    type="checkbox" 
-                    className={`w-5 h-5 text-brand-600 rounded focus:ring-brand-500 ${
-                      hasSoldPaidTickets && !isFree ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                    checked={isFree} 
-                    disabled={hasSoldPaidTickets && !isFree}
-                    onChange={async e => {
-                      const newIsFree = e.target.checked
-                      
-                      // Check if converting from paid to free and if there are sold tickets
-                      if (newIsFree && !isFree) {
-                        // Check if any paid tiers have sold tickets
-                        const hasSoldPaidTickets = await checkForSoldPaidTickets()
-                        if (hasSoldPaidTickets) {
-                          alert('Cannot convert to free event: Some paid tickets have already been sold. Please contact support if you need to make changes.')
-                          return // Don't change the checkbox state
-                        }
-                      }
-                      
-                      setIsFree(newIsFree)
-                      
-                      if (newIsFree) {
-                        // Converting from paid to free: remove all existing tiers
-                        setTicketTiers([])
-                        setMinPrice('0')
-                        setMaxPrice('0')
-                      } else {
-                        // Converting from free to paid: keep existing free tickets in a free tier
-                        // The existing free tier will remain for already sold tickets
-                        // User can add new paid tiers via TicketTierManager
-                      }
-                    }} 
-                  />
-                  <span className={`font-medium ${hasSoldPaidTickets && !isFree ? 'text-gray-400' : ''}`}>
-                    My tickets are free
-                  </span>
-                </label>
-                <p className="text-sm text-gray-500 mt-2">
-                  {hasSoldPaidTickets && !isFree ? (
-                    <span className="text-red-600 font-medium">
-                      ⚠️ Cannot convert to free: Some paid tickets have already been sold. Contact support for assistance.
-                    </span>
-                  ) : (
-                    'Check this if you want to offer all tickets for free. No tiering options will be available.'
-                  )}
-                </p>
-            </div>
-
-              {/* Show TicketTierManager only when not free */}
-              {!isFree && (
-              <TicketTierManager 
-                tiers={ticketTiers} 
-                  onChange={handleTicketTiersChange}
-                eventId={event.id}
-                originalEvent={event}
-                isEditing={true}
-              />
-              )}
-              
-              {/* Show message when free tickets are selected */}
-              {isFree && (
-                <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">Free Event</h3>
-                  <p className="text-green-700">
-                    Your event will be completely free for all attendees. No ticket tiers or pricing needed!
-                </p>
-              </div>
-              )}
             </section>
 
             {/* Submit Buttons */}
@@ -908,23 +831,14 @@ export default function EditEvent() {
               </button>
               <button
                 type="submit"
-                disabled={loading || !ticketTiersValid}
-                className={`btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl ${
-                  !ticketTiersValid ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
+                disabled={loading}
+                className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
                 {loading ? 'Updating...' : 'Update Event'}
               </button>
             </div>
             
-            {/* Validation Status */}
-            {!ticketTiersValid && (
-              <div className="text-center">
-                <p className="text-sm text-red-600">
-                  ⚠️ Cannot save event - Please fix the validation errors above
-                </p>
-              </div>
-            )}
+            {/* No tier validation in free-only mode */}
           </form>
         </div>
       </div>
