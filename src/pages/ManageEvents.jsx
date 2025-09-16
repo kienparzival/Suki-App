@@ -558,13 +558,13 @@ export default function ManageEvents() {
         )}
 
         {/* Approvals Section */}
-        <ApprovalsSection userId={user?.id} />
+        <ApprovalsSection userId={user?.id} eventIds={(myEvents || []).map(ev => ev.id)} />
       </div>
     </div>
   )
 }
 
-function ApprovalsSection({ userId }) {
+function ApprovalsSection({ userId, eventIds = [] }) {
   const [pending, setPending] = React.useState([])
   const [expired, setExpired] = React.useState([])
   const [loading, setLoading] = React.useState(false)
@@ -572,6 +572,10 @@ function ApprovalsSection({ userId }) {
 
   const loadPending = async () => {
     if (!userId) return
+    if (!eventIds || eventIds.length === 0) {
+      setPending([])
+      return
+    }
     setLoading(true)
     try {
       const { data, error } = await supabase
@@ -583,11 +587,12 @@ function ApprovalsSection({ userId }) {
           expires_at,
           is_confirmed,
           canceled_at,
-          events!inner(id, title, creator_id)
+          event_id,
+          events(title)
         `)
         .eq('is_confirmed', false)
         .is('canceled_at', null)
-        .eq('events.creator_id', userId)
+        .in('event_id', eventIds)
         .order('expires_at', { ascending: true })
       if (error) throw error
       setPending(data || [])
@@ -601,14 +606,18 @@ function ApprovalsSection({ userId }) {
 
   const loadExpired = async () => {
     if (!userId) return
+    if (!eventIds || eventIds.length === 0) {
+      setExpired([])
+      return
+    }
     setLoading(true)
     try {
       const { data, error } = await supabase
         .from('tickets')
-        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, events!inner(id, title, creator_id)')
+        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id, events(title)')
         .eq('is_confirmed', false)
         .not('canceled_at', 'is', null)
-        .eq('events.creator_id', userId)
+        .in('event_id', eventIds)
         .gte('canceled_at', new Date(Date.now() - 24*60*60*1000).toISOString())
         .order('canceled_at', { ascending: false })
       if (error) throw error
@@ -623,7 +632,7 @@ function ApprovalsSection({ userId }) {
 
   React.useEffect(() => { loadPending() }, [userId])
 
-  const approve = async (ticketId, eventId) => {
+  const approve = async (ticketId) => {
     const { error } = await supabase.rpc('approve_ticket', { p_ticket_id: ticketId })
     if (error) {
       console.error('Approve error:', error)
@@ -633,7 +642,7 @@ function ApprovalsSection({ userId }) {
     }
   }
 
-  const cancel = async (ticketId, eventId) => {
+  const cancel = async (ticketId) => {
     const { error } = await supabase
       .from('tickets')
       .update({
@@ -713,11 +722,11 @@ function ApprovalsSection({ userId }) {
                   </div>
                   <div className="flex gap-2">
                     <button className="btn btn-sm btn-outline" onClick={() => extend60(t.id)}>Extend 60m</button>
-                    <button className="btn btn-sm btn-success" onClick={() => approve(t.id, t.events?.id)}>Approve</button>
+                    <button className="btn btn-sm btn-success" onClick={() => approve(t.id)}>Approve</button>
                     <button
                       className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={!!t.is_confirmed}
-                      onClick={() => cancel(t.id, t.events?.id)}
+                      onClick={() => cancel(t.id)}
                     >
                       Cancel
                     </button>
