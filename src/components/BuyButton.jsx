@@ -117,14 +117,12 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
       // Build ticket payload (pending approval)
       const shortCode = () => Math.random().toString(36).substring(2, 10).toUpperCase()
       const paymentCode = shortCode()
-      const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString()
       const payload = {
         order_id: order.id,
         event_id: event.id,
         qr_token: crypto.randomUUID(),
         is_confirmed: false,
-        payment_code: paymentCode,
-        expires_at: expiresAt
+        payment_code: paymentCode
       }
       payload.tier_id = tierIdToUse // always set; DB FK requires a real tier
       
@@ -165,8 +163,12 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
       // Note: sold count update removed since 'sold' column doesn't exist in ticket_tiers table
       // You may need to add this column to your Supabase schema or implement a different tracking method
 
-      // 4) Go to My Tickets
+      // 4) Inform the user and go to My Tickets
       console.log('Reservation placed. Pending approval. Order:', order.id, 'Tickets created:', rows.length)
+      try {
+        await navigator.clipboard.writeText(paymentCode)
+      } catch {}
+      alert(`Reservation pending. Your Payment Code: ${paymentCode}.\nPay on the organizer’s site and paste this code. We’ll confirm soon.`)
       
       // Dispatch event for other components to update
       window.dispatchEvent(new CustomEvent('suki:events_updated'))

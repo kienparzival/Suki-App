@@ -258,8 +258,18 @@ export default function Tickets() {
                     <QRCodeCanvas value={ticket.qr_token || `ticket-${ticket.id}`} size={120} />
                   </div>
                 ) : (
-                  <div className="p-2 rounded border border-yellow-200 bg-yellow-50 text-yellow-800 text-sm">
-                    Pending approval • Payment Code: <span className="font-mono font-semibold">{ticket.payment_code || '—'}</span>
+                  <div className="p-2 rounded border border-yellow-200 bg-yellow-50 text-yellow-800 text-sm flex items-center justify-between gap-2">
+                    <div>
+                      Pending approval • Payment Code: <span className="font-mono font-semibold">{ticket.payment_code || '—'}</span>
+                    </div>
+                    {ticket.payment_code && (
+                      <button
+                        className="btn btn-xs btn-outline"
+                        onClick={() => navigator.clipboard.writeText(ticket.payment_code)}
+                      >
+                        Copy
+                      </button>
+                    )}
                   </div>
                 )}
                 

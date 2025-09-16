@@ -351,7 +351,7 @@ export default function EventPage() {
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <Users className="w-5 h-5" />
-              {!isOpen && <span>{remaining} tickets remaining</span>}
+              {!isOpen && <span>{remaining} available</span>}
             </div>
           </div>
           

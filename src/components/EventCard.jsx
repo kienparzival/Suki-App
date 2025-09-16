@@ -57,7 +57,7 @@ export default function EventCard({ event }) {
             <span className="badge bg-green-100 text-green-700 border-green-200">Open</span>
           ) : (
             <>
-              <span className="badge">{Math.max(0, event.remaining ?? 0)} left</span>
+              <span className="badge">{Math.max(0, event.remaining ?? 0)} available</span>
               <span className="ml-auto text-sm text-neutral-600">
                 {event.admission === 'open'
                   ? <span className="badge bg-green-50 text-green-700 border-green-200">Open</span>
