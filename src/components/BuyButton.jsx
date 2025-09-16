@@ -132,12 +132,7 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
           throw err2
         }
       } else if (ticketsErr) {
-        // Handle uniqueness violation as already-reserved
-        if ((ticketsErr.code === '23505') || /duplicate key|unique/i.test(ticketsErr.message || '')) {
-          setError('You already reserved a spot for this event.')
-          setBuying(false)
-          return
-        }
+        // Do not block multiple reservations per user; forward error as-is
         console.error('Error inserting tickets:', ticketsErr)
         throw ticketsErr
       }
