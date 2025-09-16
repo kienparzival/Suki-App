@@ -510,7 +510,7 @@ export default function CreateEventPage() {
               />
               <div>
                 <div className="text-gray-900 font-medium">Ticketed</div>
-                <p className="text-sm text-gray-600">Paid/free tickets, capacity applies</p>
+                <p className="text-sm text-gray-600">Free tickets, capacity applies</p>
               </div>
             </label>
             <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_OPEN ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
