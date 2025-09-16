@@ -8,7 +8,7 @@ export default function CategoryScroller({ selected, onChange }) {
       <div className="pointer-events-none hidden sm:block absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent" />
 
       <div
-        className="flex gap-6 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4"
+        className="flex gap-7 lg:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4"
         role="tablist"
         aria-label="Browse by category"
       >

@@ -259,7 +259,7 @@ function App() {
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-16">
           <div className="text-center relative">
             {/* Background decorative elements */}
@@ -277,7 +277,7 @@ function App() {
             </h1>
             
             {/* Subtitle with modern typography */}
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 mx-auto max-w-2xl mb-10 sm:mb-12 leading-relaxed font-light">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 mx-auto max-w-3xl mb-10 sm:mb-12 leading-relaxed font-light">
               Find and join events that match your interests, happening 
               <span className="text-brand-600 font-semibold"> near you </span> 
               or 
