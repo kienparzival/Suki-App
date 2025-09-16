@@ -254,16 +254,16 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
       <Header 
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
       />
-      <div className="container mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-16">
           <div className="text-center relative">
             {/* Background decorative elements */}
-            <div className="absolute inset-0 -z-10">
+            <div className="absolute inset-0 -z-10 hidden sm:block">
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-brand-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
               <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-cyan-100/30 rounded-full blur-2xl"></div>
               <div className="absolute top-1/2 left-0 w-48 h-48 bg-gradient-to-r from-pink-100/30 to-rose-100/30 rounded-full blur-xl"></div>
@@ -271,14 +271,13 @@ function App() {
             
             {/* Main heading with enhanced styling */}
             <h1 
-              className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
-              style={{ lineHeight: '1.6' }}
+              className="text-3xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-6 sm:mb-8 leading-tight"
             >
               Discover Amazing Events
             </h1>
             
             {/* Subtitle with modern typography */}
-            <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 mx-auto max-w-2xl mb-10 sm:mb-12 leading-relaxed font-light">
               Find and join events that match your interests, happening 
               <span className="text-brand-600 font-semibold"> near you </span> 
               or 

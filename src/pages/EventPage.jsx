@@ -304,10 +304,10 @@ export default function EventPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
       <Header />
       
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Event Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
@@ -331,7 +331,7 @@ export default function EventPage() {
             <span>{event.status}</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight break-anywhere">
             {event.title}
           </h1>
           
@@ -354,7 +354,7 @@ export default function EventPage() {
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             {!isOpen && (
               <button 
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
@@ -409,7 +409,7 @@ export default function EventPage() {
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* About Section */}
-            <section>
+            <section className="prose prose-sm sm:prose max-w-none prose-a:underline prose-a:text-blue-600 break-anywhere">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About this event</h2>
               <DescriptionBlock text={event.description} />
             </section>

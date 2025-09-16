@@ -70,9 +70,9 @@ export default function AuthPage() {
 
   if (user) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-gray-50">
         <Header userLocation={{city:'HCMC',lat:10.7769,lng:106.7009}} setUserLocation={()=>{}} />
-        <div className="container mt-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
           <div className="card p-6">
             <p>You are signed in as <span className="font-medium">{user.email}</span>.</p>
             <a href="/profile" className="btn btn-primary mt-4">Go to Profile</a>
@@ -83,9 +83,9 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Header userLocation={{city:'HCMC',lat:10.7769,lng:106.7009}} setUserLocation={()=>{}} />
-      <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
         <div className="w-full max-w-md">
           <div className="card p-8 space-y-6">
             <div className="text-center">

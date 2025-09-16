@@ -109,7 +109,7 @@ export default function SavedPage() {
   return (
     <div className="min-h-screen bg-white">
       <Header searchTerm="" setSearchTerm={() => {}} />
-      <div className="max-w-4xl mx-auto px-6 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Likes</h1>
         </div>
@@ -126,7 +126,7 @@ export default function SavedPage() {
             <Link to="/" className="btn btn-primary">Discover Events</Link>
           </div>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {savedEvents.map(e => {
               const dateStr = formatBangkokLabel(e.start_at, { 
                 weekday: 'short', 
@@ -152,10 +152,10 @@ export default function SavedPage() {
               }
 
               return (
-                <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                  <div className="flex gap-6">
+                <div key={e.id} className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow">
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     {/* Event Details */}
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="mb-2">
                         <Link to={`/events/${e.id}`} className="text-xl font-semibold text-gray-900 hover:text-gray-700">
                           {e.title}
@@ -175,7 +175,7 @@ export default function SavedPage() {
                     
                     {/* Event Image and Buttons */}
                     <div className="flex-shrink-0">
-                      <Link to={`/events/${e.id}`} className="block w-48 h-32 bg-gray-100 rounded-lg overflow-hidden mb-4 hover:opacity-90 transition-opacity">
+                      <Link to={`/events/${e.id}`} className="block w-full h-40 sm:w-48 sm:h-32 bg-gray-100 rounded-lg overflow-hidden mb-4 hover:opacity-90 transition-opacity">
                         {e.cover_url ? (
                           <img src={e.cover_url} alt={e.title} className="w-full h-full object-cover" />
                         ) : (

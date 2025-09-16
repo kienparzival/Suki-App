@@ -180,9 +180,9 @@ export default function Tickets() {
   }, [user])
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Header searchTerm="" setSearchTerm={() => {}} />
-      <main className="container mt-6 space-y-4">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-4">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">My Tickets</h1>
           {isOffline && (
@@ -196,17 +196,17 @@ export default function Tickets() {
         </div>
         
         {!user ? (
-          <div className="card p-10 text-center text-neutral-700">
+          <div className="card p-8 sm:p-10 text-center text-neutral-700">
             <p className="mb-4">Please sign in to view your tickets.</p>
             <a href="/auth" className="btn btn-primary">Sign In</a>
           </div>
         ) : loading ? (
-          <div className="card p-10 text-center text-neutral-700">
+          <div className="card p-8 sm:p-10 text-center text-neutral-700">
             <div className="loading loading-spinner loading-lg mb-4"></div>
             <p>Loading your tickets...</p>
           </div>
         ) : tickets.length === 0 ? (
-          <div className="card p-10 text-center text-neutral-700">
+          <div className="card p-8 sm:p-10 text-center text-neutral-700">
             <p className="mb-4">You don't have any tickets yet.</p>
             <p className="text-sm text-neutral-500">Discover events and purchase tickets to see them here.</p>
           </div>
@@ -225,7 +225,7 @@ export default function Tickets() {
                 </p>
               </div>
             )}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {tickets.map(ticket => (
               <article key={ticket.id} className="card p-4 space-y-3">
                 <div className="flex items-start justify-between">
