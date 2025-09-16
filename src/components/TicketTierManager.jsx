@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Plus, X, DollarSign, Users } from 'lucide-react'
+import { PAYMENTS_ENABLED } from '../config/payments'
 
 const SUGGESTED_TIERS = [
   { name: 'Early Bird', price: 0, quota: 50 },
@@ -88,7 +89,7 @@ export default function TicketTierManager({ tiers = [], onChange, eventId = null
     }
     
     const newTiers = localTiers.map(t => 
-      t.id === tierId ? { ...t, [field]: processedValue } : t
+      t.id === tierId ? { ...t, [field]: (field === 'price' ? (PAYMENTS_ENABLED ? processedValue : 0) : processedValue) } : t
     )
     setLocalTiers(newTiers)
     
@@ -254,13 +255,17 @@ export default function TicketTierManager({ tiers = [], onChange, eventId = null
                   />
                 </div>
                 <div>
-                  <input
-                    type="number"
-                    className="input w-full text-sm"
-                    placeholder="Price (VND)"
-                    value={tier.price}
-                    onChange={(e) => updateTier(tier.id, 'price', e.target.value)}
-                  />
+                  {PAYMENTS_ENABLED ? (
+                    <input
+                      type="number"
+                      className="input w-full text-sm"
+                      placeholder="Price (VND)"
+                      value={tier.price}
+                      onChange={(e) => updateTier(tier.id, 'price', e.target.value)}
+                    />
+                  ) : (
+                    <span className="text-green-700 font-medium">Free</span>
+                  )}
                 </div>
                 <div>
                   <input

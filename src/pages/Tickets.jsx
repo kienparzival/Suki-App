@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Header from '../components/Header.jsx'
 import { QRCodeCanvas } from 'qrcode.react'
 import { supabase } from '../lib/supabase'
+import { PAYMENTS_ENABLED } from '../config/payments'
 import { useAuth } from '../context/AuthContext'
 import { useLocation } from '../context/LocationContext'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
@@ -243,7 +244,7 @@ export default function Tickets() {
                     <div className="mt-2 p-2 bg-blue-50 rounded border border-blue-200">
                       <div className="text-xs font-medium text-blue-900">{ticket.ticket_tiers.name}</div>
                       <div className="text-xs text-blue-700">
-                        {ticket.ticket_tiers.price === 0 ? 'Free' : `${ticket.ticket_tiers.price.toLocaleString()} VND`}
+                        {!PAYMENTS_ENABLED || ticket.ticket_tiers.price === 0 ? 'Free' : `${ticket.ticket_tiers.price.toLocaleString()} VND`}
                       </div>
                     </div>
                   )}

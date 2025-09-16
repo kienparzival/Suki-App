@@ -11,6 +11,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import DescriptionBlock from '../components/DescriptionBlock.jsx'
 import '../styles.css'
+import { PAYMENTS_ENABLED } from '../config/payments'
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl
@@ -360,7 +361,7 @@ export default function EventPage() {
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 onClick={() => setOpenBuy(true)}
               >
-                Buy Ticket
+                {(PAYMENTS_ENABLED && event.max_price > 0) ? 'Buy ticket' : 'Get free ticket'}
               </button>
             )}
             <button 
@@ -526,18 +527,18 @@ export default function EventPage() {
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Pricing</h3>
                 <div className="text-center">
-                  {event.min_price === 0 && event.max_price === 0 ? (
-                    <div className="text-3xl font-bold text-green-600 mb-2">
-                      FREE
-                    </div>
-                  ) : event.min_price === event.max_price ? (
-                    <div className="text-3xl font-bold text-gray-900 mb-2">
-                      {(event.min_price/1000).toFixed(0)}k VND
-                    </div>
+                  {PAYMENTS_ENABLED && event.max_price > 0 ? (
+                    event.min_price === event.max_price ? (
+                      <div className="text-3xl font-bold text-gray-900 mb-2">
+                        {(event.min_price/1000).toFixed(0)}k VND
+                      </div>
+                    ) : (
+                      <div className="text-3xl font-bold text-gray-900 mb-2">
+                        {(event.min_price/1000).toFixed(0)}k - {(event.max_price/1000).toFixed(0)}k VND
+                      </div>
+                    )
                   ) : (
-                    <div className="text-3xl font-bold text-gray-900 mb-2">
-                      {(event.min_price/1000).toFixed(0)}k - {(event.max_price/1000).toFixed(0)}k VND
-                    </div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">FREE</div>
                   )}
                 </div>
               </div>

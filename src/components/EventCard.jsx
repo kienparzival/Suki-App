@@ -1,4 +1,5 @@
 import React from 'react'
+import { PAYMENTS_ENABLED } from '../config/payments'
 import { CalendarDays, MapPin } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { formatBangkokLabel } from '../helpers/time'
@@ -58,7 +59,11 @@ export default function EventCard({ event }) {
             <>
               <span className="badge">{Math.max(0, event.remaining ?? 0)} left</span>
               <span className="ml-auto text-sm text-neutral-600">
-                From {(event.min_price/1000).toFixed(0)}k VND
+                {event.admission === 'open'
+                  ? <span className="badge bg-green-50 text-green-700 border-green-200">Open</span>
+                  : PAYMENTS_ENABLED && event.max_price > 0
+                    ? <span className="badge bg-blue-50 text-blue-700 border-blue-200">From {(event.min_price/1000).toFixed(0)}k VND</span>
+                    : <span className="badge bg-emerald-50 text-emerald-700 border-emerald-200">Free</span>}
               </span>
             </>
           )}

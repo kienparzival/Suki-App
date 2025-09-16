@@ -2,6 +2,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { PAYMENTS_ENABLED } from '../config/payments'
 
 function isUuid(v) {
   return typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)
@@ -79,8 +80,8 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
 
     try {
       const qty = defaultQty
-      // Determine price: use override, or event.min_price as a fallback, or 0 for free tickets
-      const unitPrice = priceOverride ?? (event?.min_price ?? 0)
+      // Determine price: free when payments disabled
+      const unitPrice = PAYMENTS_ENABLED ? (priceOverride ?? (event?.min_price ?? 0)) : 0
       const total = unitPrice * qty
 
       // 1) Create an order for the current user (status 'paid' so it appears immediately)
