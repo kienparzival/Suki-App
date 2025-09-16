@@ -23,6 +23,10 @@ img { max-width: 100%; height: auto; }
 .break-anywhere { overflow-wrap: anywhere; word-break: break-word; }
 .btn, button, a.btn { min-height: 44px; }
 
+/* Hide horizontal scrollbar while keeping scroll behavior */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 .container {
   @apply max-w-6xl mx-auto px-4;
 }

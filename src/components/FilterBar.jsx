@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { CATEGORIES } from '../constants/categories'
+import CategoryScroller from './CategoryScroller'
 
 export default function FilterBar({ selectedCategory, onCategoryChange, browsingLocation, onLocationChange, selectedTimeFilter, onTimeFilterChange }) {
 	const [showAllCategories, setShowAllCategories] = useState(false)
@@ -144,39 +145,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
       {/* Category Filter */}
       <div>
         <label className="text-sm text-neutral-500 mb-3 block font-medium">Category</label>
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
-            <button
-              className={`px-4 py-2.5 text-sm rounded-xl border-2 transition-all duration-200 ${
-                selectedCategory === 'all'
-                  ? 'bg-brand-500 text-white border-brand-500 shadow-lg shadow-brand-500/25'
-                  : 'bg-white text-neutral-700 border-neutral-200 hover:border-brand-300 hover:bg-brand-50 hover:shadow-md'
-              }`}
-              onClick={() => onCategoryChange('all')}
-            >
-              All Events
-            </button>
-            {visibleCategories.map(cat => (
-              <button
-                key={cat}
-                className={`px-4 py-2.5 text-sm rounded-xl border-2 transition-all duration-200 ${
-                  selectedCategory === cat
-                    ? 'bg-brand-500 text-white border-brand-500 shadow-lg shadow-brand-500/25'
-                    : 'bg-white text-neutral-700 border-neutral-200 hover:border-brand-300 hover:bg-brand-50 hover:shadow-md'
-                }`}
-                onClick={() => onCategoryChange(cat)}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-          <button
-            className="text-sm text-brand-600 hover:text-brand-700 font-medium transition-colors"
-            onClick={() => setShowAllCategories(!showAllCategories)}
-          >
-            {showAllCategories ? 'Show Less' : 'Show More'}
-          </button>
-        </div>
+        <CategoryScroller selected={selectedCategory} onChange={onCategoryChange} />
       </div>
       
       {/* Browsing Location Section */}
