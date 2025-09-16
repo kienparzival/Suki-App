@@ -621,10 +621,11 @@ function ApprovalsSection({ userId }) {
       .eq('event_id', eventId)
       .eq('is_confirmed', false)
     if (error) {
-      console.error('Cancel error:', error)
-      alert('Could not cancel: ' + (error.message || 'Unknown error'))
+      console.error('Cancel failed', error)
+      alert(error.message || 'Unable to cancel ticket.')
     } else {
-      loadPending()
+      alert('Pending ticket cancelled.')
+      await loadPending()
     }
   }
 
@@ -648,7 +649,13 @@ function ApprovalsSection({ userId }) {
                 </div>
                 <div className="flex gap-2">
                   <button className="btn btn-sm btn-success" onClick={() => approve(t.id, t.events?.id)}>Approve</button>
-                  <button className="btn btn-sm btn-ghost text-red-600" onClick={() => cancel(t.id, t.events?.id)}>Cancel</button>
+                  <button
+                    className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!!t.is_confirmed}
+                    onClick={() => cancel(t.id, t.events?.id)}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             ))}
