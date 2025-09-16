@@ -150,7 +150,7 @@ export function BuyButton({ event, defaultQty = 1, chosenTierId = null, priceOve
       try {
         await navigator.clipboard.writeText(paymentCode)
       } catch {}
-      alert(`Reservation pending. Your Payment Code: ${paymentCode}.\nPay on the organizer’s site and paste this code. We’ll confirm soon.`)
+      alert(`Reservation pending. Expires in 60 minutes. Code: ${paymentCode}`)
       
       // Dispatch event for other components to update
       window.dispatchEvent(new CustomEvent('suki:events_updated'))

@@ -276,9 +276,9 @@ export default function Tickets() {
                 <div className="text-xs text-neutral-500">
                   <p>Order: #{ticket.orders.id}</p>
                   <p>Ticket ID: {ticket.id}</p>
-                  <p>Purchased: {formatBangkokDate(ticket.orders.created_at)}</p>
+                  <p>Purchased: {formatBangkokLabel(ticket.orders.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
                   {!ticket.is_confirmed && ticket.expires_at && (
-                    <p>Expires: {formatBangkokDate(ticket.expires_at)}</p>
+                    <p>Expires: {formatBangkokLabel(ticket.expires_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</p>
                   )}
                 </div>
               </article>

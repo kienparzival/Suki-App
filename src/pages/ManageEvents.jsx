@@ -566,7 +566,9 @@ export default function ManageEvents() {
 
 function ApprovalsSection({ userId }) {
   const [pending, setPending] = React.useState([])
+  const [expired, setExpired] = React.useState([])
   const [loading, setLoading] = React.useState(false)
+  const [tab, setTab] = React.useState('pending') // 'pending' | 'expired'
 
   const loadPending = async () => {
     if (!userId) return
@@ -580,13 +582,13 @@ function ApprovalsSection({ userId }) {
           created_at,
           expires_at,
           is_confirmed,
+          canceled_at,
           events!inner(id, title, creator_id)
         `)
         .eq('is_confirmed', false)
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
+        .is('canceled_at', null)
+        .order('expires_at', { ascending: true })
       if (error) throw error
-      // Filter to events created by current user
       const mine = (data || []).filter(t => t.events?.creator_id === userId)
       setPending(mine)
     } catch (e) {
@@ -597,22 +599,40 @@ function ApprovalsSection({ userId }) {
     }
   }
 
+  const loadExpired = async () => {
+    if (!userId) return
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, events!inner(id, title, creator_id)')
+        .eq('is_confirmed', false)
+        .not('canceled_at', 'is', null)
+        .gte('canceled_at', new Date(Date.now() - 24*60*60*1000).toISOString())
+        .order('canceled_at', { ascending: false })
+      if (error) throw error
+      const mine = (data || []).filter(t => t.events?.creator_id === userId)
+      setExpired(mine)
+    } catch (e) {
+      console.error('Error loading expired:', e)
+      setExpired([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
   React.useEffect(() => { loadPending() }, [userId])
 
   const approve = async (ticketId, eventId) => {
-    const { error } = await supabase
-      .from('tickets')
-      .update({ is_confirmed: true })
-      .eq('id', ticketId)
-      .eq('event_id', eventId)
-      .eq('is_confirmed', false)
+    const { error } = await supabase.rpc('approve_ticket', { p_ticket_id: ticketId })
     if (error) {
       console.error('Approve error:', error)
-      alert('Could not approve: ' + (error.message || 'Unknown error'))
+      alert(error.message || 'Unable to approve ticket.')
     } else {
       loadPending()
     }
   }
+
   const cancel = async (ticketId, eventId) => {
     const { error } = await supabase
       .from('tickets')
@@ -629,37 +649,102 @@ function ApprovalsSection({ userId }) {
     }
   }
 
+  const extend60 = async (ticketId) => {
+    const { error } = await supabase
+      .from('tickets')
+      .update({ expires_at: new Date(Date.now() + 60*60*1000).toISOString() })
+      .eq('id', ticketId)
+      .eq('is_confirmed', false)
+      .is('canceled_at', null)
+    if (error) alert(error.message)
+    else { alert('Extended 60 minutes'); loadPending() }
+  }
+
+  const reinstate60 = async (ticketId) => {
+    const { error } = await supabase
+      .from('tickets')
+      .update({
+        canceled_at: null,
+        canceled_reason: null,
+        expires_at: new Date(Date.now() + 60*60*1000).toISOString()
+      })
+      .eq('id', ticketId)
+      .eq('is_confirmed', false)
+    if (error) alert(error.message)
+    else { alert('Reinstated for 60 minutes'); loadExpired() }
+  }
+
+  useEffect(() => {
+    if (tab === 'pending') loadPending()
+    if (tab === 'expired') loadExpired()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-bold text-gray-900 mb-4">Approvals</h2>
-      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 15 minutes.</p>
+      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 60 minutes.</p>
+
+      <div className="mb-4 flex gap-2">
+        <button className={`btn btn-sm ${tab==='pending'?'btn-primary':'btn-outline'}`} onClick={()=>setTab('pending')}>Pending</button>
+        <button className={`btn btn-sm ${tab==='expired'?'btn-primary':'btn-outline'}`} onClick={()=>setTab('expired')}>Expired (24h)</button>
+      </div>
+
       <div className="bg-white rounded-lg shadow">
         {loading ? (
           <div className="p-6">Loading…</div>
-        ) : pending.length === 0 ? (
-          <div className="p-6 text-gray-600">No pending reservations.</div>
+        ) : tab === 'pending' ? (
+          pending.length === 0 ? (
+            <div className="p-6 text-gray-600">No pending reservations.</div>
+          ) : (
+            <div className="divide-y">
+              {pending.map(t => (
+                <div key={t.id} className="p-4 flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-gray-900">{t.events?.title}</div>
+                    <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span></div>
+                    <div className="text-xs text-gray-500">
+                      Reserved: {formatBangkokLabel(t.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
+                      {' '}• Expires: {formatBangkokLabel(t.expires_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="btn btn-sm btn-outline" onClick={() => extend60(t.id)}>Extend 60m</button>
+                    <button className="btn btn-sm btn-success" onClick={() => approve(t.id, t.events?.id)}>Approve</button>
+                    <button
+                      className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={!!t.is_confirmed}
+                      onClick={() => cancel(t.id, t.events?.id)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
         ) : (
-          <div className="divide-y">
-            {pending.map(t => (
-              <div key={t.id} className="p-4 flex items-center justify-between">
-                <div>
-                  <div className="font-medium text-gray-900">{t.events?.title}</div>
-                  <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span></div>
-                  <div className="text-xs text-gray-500">Reserved: {formatBangkokDate(t.created_at)} • Expires: {formatBangkokDate(t.expires_at)}</div>
+          expired.length === 0 ? (
+            <div className="p-6 text-gray-600">No expired reservations in the last 24 hours.</div>
+          ) : (
+            <div className="divide-y">
+              {expired.map(t => (
+                <div key={t.id} className="p-4 flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-gray-900">{t.events?.title}</div>
+                    <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span> <span className="ml-2 badge">Expired</span></div>
+                    <div className="text-xs text-gray-500">
+                      Reserved: {formatBangkokLabel(t.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
+                      {' '}• Expired: {formatBangkokLabel(t.canceled_at || t.expires_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button className="btn btn-sm btn-outline" onClick={() => reinstate60(t.id)}>Reinstate 60m</button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button className="btn btn-sm btn-success" onClick={() => approve(t.id, t.events?.id)}>Approve</button>
-                  <button
-                    className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!!t.is_confirmed}
-                    onClick={() => cancel(t.id, t.events?.id)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>
