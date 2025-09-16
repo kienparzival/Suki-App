@@ -587,10 +587,10 @@ function ApprovalsSection({ userId }) {
         `)
         .eq('is_confirmed', false)
         .is('canceled_at', null)
+        .eq('events.creator_id', userId)
         .order('expires_at', { ascending: true })
       if (error) throw error
-      const mine = (data || []).filter(t => t.events?.creator_id === userId)
-      setPending(mine)
+      setPending(data || [])
     } catch (e) {
       console.error('Error loading pending approvals:', e)
       setPending([])
@@ -608,11 +608,11 @@ function ApprovalsSection({ userId }) {
         .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, events!inner(id, title, creator_id)')
         .eq('is_confirmed', false)
         .not('canceled_at', 'is', null)
+        .eq('events.creator_id', userId)
         .gte('canceled_at', new Date(Date.now() - 24*60*60*1000).toISOString())
         .order('canceled_at', { ascending: false })
       if (error) throw error
-      const mine = (data || []).filter(t => t.events?.creator_id === userId)
-      setExpired(mine)
+      setExpired(data || [])
     } catch (e) {
       console.error('Error loading expired:', e)
       setExpired([])
@@ -636,10 +636,13 @@ function ApprovalsSection({ userId }) {
   const cancel = async (ticketId, eventId) => {
     const { error } = await supabase
       .from('tickets')
-      .delete()
+      .update({
+        canceled_at: new Date().toISOString(),
+        canceled_reason: 'cancelled by organizer'
+      })
       .eq('id', ticketId)
-      .eq('event_id', eventId)
       .eq('is_confirmed', false)
+      .is('canceled_at', null)
     if (error) {
       console.error('Cancel failed', error)
       alert(error.message || 'Unable to cancel ticket.')
