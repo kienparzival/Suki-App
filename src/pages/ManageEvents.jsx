@@ -599,19 +599,33 @@ function ApprovalsSection({ userId }) {
 
   React.useEffect(() => { loadPending() }, [userId])
 
-  const approve = async (ticketId) => {
+  const approve = async (ticketId, eventId) => {
     const { error } = await supabase
       .from('tickets')
       .update({ is_confirmed: true })
       .eq('id', ticketId)
-    if (!error) loadPending()
+      .eq('event_id', eventId)
+      .eq('is_confirmed', false)
+    if (error) {
+      console.error('Approve error:', error)
+      alert('Could not approve: ' + (error.message || 'Unknown error'))
+    } else {
+      loadPending()
+    }
   }
-  const cancel = async (ticketId) => {
+  const cancel = async (ticketId, eventId) => {
     const { error } = await supabase
       .from('tickets')
       .delete()
       .eq('id', ticketId)
-    if (!error) loadPending()
+      .eq('event_id', eventId)
+      .eq('is_confirmed', false)
+    if (error) {
+      console.error('Cancel error:', error)
+      alert('Could not cancel: ' + (error.message || 'Unknown error'))
+    } else {
+      loadPending()
+    }
   }
 
   return (
@@ -633,8 +647,8 @@ function ApprovalsSection({ userId }) {
                   <div className="text-xs text-gray-500">Reserved: {formatBangkokDate(t.created_at)} • Expires: {formatBangkokDate(t.expires_at)}</div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="btn btn-sm btn-success" onClick={() => approve(t.id)}>Approve</button>
-                  <button className="btn btn-sm btn-ghost text-red-600" onClick={() => cancel(t.id)}>Cancel</button>
+                  <button className="btn btn-sm btn-success" onClick={() => approve(t.id, t.events?.id)}>Approve</button>
+                  <button className="btn btn-sm btn-ghost text-red-600" onClick={() => cancel(t.id, t.events?.id)}>Cancel</button>
                 </div>
               </div>
             ))}
