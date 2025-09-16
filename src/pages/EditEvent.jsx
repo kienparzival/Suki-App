@@ -350,9 +350,9 @@ export default function EditEvent() {
           } else {
             // If venue creation fails, keep existing venue
             venue_id = event.venue?.id
-            }
           }
         }
+      }
       }
 
       // Admission-based price/capacity
@@ -404,7 +404,7 @@ export default function EditEvent() {
         let issued = 0
         if (idList.length > 0) {
           const { count } = await supabase
-            .from('tickets')
+              .from('tickets')
             .select('id', { head: true, count: 'exact' })
             .in('tier_id', idList)
           issued = count || 0
@@ -420,7 +420,7 @@ export default function EditEvent() {
         const { error: insErr } = await supabase
           .from('ticket_tiers')
           .insert({
-            event_id: event.id,
+          event_id: event.id,
             name: 'General Admission (Free)',
             price: 0,
             quota: Number(finalCapacity) || 0
@@ -570,7 +570,7 @@ export default function EditEvent() {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
-              </div>
+            </div>
               <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
@@ -813,7 +813,7 @@ export default function EditEvent() {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Ticketing</h2>
-              </div>
+            </div>
               <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
                 <h3 className="text-lg font-semibold text-green-800 mb-1">Free Ticketed Event</h3>
                 <p className="text-green-700">A single free General Admission pool will be maintained automatically.</p>
