@@ -353,7 +353,6 @@ export default function CreateEventPage() {
         window.dispatchEvent(new CustomEvent('suki:events_updated'))
         console.log('Event created successfully, navigating to home page')
         console.log('Created event data:', eventData[0])
-        console.log('Created ticket tiers:', ticketTiers)
         navigate('/')
       }
     } catch (error) {
@@ -615,17 +614,8 @@ export default function CreateEventPage() {
               onChange={(e) => setCapacity(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
               placeholder="Enter maximum number of attendees"
-              readOnly={!isFree && ticketTiers.length > 0}
             />
-            {!isFree && ticketTiers.length > 0 ? (
-              <p className="text-sm text-gray-500 mt-2">
-                Capacity is automatically calculated from ticket tiers below.
-              </p>
-            ) : (
-              <p className="text-sm text-gray-500 mt-2">
-                Set the maximum number of people who can attend your event.
-              </p>
-            )}
+            <p className="text-sm text-gray-500 mt-2">One free General Admission pool will be created automatically.</p>
           </div>
         </section>
         )}
