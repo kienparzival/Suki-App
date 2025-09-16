@@ -614,7 +614,7 @@ function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
     try {
       const { data, error } = await supabase
         .from('tickets')
-        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id')
+        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id, canceled_reason')
         .eq('is_confirmed', false)
         .not('canceled_at', 'is', null)
         .in('event_id', eventIds)
@@ -645,13 +645,9 @@ function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
   const cancel = async (ticketId) => {
     const { error } = await supabase
       .from('tickets')
-      .update({
-        canceled_at: new Date().toISOString(),
-        canceled_reason: 'cancelled by organizer'
-      })
+      .delete()
       .eq('id', ticketId)
       .eq('is_confirmed', false)
-      .is('canceled_at', null)
     if (error) {
       console.error('Cancel failed', error)
       alert(error.message || 'Unable to cancel ticket.')
@@ -659,17 +655,6 @@ function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
       alert('Pending ticket cancelled.')
       await loadPending()
     }
-  }
-
-  const extend60 = async (ticketId) => {
-    const { error } = await supabase
-      .from('tickets')
-      .update({ expires_at: new Date(Date.now() + 60*60*1000).toISOString() })
-      .eq('id', ticketId)
-      .eq('is_confirmed', false)
-      .is('canceled_at', null)
-    if (error) alert(error.message)
-    else { alert('Extended 60 minutes'); loadPending() }
   }
 
   const reinstate60 = async (ticketId) => {
@@ -721,7 +706,6 @@ function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <button className="btn btn-sm btn-outline" onClick={() => extend60(t.id)}>Extend 60m</button>
                     <button className="btn btn-sm btn-success" onClick={() => approve(t.id)}>Approve</button>
                     <button
                       className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
