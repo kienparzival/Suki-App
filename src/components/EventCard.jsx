@@ -53,20 +53,7 @@ export default function EventCard({ event }) {
             event.category && <span className="badge">{event.category}</span>
           )}
           {event.distance_m != null && <span className="badge">{(event.distance_m/1000).toFixed(1)} km</span>}
-          {event.admission === 'open' ? (
-            <span className="badge bg-green-100 text-green-700 border-green-200">Open</span>
-          ) : (
-            <>
-              <span className="badge">{Math.max(0, event.remaining ?? 0)} available</span>
-              <span className="ml-auto text-sm text-neutral-600">
-                {event.admission === 'open'
-                  ? <span className="badge bg-green-50 text-green-700 border-green-200">Open</span>
-                  : PAYMENTS_ENABLED && event.max_price > 0
-                    ? <span className="badge bg-blue-50 text-blue-700 border-blue-200">From {(event.min_price/1000).toFixed(0)}k VND</span>
-                    : <span className="badge bg-emerald-50 text-emerald-700 border-emerald-200">Free</span>}
-              </span>
-            </>
-          )}
+          {/* Ticketing removed; optional external badge */}
         </div>
         <Link to={`/events/${event.id}`} className="block">
           <h3 className="text-lg font-semibold text-neutral-900">{event.title}</h3>

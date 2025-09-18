@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './styles.css'
 import App from './App.jsx'
-import Tickets from './pages/Tickets.jsx'
 import AuthPage from './pages/Auth.jsx'
 import AuthCallback from './pages/AuthCallback.jsx'
 import ProfilePage from './pages/Profile.jsx'
@@ -16,7 +15,6 @@ import BrowseEvents from './pages/BrowseEvents.jsx'
 import ManageEvents from './pages/ManageEvents.jsx'
 import EditEvent from './pages/EditEvent.jsx'
 import CopyEvent from './pages/CopyEvent.jsx'
-import Scanner from './pages/Scanner.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { LocationProvider } from './context/LocationContext.jsx'
 
@@ -27,7 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<App />} />
-            <Route path="/tickets" element={<Tickets />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/profile" element={<ProfilePage />} />
@@ -40,7 +37,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/manage-events" element={<ManageEvents />} />
             <Route path="/edit-event" element={<EditEvent />} />
             <Route path="/copy-event" element={<CopyEvent />} />
-            <Route path="/scan" element={<Scanner />} />
           </Routes>
         </BrowserRouter>
       </LocationProvider>

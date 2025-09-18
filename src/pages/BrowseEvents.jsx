@@ -26,12 +26,7 @@ function BrowseEvents() {
           .select(`
             *,
             venue:venues(*),
-            ticket_tiers(
-              id,
-              name,
-              price,
-              quota
-            )
+            
           `)
           .eq('status', 'published')
           .order('start_at', { ascending: true })
@@ -50,12 +45,11 @@ function BrowseEvents() {
             end_at: event.end_at,
             venue: event.venue || { name: 'TBD' },
             capacity: event.capacity || 0,
-            min_price: event.min_price || 0,
-            max_price: event.max_price || 0,
+            
             cover_url: event.cover_url || '',
             status: event.status,
             creator_id: event.creator_id,
-            tiers: event.ticket_tiers || []
+            
           }))
           setEvents(transformedEvents)
         }

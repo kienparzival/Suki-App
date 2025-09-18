@@ -154,13 +154,7 @@ export default function ManageEvents() {
         .from('events')
         .select(`
           *,
-          venue:venues(*),
-          ticket_tiers(
-            id,
-            name,
-            price,
-            quota
-          )
+          venue:venues(*)
         `)
         .eq('creator_id', user.id)
         .order('start_at', { ascending: false })
@@ -170,25 +164,7 @@ export default function ManageEvents() {
         setMyEvents([])
       } else {
         // Get live tiers with sold/remaining via RPC (bypasses RLS safely)
-        if (supabaseEvents && !error) {
-          for (const ev of supabaseEvents) {
-            if (ev.admission === 'open') {
-              ev.ticket_tiers = []
-              continue
-            }
-            const { data: inv, error: invErr } = await supabase.rpc('tier_inventory', { p_event: ev.id })
-            if (!invErr && inv) {
-              ev.ticket_tiers = inv.map(t => ({
-                id: t.id,
-                name: t.name,
-                price: t.price,
-                quota: t.quota,
-                sold: Number(t.sold) || 0,
-                remaining: t.remaining
-              }))
-            }
-          }
-        }
+        // Ticketing removed; no tier fetch
         
         setMyEvents(supabaseEvents || [])
       }
@@ -443,28 +419,8 @@ export default function ManageEvents() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {event.ticket_tiers && event.ticket_tiers.length > 0 ? (
-                            <div className="space-y-1">
-                              {event.ticket_tiers.map(tier => (
-                                <div key={tier.id} className="text-xs">
-                                  <span className="font-medium">{tier.name}:</span> {tier.price === 0 ? 'Free' : `${tier.price.toLocaleString()} VND`} ({tier.sold || 0}/{tier.quota} sold)
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">No tiers</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {event.admission === 'open' ? (
-                            <span className="text-gray-500">Open — no tickets</span>
-                          ) : (
-                            <>
-                              {(event.ticket_tiers || []).reduce((s, t) => s + (Number(t.sold) || 0), 0)}/{event.capacity || '∞'} tickets
-                            </>
-                          )}
-                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">External</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ticketing off-site</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {grossSales || 0} VND
                         </td>

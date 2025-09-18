@@ -49,8 +49,7 @@ export default function SavedPage() {
             end_at: event.end_at,
             venue: event.venue || { name: 'TBD' },
             capacity: event.capacity || 0,
-            min_price: event.min_price || 0,
-            max_price: event.max_price || 0,
+            
             cover_url: event.cover_url || '',
             status: event.status,
             creator_id: event.creator_id
@@ -168,9 +167,7 @@ export default function SavedPage() {
                         {e.venue?.name || 'TBD'}
                         {e.venue?.address && `, ${e.venue.address}`}
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {e.min_price === 0 ? 'Free' : `From ${(e.min_price/1000).toFixed(0)}k VND`}
-                      </div>
+                      
                     </div>
                     
                     {/* Event Image and Buttons */}

@@ -59,24 +59,7 @@ function App() {
       }
       
 
-      // Get live tiers with sold/remaining via RPC (bypasses RLS safely)
-      if (data) {
-        for (const event of data) {
-          const { data: inv, error: invErr } = await supabase.rpc('tier_inventory', { p_event: event.id })
-          
-          if (!invErr && inv) {
-            // Replace the displayed tiers with inventory rows that include sold/remaining
-            event.ticket_tiers = inv.map(t => ({
-              id: t.id,
-              name: t.name,
-              price: t.price,
-              quota: t.quota,
-              sold: Number(t.sold) || 0,
-              remaining: t.remaining
-            }))
-          }
-        }
-      }
+      // Ticketing removed; skip tier inventory
       
       // Transform RPC data to match expected format
       const transformedEvents = (data || []).map(event => ({
@@ -94,12 +77,10 @@ function App() {
         },
         venue_id: event.venue_id, // <-- add this
         capacity: event.capacity || 0,
-        min_price: event.min_price || 0,
-        max_price: event.max_price || 0,
         cover_url: event.cover_url || '',
         status: event.status,
         creator_id: event.creator_id,
-        tiers: event.ticket_tiers || [],
+        external_ticket_url: event.external_ticket_url || null,
         distance_m: event.distance_m // Include distance for display
       }))
       setEvents(transformedEvents)

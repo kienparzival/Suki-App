@@ -427,10 +427,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             <Star className="w-5 h-5 mb-1" />
             <span className="text-xs">Discover</span>
           </NavLink>
-          <NavLink to="/tickets" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
-            <Ticket className="w-5 h-5 mb-1" />
-            <span className="text-xs">My Tickets</span>
-          </NavLink>
+          {/* Tickets removed */}
           {user && (
             <NavLink to="/saved" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
               <Heart className="w-5 h-5 mb-1"/> 

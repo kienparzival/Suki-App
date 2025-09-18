@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { X, CalendarDays, MapPin, Users, Ticket, DollarSign, ExternalLink } from 'lucide-react'
 import { QRCodeCanvas } from 'qrcode.react'
-import { BuyButton } from './BuyButton.jsx'
 import { formatBangkokLabel } from '../helpers/time'
 
 function formatVND(n) {
@@ -15,12 +14,7 @@ export default function EventDetail({ event, remaining, onClose }) {
 
   // Debug logging
   console.log('EventDetail - Received event:', event)
-  console.log('EventDetail - Event tiers:', event?.tiers)
-  console.log('EventDetail - Event has tiers array:', Array.isArray(event?.tiers))
-  console.log('EventDetail - Event capacity:', event?.capacity)
-  console.log('EventDetail - Event min_price:', event?.min_price)
-  console.log('EventDetail - Event max_price:', event?.max_price)
-  console.log('EventDetail - Remaining prop:', remaining)
+  
 
   const start = new Date(event.start_at)
   const end = new Date(event.end_at || event.start_at)
@@ -71,92 +65,12 @@ export default function EventDetail({ event, remaining, onClose }) {
                 }
                 return event.capacity
               })()} {remainingText && <span className="badge ml-2">{remainingText}</span>}</div>
-              <div className="flex items-center gap-2 text-neutral-700"><DollarSign className="size-4" /> 
-                {event.min_price === 0 && event.max_price === 0 ? (
-                  <span className="text-green-600 font-medium">Free</span>
-                ) : (
-                  `${formatVND(event.min_price)} – ${formatVND(event.max_price)}`
-                )}
-              </div>
+              
             </div>
 
             {!purchased ? (
               <div className="space-y-3">
-                {Array.isArray(event.tiers) && event.tiers.length > 0 ? (
-                  <div className="space-y-3">
-                    <div className="text-sm text-neutral-500 font-medium">Select your ticket tier:</div>
-                    <div className="space-y-2">
-                      {event.tiers.map(tier => (
-                        <label key={tier.id} className="flex items-center p-3 rounded-lg border border-neutral-200 hover:border-blue-300 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="tier"
-                            value={tier.id}
-                            className="mr-3"
-                            onChange={() => setSelectedTier(tier)}
-                            checked={selectedTier?.id === tier.id}
-                          />
-                                                      <div className="flex-1">
-                              <div className="flex items-center justify-between">
-                                <span className="font-medium text-neutral-900">{tier.name}</span>
-                                <span className="font-semibold text-blue-600">{formatVND(tier.price)}</span>
-                              </div>
-                              <div className="text-xs text-neutral-500 mt-1">
-                                {tier.remaining || tier.quota} available
-                              </div>
-                            </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="text-sm text-neutral-500 font-medium">Free Tickets Available:</div>
-                    <div className="p-3 rounded-lg border border-green-200 bg-green-50">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-green-900">Free Ticket</span>
-                        <span className="font-semibold text-green-600">Free</span>
-                      </div>
-                      <div className="text-xs text-green-700 mt-1">
-                        {remaining !== undefined ? remaining : (() => {
-                          // Fallback: For free events, try to get remaining from tiers first, then fallback to capacity
-                          if (event.tiers && event.tiers.length > 0) {
-                            const freeTier = event.tiers.find(tier => tier.price === 0) || event.tiers[0]
-                            return freeTier.remaining || freeTier.quota || event.capacity
-                          }
-                          return event.capacity || 0
-                        })()} available
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {selectedTier && (
-                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div>
-                      <div className="font-medium text-blue-900">{selectedTier.name}</div>
-                      <div className="text-sm text-blue-700">{formatVND(selectedTier.price)} per ticket</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-neutral-700">Quantity</div>
-                      <input 
-                        type="number" 
-                        className="input w-20 text-center" 
-                        min={1} 
-                        max={Math.min(10, selectedTier.remaining || selectedTier.quota)} 
-                        value={qty} 
-                        onChange={e => setQty(Number(e.target.value || 1))} 
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                <BuyButton 
-                  event={event} 
-                  defaultQty={qty} 
-                  chosenTierId={selectedTier?.id}
-                  priceOverride={selectedTier?.price}
-                />
+                {/* Ticketing removed */}
               </div>
             ) : (
               <div className="card p-4 text-center">

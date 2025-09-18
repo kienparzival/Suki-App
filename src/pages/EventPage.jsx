@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
-import EventDetail from '../components/EventDetail.jsx'
+// Internal purchase modal removed
 import { supabase } from '../lib/supabase.js'
 import { formatBangkokLabel } from '../helpers/time'
 import { Share2, MapPin, Calendar, Clock, Users, ChevronDown, ChevronUp, Heart } from 'lucide-react'
@@ -113,17 +113,8 @@ export default function EventPage() {
       const data = { ...eventData, venue: venueWithCoords }
 
       if (data) {
-        // Get live tiers with sold/remaining via RPC (bypasses RLS safely)
-        console.log('Calling tier_inventory RPC for event:', id)
-        const { data: inv, error: invErr } = await supabase.rpc('tier_inventory', { p_event: id })
-        
-        if (invErr) {
-          console.error('tier_inventory RPC error:', invErr)
-        } else {
-          console.log('tier_inventory RPC result:', inv)
-        }
-        
-        const tiersWithSoldCounts = inv || []
+        // Ticketing removed; no tier inventory
+        const tiersWithSoldCounts = []
 
         // Debug venue data
         console.log('Venue data from database:', data.venue)
@@ -356,15 +347,11 @@ export default function EventPage() {
           </div>
           
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            {!isOpen && (
-              <button 
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                onClick={() => setOpenBuy(true)}
-              >
-                Reserve spot (payment required)
-              </button>
-            )}
-            <button 
+            {/* External ticket CTA */}
+            {event?.external_ticket_url ? (
+              <a href={event.external_ticket_url} target="_blank" rel="noopener" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">Get tickets on organizer site</a>
+            ) : null}
+            <button
               className={`px-6 py-3 border rounded-lg font-medium transition-colors flex items-center gap-2 ${
                 isSaved 
                   ? 'border-red-300 text-red-600 bg-red-50 hover:bg-red-100' 
@@ -523,27 +510,7 @@ export default function EventPage() {
           {/* Right Column - Sidebar */}
           <div className="space-y-6">
             {/* Pricing Card */}
-            {!isOpen && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Pricing</h3>
-                <div className="text-center">
-                  {PAYMENTS_ENABLED && event.max_price > 0 ? (
-                    event.min_price === event.max_price ? (
-                      <div className="text-3xl font-bold text-gray-900 mb-2">
-                        {(event.min_price/1000).toFixed(0)}k VND
-                      </div>
-                    ) : (
-                      <div className="text-3xl font-bold text-gray-900 mb-2">
-                        {(event.min_price/1000).toFixed(0)}k - {(event.max_price/1000).toFixed(0)}k VND
-                      </div>
-                    )
-                  ) : (
-                    <div className="text-3xl font-bold text-green-600 mb-2">FREE</div>
-                  )}
-                  <div className="text-xs text-neutral-500 mt-2">Unpaid reservations expire in 60 minutes.</div>
-                </div>
-              </div>
-            )}
+            {/* Pricing removed for external-only */}
 
             {/* Quick Info Card */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -581,14 +548,7 @@ export default function EventPage() {
         </div>
       </div>
       
-      {/* EventDetail Modal for Buying Tickets */}
-      {openBuy && event && !isOpen && (
-        <EventDetail 
-          event={event} 
-          remaining={remaining}
-          onClose={() => setOpenBuy(false)} 
-        />
-      )}
+      {/* Internal ticket modal removed */}
     </div>
   )
 } 

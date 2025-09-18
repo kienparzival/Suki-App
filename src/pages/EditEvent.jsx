@@ -4,9 +4,9 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
-import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
+// Ticketing removed
 import { CATEGORIES } from '../constants/categories'
-// Removed TicketTierManager – keep a single free tier automatically
+// Ticketing removed – link-out only
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
@@ -32,14 +32,11 @@ export default function EditEvent() {
     coordinates: null,
     address: null
   })
-  const [capacity, setCapacity] = useState('')
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
+  const [externalUrl, setExternalUrl] = useState('')
   const [coverUrl, setCoverUrl] = useState('')
   const [coverImage, setCoverImage] = useState(null)
   const [coverImagePreview, setCoverImagePreview] = useState('')
-  // No tiers UI; capacity-only for ticketed events
-  const [admission, setAdmission] = useState(ADMISSION_TICKETED)
+  // No ticketing UI
   const [loading, setLoading] = useState(false)
   const [hasSoldPaidTickets, setHasSoldPaidTickets] = useState(false)
 
@@ -60,13 +57,7 @@ export default function EditEvent() {
           .from('events')
           .select(`
             *,
-            venue:venues(*),
-            ticket_tiers(
-              id,
-              name,
-              price,
-              quota
-            )
+            venue:venues(*)
           `)
           .eq('id', event.id)
           .single()
@@ -120,14 +111,11 @@ export default function EditEvent() {
           })
         }
         
-        setCapacity(eventWithTiers.capacity?.toString() || '')
-        setMinPrice(eventWithTiers.min_price?.toString() || '')
-        setMaxPrice(eventWithTiers.max_price?.toString() || '')
+        setExternalUrl(eventWithTiers.external_ticket_url || '')
         setCoverUrl(eventWithTiers.cover_url || '')
         setCoverImagePreview(eventWithTiers.cover_url || '')
         
-        // Ignore tiers; free-only system
-        setAdmission(eventWithTiers.admission || ADMISSION_TICKETED)
+        // Ticketing removed
       } catch (error) {
         console.error('Error in loadEventWithTiers:', error)
       }
@@ -175,48 +163,7 @@ export default function EditEvent() {
     )
   }
 
-  const checkForSoldPaidTickets = async () => {
-    try {
-      // Get all paid tiers (price > 0) for this event
-      const { data: paidTiers, error: tiersError } = await supabase
-        .from('ticket_tiers')
-        .select('id, name, price')
-        .eq('event_id', event.id)
-        .gt('price', 0)
-
-      if (tiersError) {
-        console.error('Error checking paid tiers:', tiersError)
-        return false // Allow the operation if we can't check
-      }
-
-      if (!paidTiers || paidTiers.length === 0) {
-        return false // No paid tiers, so no sold paid tickets
-      }
-
-      // Check if any of these paid tiers have sold tickets
-      for (const tier of paidTiers) {
-        const { data: soldTickets, error: ticketsError } = await supabase
-          .from('tickets')
-          .select('id')
-          .eq('tier_id', tier.id)
-          .limit(1) // We only need to know if at least one exists
-
-        if (ticketsError) {
-          console.error('Error checking sold tickets for tier:', tier.name, ticketsError)
-          continue // Skip this tier if we can't check
-        }
-
-        if (soldTickets && soldTickets.length > 0) {
-          return true // Found sold tickets in a paid tier
-        }
-      }
-
-      return false // No sold paid tickets found
-    } catch (error) {
-      console.error('Error in checkForSoldPaidTickets:', error)
-      return false // Allow the operation if we can't check
-    }
-  }
+  const checkForSoldPaidTickets = async () => false
 
   const handleConversionToFree = async (finalCapacity) => {
     // Remove all paid tiers
@@ -355,17 +302,7 @@ export default function EditEvent() {
       }
       }
 
-      // Admission-based price/capacity
-      const minPrice = 0
-      const maxPrice = 0
-      let finalCapacity = null
-      if (admission === ADMISSION_TICKETED) {
-        finalCapacity = parseInt(capacity, 10) || 0
-      }
-
-      console.log('Capacity Debug:', { capacity, finalCapacity, admission })
-
-      // Update event
+      // Update event (ticketing removed)
       const { error } = await supabase
         .from('events')
         .update({
@@ -375,10 +312,7 @@ export default function EditEvent() {
           end_at: endAt,
           categories,
           venue_id: venue_id, // Use the venue_id we determined above
-          admission,
-          capacity: finalCapacity,
-          min_price: minPrice,
-          max_price: maxPrice,
+          external_ticket_url: externalUrl || null,
           cover_url: coverImagePreview || coverUrl || null
         })
         .eq('id', event.id)
@@ -389,44 +323,7 @@ export default function EditEvent() {
         throw error
       }
 
-      console.log('Event updated successfully with capacity:', finalCapacity)
-
-      // Update ticket tiers according to admission
-      if (admission === ADMISSION_OPEN) {
-        await supabase.from('ticket_tiers').delete().eq('event_id', event.id)
-      } else {
-        // Safety: prevent reducing capacity below tickets issued
-        const { data: tierIds } = await supabase
-          .from('ticket_tiers')
-          .select('id')
-          .eq('event_id', event.id)
-        const idList = (tierIds || []).map(t => t.id)
-        let issued = 0
-        if (idList.length > 0) {
-          const { count } = await supabase
-              .from('tickets')
-            .select('id', { head: true, count: 'exact' })
-            .in('tier_id', idList)
-          issued = count || 0
-        }
-        if (Number(finalCapacity) < issued) {
-          alert('Capacity cannot be less than tickets issued')
-          setLoading(false)
-          return
-        }
-
-        // Wipe all tiers and create one free pool
-        await supabase.from('ticket_tiers').delete().eq('event_id', event.id)
-        const { error: insErr } = await supabase
-          .from('ticket_tiers')
-          .insert({
-          event_id: event.id,
-            name: 'General Admission (Free)',
-            price: 0,
-            quota: Number(finalCapacity) || 0
-          })
-        if (insErr) throw insErr
-      }
+      console.log('Event updated successfully')
 
       // Reload the event data to ensure we have the latest venue information
       const { data: updatedEvent, error: reloadError } = await supabase
@@ -804,20 +701,19 @@ export default function EditEvent() {
                 )}
             </section>
 
-            {/* Ticketing (free-only) */}
+            {/* External ticket link */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Ticketing</h2>
-            </div>
-              <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center">
-                <h3 className="text-lg font-semibold text-green-800 mb-1">Free Ticketed Event</h3>
-                <p className="text-green-700">A single free General Admission pool will be maintained automatically.</p>
               </div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">External ticket link (optional)</label>
+              <input type="url" value={externalUrl} onChange={(e)=>setExternalUrl(e.target.value)} placeholder="https://…" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" />
+              <p className="text-xs text-gray-500 mt-2">Attendees will be redirected to this link to get tickets.</p>
             </section>
 
             {/* Submit Buttons */}

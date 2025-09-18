@@ -54,6 +54,7 @@ export default function CreateEventPage() {
   const [coverImage, setCoverImage] = useState(null)
   const [coverImagePreview, setCoverImagePreview] = useState('')
   const [publishing, setPublishing] = useState(false)
+  const [externalUrl, setExternalUrl] = useState('')
 
   // No tiers UI; capacity is directly input
 
@@ -236,10 +237,7 @@ export default function CreateEventPage() {
       alert('Please enter a venue name or select "To be announced"'); 
       return 
     }
-    if (admission === ADMISSION_TICKETED && (!capacity || Number(capacity) <= 0)) { 
-      alert('Please set capacity (greater than 0) for ticketed events'); 
-      return 
-    }
+    // Ticketing removed
 
     const start_at = toIso(date, startTime)
     const effectiveEndDate = endDate || date
@@ -256,10 +254,7 @@ export default function CreateEventPage() {
     else if (locationData.mode === 'tba') venue = { name: 'To be announced' }
     else venue = { name: (locationData.name || '').trim() }
 
-    // Pricing/capacity (free-only)
-    const minPrice = 0
-    const maxPrice = 0
-    const totalCapacity = admission === ADMISSION_TICKETED ? Number(capacity) : null
+    // Ticketing removed
 
     setPublishing(true)
 
@@ -319,10 +314,7 @@ export default function CreateEventPage() {
           categories,
           cover_url: coverImagePreview || images[0] || '',
           status: 'published',
-          admission,
-          min_price: minPrice,
-          max_price: maxPrice,
-          capacity: totalCapacity
+          external_ticket_url: externalUrl || null
         }])
         .select()
 
@@ -332,22 +324,7 @@ export default function CreateEventPage() {
       } else {
         console.log('Event created successfully:', eventData)
         
-        // Auto-create a single free tier for ticketed events
-        if (admission === ADMISSION_TICKETED) {
-          const eventId = eventData[0].id
-          const { error: tiersError } = await supabase
-            .from('ticket_tiers')
-            .insert([{ 
-              event_id: eventId,
-              name: 'General Admission (Free)',
-              price: 0,
-              quota: Number(capacity)
-            }])
-          if (tiersError) {
-            console.error('Error creating free ticket tier:', tiersError)
-            alert('Event created but failed to create ticket tier: ' + tiersError.message)
-          }
-        }
+        // No internal tickets; link-out only
         
         // Dispatch event for other components to update
         window.dispatchEvent(new CustomEvent('suki:events_updated'))
@@ -489,7 +466,7 @@ export default function CreateEventPage() {
           </div>
         </section>
 
-        {/* Admission */}
+        {/* Ticketing (external) */}
         <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -497,40 +474,11 @@ export default function CreateEventPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Admission</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Ticketing</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_TICKETED ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
-              <input
-                type="radio"
-                name="admission"
-                className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
-                checked={admission === ADMISSION_TICKETED}
-                onChange={() => setAdmission(ADMISSION_TICKETED)}
-              />
-              <div>
-                <div className="text-gray-900 font-medium">Ticketed</div>
-                <p className="text-sm text-gray-600">Free tickets, capacity applies</p>
-              </div>
-            </label>
-            <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_OPEN ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
-              <input 
-                type="radio"
-                name="admission"
-                className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
-                checked={admission === ADMISSION_OPEN}
-                onChange={() => {
-                  setAdmission(ADMISSION_OPEN)
-                  setTicketTiers([])
-                  setCapacity('')
-                }}
-              />
-              <div>
-                <div className="text-gray-900 font-medium">Open</div>
-                <p className="text-sm text-gray-600">No ticket required, unlimited capacity</p>
-              </div>
-            </label>
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">External ticket link (optional)</label>
+          <input type="url" value={externalUrl} onChange={(e)=>setExternalUrl(e.target.value)} placeholder="https://…" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" />
+          <p className="text-xs text-gray-500 mt-2">Attendees will be redirected to this link to get tickets.</p>
         </section>
 
         {/* Location */}
@@ -590,9 +538,8 @@ export default function CreateEventPage() {
             )}
         </section>
 
-                {/* Event Capacity */}
-        {admission === ADMISSION_TICKETED && (
-        <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+        {/* Capacity removed */}
+        {/* <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -617,8 +564,7 @@ export default function CreateEventPage() {
             />
             <p className="text-sm text-gray-500 mt-2">One free General Admission pool will be created automatically.</p>
           </div>
-        </section>
-        )}
+        </section> */}
 
         {/* Ticketing removed: capacity-only for Ticketed admission */}
 
