@@ -250,14 +250,30 @@ function App() {
           <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl" />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+            <h1
+              className="
+                text-5xl sm:text-6xl lg:text-7xl
+                font-extrabold tracking-tight leading-tight
+                text-transparent bg-clip-text
+                bg-gradient-to-r from-[#FF7F63] via-[#FF8D6E] to-[#FFB79A]
+                drop-shadow-lg
+              "
+            >
               Discover Amazing Events
             </h1>
-            <p className="mt-3 text-gray-700 max-w-2xl mx-auto">
+            <p
+              className="
+                mt-4 sm:mt-5
+                text-base sm:text-lg lg:text-xl
+                text-gray-800/90
+                max-w-3xl mx-auto
+                drop-shadow-sm
+              "
+            >
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            {/* buttons removed for a clean, centered poster */}
+            {/* kept button-free for a clean, centered poster */}
           </div>
         </div>
       </section>
