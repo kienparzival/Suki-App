@@ -243,32 +243,25 @@ function App() {
       
       {/* Poster-style hero (Discover only) */}
       <section className="relative overflow-hidden">
-        {/* soft color band */}
-        <div className="h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500" />
-        <div className="relative bg-gradient-to-r from-indigo-600 via-sky-500 to-cyan-500 text-white">
-          {/* decorative blobs */}
-          <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+        {/* soft color band (light orange) */}
+        <div className="h-1 bg-gradient-to-r from-[#FF8D6E] via-[#FFA27F] to-[#FFB79A]" />
+        <div className="relative bg-gradient-to-r from-[#FFE5DB] via-[#FFD9C9] to-[#FFEDE6] text-gray-900">
+          {/* decorative blobs tinted to logo hue */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl" />
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 text-sm shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-[#36C091] animate-pulse" />
               <span>New events added daily</span>
             </div>
-            <h1 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">
+            <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
               Discover Amazing Events
             </h1>
-            <p className="mt-3 text-white/90 max-w-2xl">
+            <p className="mt-3 text-gray-700 max-w-2xl mx-auto">
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a href="/browse-events" className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white text-indigo-700 font-semibold shadow-md hover:shadow-lg transition">
-                Browse all events
-              </a>
-              <a href="/create" className="inline-flex items-center px-5 py-2.5 rounded-xl border border-white/50 text-white hover:bg-white/10 transition">
-                Create an event
-              </a>
-            </div>
+            {/* buttons removed for a clean, centered poster */}
           </div>
         </div>
       </section>
