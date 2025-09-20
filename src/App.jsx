@@ -251,11 +251,7 @@ function App() {
           <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl" />
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 text-sm shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-[#36C091] animate-pulse" />
-              <span>New events added daily</span>
-            </div>
-            <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
+            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900">
               Discover Amazing Events
             </h1>
             <p className="mt-3 text-gray-700 max-w-2xl mx-auto">
