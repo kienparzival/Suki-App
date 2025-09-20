@@ -251,6 +251,7 @@ function App() {
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
             <h1
               className="
+                hero-title-fix
                 relative z-20
                 text-6xl sm:text-7xl lg:text-[5.5rem]
                 font-extrabold tracking-tight leading-[1.12]

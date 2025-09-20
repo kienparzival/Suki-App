@@ -51,6 +51,13 @@ img { max-width: 100%; height: auto; }
   @apply w-8 h-8;
 }
 
+/* Prevent any global blend/overflow from affecting the hero title */
+.hero-title-fix {
+  position: relative;
+  z-index: 9999;
+  mix-blend-mode: normal !important;
+}
+
 .checkbox {
   @apply rounded border-neutral-300 text-brand-500 focus:ring-brand-500/40;
 }
