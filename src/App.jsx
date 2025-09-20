@@ -242,11 +242,11 @@ function App() {
       />
       
       {/* Poster-style hero (Discover only) */}
-      <section className="relative overflow-visible"> {/* overflow visible so text never clips */}
-        {/* soft color band (light orange) */}
-        <div className="h-1 bg-gradient-to-r from-[#FF8D6E] via-[#FFA27F] to-[#FFB79A]" />
-        {/* BOLDER background so the headline stands out */}
-        <div className="relative isolate overflow-visible bg-gradient-to-r from-[#FFC0A8] via-[#FFAB95] to-[#FF977F]">
+      <section className="relative overflow-visible"> {/* keep overflow visible so text never clips */}
+        {/* cool accent band (indigo → sky → cyan) */}
+        <div className="h-1 bg-gradient-to-r from-[#4F46E5] via-[#0EA5E9] to-[#22D3EE]" />
+        {/* cool, light background that accentuates the blue headline */}
+        <div className="relative isolate overflow-visible bg-gradient-to-r from-[#EEF2FF] via-[#E0F2FE] to-[#ECFEFF]">
           {/* removed decorative blobs to avoid any stacking/mix issues */}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
