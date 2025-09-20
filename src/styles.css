@@ -54,8 +54,12 @@ img { max-width: 100%; height: auto; }
 /* Prevent any global blend/overflow from affecting the hero title */
 .hero-title-fix {
   position: relative;
-  z-index: 9999;
+  z-index: 2147483647;
+  line-height: 1.3;
+  display: inline-block;
+  padding-bottom: 0.25rem;
   mix-blend-mode: normal !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
 .checkbox {

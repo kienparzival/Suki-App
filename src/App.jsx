@@ -242,27 +242,27 @@ function App() {
       />
       
       {/* Poster-style hero (Discover only) */}
-      <section className="relative"> {/* overflow visible so text never clips */}
+      <section className="relative overflow-visible"> {/* overflow visible so text never clips */}
         {/* soft color band (light orange) */}
         <div className="h-1 bg-gradient-to-r from-[#FF8D6E] via-[#FFA27F] to-[#FFB79A]" />
-        <div className="relative isolate overflow-visible bg-gradient-to-r from-[#FFE5DB] via-[#FFD9C9] to-[#FFEDE6]">
+        {/* BOLDER background so the headline stands out */}
+        <div className="relative isolate overflow-visible bg-gradient-to-r from-[#FFC0A8] via-[#FFAB95] to-[#FF977F]">
           {/* removed decorative blobs to avoid any stacking/mix issues */}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
             <h1
               className="
-                hero-title-fix
-                relative z-20
+                relative z-[9999] inline-block pb-2
                 text-6xl sm:text-7xl lg:text-[5.5rem]
-                font-extrabold tracking-tight leading-[1.12]
+                font-extrabold tracking-tight leading-[1.28]
                 text-transparent bg-clip-text
-                bg-[linear-gradient(90deg,#0F172A_0%,#4F46E5_55%,#06B6D4_100%)]  /* slate→indigo→cyan */
+                bg-[linear-gradient(90deg,#0B1020_0%,#4338CA_50%,#0EA5E9_100%)]  /* deep slate → indigo → sky */
                 [text-rendering:optimizeLegibility]
               "
               style={{
-                WebkitTextFillColor: 'transparent',   /* pure gradient fill */
-                mixBlendMode: 'normal',                /* bypass any blend rules */
-                transform: 'translateZ(0)'             /* create its own layer */
+                WebkitTextFillColor: 'transparent',   // pure gradient fill (prevents tint on descenders)
+                mixBlendMode: 'normal',                // bypass global blends
+                transform: 'translateZ(0)'             // own layer
               }}
             >
               Discover Amazing Events
@@ -271,7 +271,7 @@ function App() {
               className="
                 mt-4 sm:mt-5
                 text-base sm:text-lg lg:text-xl
-                text-gray-900/80
+                text-gray-900/90
                 max-w-3xl mx-auto
               "
             >
