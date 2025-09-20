@@ -408,7 +408,7 @@ export default function EventPage() {
               <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
                 <div className="flex items-center gap-3">
                   <Calendar className="w-5 h-5 text-blue-600" />
-                  <div>
+              <div>
                     <div className="font-medium text-gray-900">Date & Time</div>
                     <div className="text-gray-600">{dateFmt}</div>
               </div>
@@ -503,8 +503,8 @@ export default function EventPage() {
                     </div>
                   )}
                 </div>
-              </div>
-            </section>
+                  </div>
+                </section>
               </div>
 
           {/* Right Column - Sidebar */}

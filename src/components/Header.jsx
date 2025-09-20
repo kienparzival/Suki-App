@@ -302,9 +302,9 @@ export default function Header({ searchTerm, setSearchTerm }) {
       <div className="w-full pt-[env(safe-area-inset-top)] py-3">
         {/* Row 1 — brand + desktop search/location + actions */}
         <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <img src="/Suki.png" alt="Suki logo" className="size-12" />
-          </Link>
+        <Link to="/" className="flex items-center gap-2">
+          <img src="/Suki.png" alt="Suki logo" className="size-12" />
+        </Link>
 
           <div className="hidden md:flex items-center flex-1 mx-6 lg:mx-8" ref={containerRef}>
           {/* Combined Search and Location Box */}
@@ -422,7 +422,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
           </div>
         </div>
 
-          <nav className="flex items-center gap-1">
+        <nav className="flex items-center gap-1">
           <NavLink to="/" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
             <Star className="w-5 h-5 mb-1" />
             <span className="text-xs">Discover</span>
@@ -508,7 +508,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
               <LogIn className="size-4 mr-1"/> Sign in
             </NavLink>
           )}
-          </nav>
+        </nav>
         </div>
 
         {/* Row 2 — Mobile Search + Location */}

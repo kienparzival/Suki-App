@@ -62,13 +62,13 @@ function App() {
       // Ticketing removed; skip tier inventory
       
       // Transform RPC data to match expected format
-      const transformedEvents = (data || []).map(event => ({
-        id: event.id,
-        title: event.title,
-        description: event.description,
-        category: event.category,
-        start_at: event.start_at,
-        end_at: event.end_at,
+        const transformedEvents = (data || []).map(event => ({
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          category: event.category,
+          start_at: event.start_at,
+          end_at: event.end_at,
         venue: {
           name: event.venue_name || 'TBD',
           latitude: event.venue_latitude,
@@ -76,14 +76,14 @@ function App() {
           address: event.venue_address
         },
         venue_id: event.venue_id, // <-- add this
-        capacity: event.capacity || 0,
-        cover_url: event.cover_url || '',
-        status: event.status,
-        creator_id: event.creator_id,
+          capacity: event.capacity || 0,
+          cover_url: event.cover_url || '',
+          status: event.status,
+          creator_id: event.creator_id,
         external_ticket_url: event.external_ticket_url || null,
         distance_m: event.distance_m // Include distance for display
-      }))
-      setEvents(transformedEvents)
+        }))
+        setEvents(transformedEvents)
     } catch (error) {
       console.error('Error loading events:', error)
       setEvents([])
@@ -236,10 +236,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
-      <Header 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
+              <Header 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-16">
           <div className="text-center relative">
@@ -321,15 +321,15 @@ function App() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-              {filtered.length} Event{filtered.length !== 1 ? 's' : ''} Found
-            </h2>
+            {filtered.length} Event{filtered.length !== 1 ? 's' : ''} Found
+          </h2>
             {userCity && userCity !== 'All locations' && (
               <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                 in {userCity}
               </div>
             )}
           </div>
-          <EventList events={filtered} />
+        <EventList events={filtered} />
         </div>
       </div>
     </div>

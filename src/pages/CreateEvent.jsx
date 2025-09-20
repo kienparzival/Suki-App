@@ -509,7 +509,7 @@ export default function CreateEventPage() {
               <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
             </div>
             <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2">
               {CATEGORIES.map(opt => {
                 const selected = categories.includes(opt)
                 return (
@@ -532,10 +532,10 @@ export default function CreateEventPage() {
                   </button>
                 )
               })}
-            </div>
+          </div>
             {categories.length === 0 && (
               <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
-            )}
+          )}
         </section>
 
         {/* Capacity removed */}
