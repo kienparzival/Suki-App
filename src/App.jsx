@@ -242,24 +242,27 @@ function App() {
       />
       
       {/* Poster-style hero (Discover only) */}
-      <section className="relative"> {/* remove overflow-hidden so text/shadows never clip */}
+      <section className="relative"> {/* overflow visible so text never clips */}
         {/* soft color band (light orange) */}
         <div className="h-1 bg-gradient-to-r from-[#FF8D6E] via-[#FFA27F] to-[#FFB79A]" />
-        <div className="relative isolate bg-gradient-to-r from-[#FFE5DB] via-[#FFD9C9] to-[#FFEDE6] text-gray-900">
-          {/* decorative blobs (sit behind content) */}
-          <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl z-0" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-[#FF8D6E]/15 blur-3xl z-0" />
+        <div className="relative isolate overflow-visible bg-gradient-to-r from-[#FFE5DB] via-[#FFD9C9] to-[#FFEDE6]">
+          {/* removed decorative blobs to avoid any stacking/mix issues */}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
             <h1
               className="
+                relative z-20
                 text-6xl sm:text-7xl lg:text-[5.5rem]
-                font-extrabold tracking-tight leading-[1.1]
+                font-extrabold tracking-tight leading-[1.12]
                 text-transparent bg-clip-text
-                bg-[linear-gradient(90deg,#FF855F_0%,#FF9877_45%,#FFC1A7_100%)]
+                bg-[linear-gradient(90deg,#0F172A_0%,#4F46E5_55%,#06B6D4_100%)]  /* slate→indigo→cyan */
                 [text-rendering:optimizeLegibility]
               "
-              style={{ WebkitTextFillColor: 'transparent' }}  /* ensure pure gradient fill (fixes odd descender tint) */
+              style={{
+                WebkitTextFillColor: 'transparent',   /* pure gradient fill */
+                mixBlendMode: 'normal',                /* bypass any blend rules */
+                transform: 'translateZ(0)'             /* create its own layer */
+              }}
             >
               Discover Amazing Events
             </h1>
@@ -267,13 +270,13 @@ function App() {
               className="
                 mt-4 sm:mt-5
                 text-base sm:text-lg lg:text-xl
-                text-gray-800/90
+                text-gray-900/80
                 max-w-3xl mx-auto
               "
             >
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            {/* clean, modern tech vibe — graphics removed */}
+            {/* clean, modern tech vibe — no extra graphics */}
           </div>
         </div>
       </section>
