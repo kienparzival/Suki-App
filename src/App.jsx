@@ -35,15 +35,28 @@ function App() {
   const loadEvents = useCallback(async () => {
     setLoading(true)
     try {
-      // Make sure these are numbers or null
-      const lat = userLocation?.lat ?? null
-      const lng = userLocation?.lng ?? null;
-      const onlineOnly = userLocation?.mode === 'online' || userLocation?.city === 'Online Events'
+      // Handle location parameters properly
+      let lat = null
+      let lng = null
+      let onlineOnly = false
+      
+      // If user has set a specific location (not "All locations")
+      if (userLocation?.lat && userLocation?.lng) {
+        lat = userLocation.lat
+        lng = userLocation.lng
+      }
+      
+      // Check if user wants online events only
+      if (userLocation?.mode === 'online' || userLocation?.city === 'Online Events') {
+        onlineOnly = true
+      }
+
+      console.log('Loading events with params:', { lat, lng, onlineOnly, searchTerm, selectedCategory })
 
       const { data, error } = await supabase.rpc('events_explore', {
         p_lat: lat,
         p_lng: lng,
-        p_radius_km: 50,
+        p_radius_km: lat && lng ? 50 : null, // Only set radius if we have coordinates
         p_start_from: new Date().toISOString(),
         p_q: searchTerm || null,
         p_category: selectedCategory === 'all' ? null : selectedCategory,
@@ -143,7 +156,15 @@ function App() {
 
   // Update userCity when userLocation changes (for location filtering)
   useEffect(() => {
-    setUserCity(userLocation.city)
+    setUserCity(userLocation?.city || 'All locations')
+  }, [userLocation])
+
+  // Initialize user location to "All locations" if not set
+  useEffect(() => {
+    if (!userLocation) {
+      setUserLocation({ lat: null, lng: null, city: 'All locations', mode: 'all' })
+      setUserCity('All locations')
+    }
   }, [userLocation])
 
   // Filter events based on time (location, search, and category are now handled by the database)
@@ -254,20 +275,23 @@ function App() {
             onCategoryChange={setSelectedCategory}
             browsingLocation={userCity || 'All locations'}
             onLocationChange={async (loc) => {
+              console.log('Location change requested:', loc)
+              
               // Expected shapes from FilterBar:
               // - Current location: { mode: 'current', city: 'Current Location', lat, lng }
               // - Preset/clicked on map: { mode: 'preset'|'manual', city: 'Hanoi', lat, lng }
               // - Online: { mode: 'online', city: 'Online Events' }
+              // - All locations: null or { mode: 'all', city: 'All locations' }
 
               if (loc?.mode === 'online' || loc?.city === 'Online Events') {
-                setUserLocation({ lat: null, lng: null, city: 'Online Events' })
+                setUserLocation({ lat: null, lng: null, city: 'Online Events', mode: 'online' })
                 setUserCity('Online Events')
                 return
               }
 
               // If coords already provided, use them
               if (typeof loc?.lat === 'number' && typeof loc?.lng === 'number') {
-                setUserLocation({ lat: loc.lat, lng: loc.lng, city: loc.city || 'Current Location' })
+                setUserLocation({ lat: loc.lat, lng: loc.lng, city: loc.city || 'Current Location', mode: 'current' })
                 setUserCity(loc.city || 'Current Location')
                 return
               }
@@ -279,14 +303,15 @@ function App() {
                     setUserLocation({
                       lat: pos.coords.latitude,
                       lng: pos.coords.longitude,
-                      city: loc.city || 'Current Location'
+                      city: loc.city || 'Current Location',
+                      mode: 'current'
                     })
                     setUserCity(loc.city || 'Current Location')
                   },
                   () => {
                     // permission denied or error → no geofilter
-                    setUserLocation({ lat: null, lng: null, city: '' })
-                    setUserCity('')
+                    setUserLocation({ lat: null, lng: null, city: 'All locations', mode: 'all' })
+                    setUserCity('All locations')
                   }
                 )
               }

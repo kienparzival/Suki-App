@@ -140,6 +140,11 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
     setShowLocationDropdown(false);
   };
 
+  const handleBrowseAllLocations = () => {
+    onLocationChange({ mode: 'all', city: 'All locations' });
+    setShowLocationDropdown(false);
+  };
+
   return (
     <section className="space-y-6">
       {/* Category Filter */}
@@ -163,6 +168,20 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
         
         {showLocationDropdown && (
           <div className="absolute z-20 mt-2 w-64 bg-white border border-neutral-200 rounded-xl shadow-xl">
+            {/* Browse all locations option */}
+            <button
+              type="button"
+              className="w-full text-left px-4 py-3 hover:bg-neutral-50 border-b border-neutral-100 transition-colors"
+              onClick={handleBrowseAllLocations}
+            >
+              <div className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-gray-600 font-medium">Browse all locations</span>
+              </div>
+            </button>
+            
             {/* Use my current location option */}
             <button
               type="button"
