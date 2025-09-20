@@ -486,6 +486,13 @@ export default function Header({ searchTerm, setSearchTerm }) {
                       Manage My Events
                     </NavLink>
                     <NavLink 
+                      to="/saved" 
+                      className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      Saved
+                    </NavLink>
+                    <NavLink 
                       to="/profile" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
 import Header from '../components/Header.jsx'
+import Footer from '../components/Footer.jsx'
 import AvatarUploader from '../components/AvatarUploader.jsx'
 import { supabase } from '../lib/supabase.js'
 import { CATEGORIES } from '../constants/categories'
@@ -668,6 +669,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

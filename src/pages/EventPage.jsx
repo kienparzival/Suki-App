@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
+import Footer from '../components/Footer.jsx'
 // Internal purchase modal removed
 import { supabase } from '../lib/supabase.js'
 import { formatBangkokLabel } from '../helpers/time'
@@ -555,6 +556,7 @@ export default function EventPage() {
       </div>
       
       {/* Internal ticket modal removed */}
+      <Footer />
     </div>
   )
 } 

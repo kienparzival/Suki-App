@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useLocation } from '../context/LocationContext.jsx'
 import Header from '../components/Header.jsx'
+import Footer from '../components/Footer.jsx'
 import FilterBar from '../components/FilterBar.jsx'
 import EventList from '../components/EventList.jsx'
 import { supabase } from '../lib/supabase.js'
@@ -224,6 +225,7 @@ export default function BrowseEvents() {
           <EventList events={filtered} />
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

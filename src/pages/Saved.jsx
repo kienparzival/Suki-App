@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
 import Header from '../components/Header.jsx'
+import Footer from '../components/Footer.jsx'
 import { supabase } from '../lib/supabase.js'
 import { formatBangkokLabel } from '../helpers/time'
 import { Link } from 'react-router-dom'
@@ -209,6 +210,7 @@ export default function SavedPage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 } 
