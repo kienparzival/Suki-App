@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="mt-16 border-t bg-white">
+    <footer className="mt-16 border-t bg-gradient-to-b from-indigo-50 via-sky-50 to-white">
+      <div className="h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* FAQ-ish headings (optional; keep minimal for now) */}
+        {/* FAQ */}
         <div className="space-y-4 mb-10">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Frequently asked questions about Suki
+          </h2>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
               <span>What are the best events to attend?</span>
-              <span className="text-gray-500 group-open:rotate-180 transition">⌄</span>
+              <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
               Explore "Trending" or use filters for category, date, and location to find top picks.
@@ -18,17 +22,18 @@ export default function Footer() {
           </details>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>Which events are currently trending in Ha Noi?</span>
-              <span className="text-gray-500 group-open:rotate-180 transition">⌄</span>
+              <span>How do I find events near me?</span>
+              <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              Head to Browse/Discover, set your location to Ha Noi, and sort by "Trending."
+              Open Discover or Browse, click the Location filter, and choose your city (e.g., Ha Noi).
+              You can also pick "Current location" to use your device's GPS or "All locations" to see everything.
             </p>
           </details>
           <details className="group pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
               <span>Which events are coming up?</span>
-              <span className="text-gray-500 group-open:rotate-180 transition">⌄</span>
+              <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
               Use the "Today" / "Weekend" time filters on the Discover or Browse page.
@@ -71,13 +76,13 @@ export default function Footer() {
             <div className="space-y-1">
               <a
                 href="mailto:kien.wwl@gmail.com"
-                className="inline-block px-3 py-2 rounded-lg border hover:bg-gray-50"
+                className="inline-block px-3 py-2 rounded-lg border border-indigo-200 bg-white/60 hover:bg-indigo-50 transition"
               >
                 Email: kien.wwl@gmail.com
               </a>
               <a
                 href="tel:+84916962351"
-                className="block text-gray-700 hover:text-gray-900"
+                className="block text-gray-700 hover:text-indigo-700"
               >
                 Phone: +84 91 696 2351
               </a>
