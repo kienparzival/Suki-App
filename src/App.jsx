@@ -117,28 +117,6 @@ function App() {
     }
   }, [loadEvents])
 
-  // Real-time subscription to ticket changes for all events
-  useEffect(() => {
-    const subscription = supabase
-      .channel('all-event-tickets')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tickets'
-        },
-        (payload) => {
-          // Immediately reload events to show updated availability
-          loadEvents()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [loadEvents])
 
   // Force refresh when page becomes visible (catches missed real-time updates)
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
-import { Edit, Trash2, Eye, Calendar, MapPin, Users, DollarSign, MoreVertical, List, CalendarDays, Copy, Link, Copy as CopyIcon } from 'lucide-react'
+import { Edit, Trash2, Eye, Calendar, MoreVertical, List, CalendarDays, Link, Copy as CopyIcon } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
@@ -13,30 +13,10 @@ export default function ManageEvents() {
   const [myEvents, setMyEvents] = useState([])
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [ticketSales, setTicketSales] = useState({})
   const [viewMode, setViewMode] = useState('list') // 'list' or 'calendar'
   const [showActionsMenu, setShowActionsMenu] = useState(null) // event ID for which menu is open
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 })
 
-  // Load ticket sales data
-  const loadTicketSales = () => {
-    try {
-      const tickets = JSON.parse(localStorage.getItem('suki_tickets') || '[]')
-      const eventSales = {}
-      
-      tickets.forEach(ticket => {
-        if (ticket.event_id) {
-          eventSales[ticket.event_id] = (eventSales[ticket.event_id] || 0) + (Number(ticket.qty) || 1)
-        }
-      })
-      
-      setTicketSales(eventSales)
-      return eventSales
-    } catch (error) {
-      console.warn('Could not load ticket sales:', error)
-      return {}
-    }
-  }
 
   useEffect(() => {
     // Load user's saved city from profile
@@ -62,8 +42,6 @@ export default function ManageEvents() {
     // Load user's created events
     loadMyEvents()
     
-    // Load ticket sales data
-    loadTicketSales()
   }, [user])
 
       // Add focus listener to reload data when returning from edit
@@ -78,30 +56,6 @@ export default function ManageEvents() {
       return () => window.removeEventListener('focus', handleFocus)
       }, [user])
 
-  // Real-time subscription to ticket changes for user's events
-  useEffect(() => {
-    if (!user) return
-
-    const subscription = supabase
-      .channel(`user-events-${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tickets'
-        },
-        (payload) => {
-          // Immediately reload user's events to show updated availability
-          loadMyEvents()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [user])
 
   // Force refresh when page becomes visible (catches missed real-time updates)
   useEffect(() => {
@@ -254,11 +208,7 @@ export default function ManageEvents() {
     }
   }
 
-  const calculateGrossSales = (event) => {
-    const sold = (event.ticket_tiers || []).reduce((s, t) => s + (Number(t.sold) || 0), 0)
-    const gross = (event.ticket_tiers || []).reduce((s, t) => s + (Number(t.sold || 0) * Number(t.price || 0)), 0)
-    return gross
-  }
+  // ticketing removed → no gross/sold calculations
 
   const parseLocalDateTime = (s) => {
     return new Date(s)
@@ -313,7 +263,7 @@ export default function ManageEvents() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Manage My Events</h1>
-          <p className="text-lg text-gray-600">Monitor and manage your events, track sales, and make updates</p>
+          <p className="text-lg text-gray-600">Monitor and manage your events and make updates</p>
         </div>
 
         {/* View Mode Toggle */}
@@ -369,28 +319,14 @@ export default function ManageEvents() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Event
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tiers
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sold
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Gross
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {myEvents.map((event) => {
                     const status = getEventStatus(event)
-                    const grossSales = calculateGrossSales(event)
                     
                     return (
                       <tr key={event.id} className="hover:bg-gray-50">
@@ -418,11 +354,6 @@ export default function ManageEvents() {
                               </div>
                             </div>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">External</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Ticketing off-site</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {grossSales || 0} VND
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(status)}`}>
@@ -464,19 +395,6 @@ export default function ManageEvents() {
                                   <Link className="w-4 h-4 mr-2" />
                                   Copy Link
                                 </button>
-                                <a
-                                  href={`/scan?event=${event.id}`}
-                                  className="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full text-left"
-                                >
-                                  <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M4 7V5a1 1 0 0 1 1-1h2" />
-                                    <path d="M4 17v2a1 1 0 0 0 1 1h2" />
-                                    <path d="M20 7V5a1 1 0 0 0-1-1h-2" />
-                                    <path d="M20 17v2a1 1 0 0 1-1 1h-2" />
-                                    <path d="M7 12h10" />
-                                  </svg>
-                                  Scan Tickets
-                                </a>
                                 <button
                                   onClick={() => copyEvent(event)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
@@ -513,192 +431,9 @@ export default function ManageEvents() {
           </div>
         )}
 
-        {/* Approvals Section */}
-        {(() => {
-          const eventsById = Object.fromEntries((myEvents || []).map(ev => [ev.id, ev]))
-          return (
-            <ApprovalsSection
-              userId={user?.id}
-              eventIds={(myEvents || []).map(ev => ev.id)}
-              eventsById={eventsById}
-            />
-          )
-        })()}
+        {/* Ticketing approvals removed: discovery-only mode */}
       </div>
     </div>
   )
 }
 
-function ApprovalsSection({ userId, eventIds = [], eventsById = {} }) {
-  const [pending, setPending] = React.useState([])
-  const [expired, setExpired] = React.useState([])
-  const [loading, setLoading] = React.useState(false)
-  const [tab, setTab] = React.useState('pending') // 'pending' | 'expired'
-
-  const loadPending = async () => {
-    if (!userId) return
-    if (!eventIds || eventIds.length === 0) {
-      setPending([])
-      return
-    }
-    setLoading(true)
-    try {
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('id, payment_code, created_at, expires_at, is_confirmed, canceled_at, event_id')
-        .eq('is_confirmed', false)
-        .is('canceled_at', null)
-        .in('event_id', eventIds)
-        .order('expires_at', { ascending: true })
-      if (error) throw error
-      setPending(data || [])
-    } catch (e) {
-      console.error('Error loading pending approvals:', e)
-      setPending([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadExpired = async () => {
-    if (!userId) return
-    if (!eventIds || eventIds.length === 0) {
-      setExpired([])
-      return
-    }
-    setLoading(true)
-    try {
-      const { data, error } = await supabase
-        .from('tickets')
-        .select('id, payment_code, created_at, expires_at, canceled_at, is_confirmed, event_id, canceled_reason')
-        .eq('is_confirmed', false)
-        .not('canceled_at', 'is', null)
-        .in('event_id', eventIds)
-        .gte('canceled_at', new Date(Date.now() - 24*60*60*1000).toISOString())
-        .order('canceled_at', { ascending: false })
-      if (error) throw error
-      setExpired(data || [])
-    } catch (e) {
-      console.error('Error loading expired:', e)
-      setExpired([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  React.useEffect(() => { loadPending() }, [userId, JSON.stringify(eventIds)])
-
-  const approve = async (ticketId) => {
-    const { error } = await supabase.rpc('approve_ticket', { p_ticket_id: ticketId })
-    if (error) {
-      console.error('Approve error:', error)
-      alert(error.message || 'Unable to approve ticket.')
-    } else {
-      loadPending()
-    }
-  }
-
-  const cancel = async (ticketId) => {
-    const { error } = await supabase
-      .from('tickets')
-      .delete()
-      .eq('id', ticketId)
-      .eq('is_confirmed', false)
-    if (error) {
-      console.error('Cancel failed', error)
-      alert(error.message || 'Unable to cancel ticket.')
-    } else {
-      alert('Pending ticket cancelled.')
-      await loadPending()
-    }
-  }
-
-  const reinstate60 = async (ticketId) => {
-    const { error } = await supabase
-      .from('tickets')
-      .update({
-        canceled_at: null,
-        canceled_reason: null,
-        expires_at: new Date(Date.now() + 60*60*1000).toISOString()
-      })
-      .eq('id', ticketId)
-      .eq('is_confirmed', false)
-    if (error) alert(error.message)
-    else { alert('Reinstated for 60 minutes'); loadExpired() }
-  }
-
-  useEffect(() => {
-    if (tab === 'pending') loadPending()
-    if (tab === 'expired') loadExpired()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, JSON.stringify(eventIds), userId])
-
-  return (
-    <div className="mt-10">
-      <h2 className="text-2xl font-bold text-gray-900 mb-4">Approvals</h2>
-      <p className="text-sm text-gray-600 mb-4">Approve or cancel pending reservations. Unpaid reservations expire in 60 minutes.</p>
-
-      <div className="mb-4 flex gap-2">
-        <button className={`btn btn-sm ${tab==='pending'?'btn-primary':'btn-outline'}`} onClick={()=>setTab('pending')}>Pending</button>
-        <button className={`btn btn-sm ${tab==='expired'?'btn-primary':'btn-outline'}`} onClick={()=>setTab('expired')}>Expired (24h)</button>
-      </div>
-
-      <div className="bg-white rounded-lg shadow">
-        {loading ? (
-          <div className="p-6">Loading…</div>
-        ) : tab === 'pending' ? (
-          pending.length === 0 ? (
-            <div className="p-6 text-gray-600">No pending reservations.</div>
-          ) : (
-            <div className="divide-y">
-              {pending.map(t => (
-                <div key={t.id} className="p-4 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-gray-900">{eventsById?.[t.event_id]?.title ?? 'Untitled Event'}</div>
-                    <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span></div>
-                    <div className="text-xs text-gray-500">
-                      Reserved: {formatBangkokLabel(t.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
-                      {' '}• Expires: {formatBangkokLabel(t.expires_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="btn btn-sm btn-success" onClick={() => approve(t.id)}>Approve</button>
-                    <button
-                      className="btn btn-sm btn-ghost text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={!!t.is_confirmed}
-                      onClick={() => cancel(t.id)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        ) : (
-          expired.length === 0 ? (
-            <div className="p-6 text-gray-600">No expired reservations in the last 24 hours.</div>
-          ) : (
-            <div className="divide-y">
-              {expired.map(t => (
-                <div key={t.id} className="p-4 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-gray-900">{t.events?.title}</div>
-                    <div className="text-sm text-gray-600">Code: <span className="font-mono">{t.payment_code}</span> <span className="ml-2 badge">Expired</span></div>
-                    <div className="text-xs text-gray-500">
-                      Reserved: {formatBangkokLabel(t.created_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
-                      {' '}• Expired: {formatBangkokLabel(t.canceled_at || t.expires_at, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="btn btn-sm btn-outline" onClick={() => reinstate60(t.id)}>Reinstate 60m</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        )}
-      </div>
-    </div>
-  )
-}

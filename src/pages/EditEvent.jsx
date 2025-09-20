@@ -234,11 +234,7 @@ export default function EditEvent() {
       setLoading(false)
       return
     }
-    if (admission === ADMISSION_TICKETED && (!capacity || Number(capacity) <= 0)) {
-      alert('Please set capacity (greater than 0) for ticketed events')
-      setLoading(false)
-      return
-    }
+    // Admission validation removed - discovery-only mode
 
     try {
       // Build timestamp strings using Bangkok timezone utility with explicit +07:00 offset
@@ -568,95 +564,6 @@ export default function EditEvent() {
               />
             </section>
 
-            {/* Admission */}
-            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Admission</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_TICKETED ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
-                  <input
-                    type="radio"
-                    name="admission"
-                    className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
-                    checked={admission === ADMISSION_TICKETED}
-                    onChange={() => setAdmission(ADMISSION_TICKETED)}
-                  />
-                  <div>
-                    <div className="text-gray-900 font-medium">Ticketed</div>
-                    <p className="text-sm text-gray-600">Free tickets, capacity applies</p>
-                  </div>
-                </label>
-                <label className={`flex items-start gap-3 p-5 border-2 rounded-xl cursor-pointer transition-colors ${admission === ADMISSION_OPEN ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-brand-300'}`}>
-                  <input
-                    type="radio"
-                    name="admission"
-                    className="mt-1 h-5 w-5 text-brand-600 focus:ring-brand-500"
-                    checked={admission === ADMISSION_OPEN}
-                    onChange={() => setAdmission(ADMISSION_OPEN)}
-                  />
-              <div>
-                    <div className="text-gray-900 font-medium">Open</div>
-                    <p className="text-sm text-gray-600">No ticket required, unlimited capacity</p>
-                  </div>
-                </label>
-              </div>
-            </section>
-
-            {/* Capacity and Pricing */}
-            {admission === ADMISSION_TICKETED && (
-            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">Capacity & Pricing</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Capacity</label>
-                <input
-                  type="number"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  min="1"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder="Enter capacity"
-                />
-                <p className="text-xs text-gray-500 mt-1">One free General Admission pool will be created automatically.</p>
-              </div>
-              <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Min Price (VND)</label>
-                <input
-                  type="number"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  min="0"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Price (VND)</label>
-                <input
-                  type="number"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  min="0"
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            </section>
-            )}
 
             {/* Cover Image */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
