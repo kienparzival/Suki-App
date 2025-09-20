@@ -253,41 +253,27 @@ function App() {
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
             <h1
               className="
-                text-5xl sm:text-6xl lg:text-7xl
-                font-extrabold tracking-tight leading-[1.08]   /* a bit more line-height to avoid glyph clipping */
+                text-6xl sm:text-7xl lg:text-[5.5rem]
+                font-extrabold tracking-tight leading-[1.1]
                 text-transparent bg-clip-text
-                bg-gradient-to-r from-[#FF7F63] via-[#FF8D6E] to-[#FFB79A]
-                drop-shadow-2xl
+                bg-[linear-gradient(90deg,#FF855F_0%,#FF9877_45%,#FFC1A7_100%)]
+                [text-rendering:optimizeLegibility]
               "
-              style={{ WebkitTextStroke: '1px rgba(0,0,0,0.06)' }}  /* subtle stroke for pop */
+              style={{ WebkitTextFillColor: 'transparent' }}  /* ensure pure gradient fill (fixes odd descender tint) */
             >
               Discover Amazing Events
             </h1>
             <p
               className="
-                mt-5 sm:mt-6
+                mt-4 sm:mt-5
                 text-base sm:text-lg lg:text-xl
                 text-gray-800/90
                 max-w-3xl mx-auto
-                drop-shadow
               "
             >
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            {/* decorative sparkles for energy (purely visual) */}
-            <div className="pointer-events-none relative mt-6 flex justify-center">
-              <svg className="w-8 h-8 mr-6 opacity-80 animate-pulse" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M12 2l1.6 4.3L18 8l-4.4 1.7L12 14l-1.6-4.3L6 8l4.4-1.7L12 2z" fill="#FFA27F"/>
-              </svg>
-              <svg className="w-10 h-10 opacity-90" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <circle cx="12" cy="12" r="3" fill="#FF8D6E"/>
-                <circle cx="5" cy="7" r="1.5" fill="#FFB79A"/>
-                <circle cx="19" cy="8" r="1.2" fill="#FFC6AE"/>
-                <circle cx="7" cy="18" r="1.2" fill="#FFC6AE"/>
-                <circle cx="17" cy="17" r="1.5" fill="#FFB79A"/>
-              </svg>
-            </div>
-            {/* button-free for a clean, centered poster */}
+            {/* clean, modern tech vibe — graphics removed */}
           </div>
         </div>
       </section>
