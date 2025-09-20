@@ -33,6 +33,7 @@ export default function EditEvent() {
     address: null
   })
   const [externalUrl, setExternalUrl] = useState('')
+  const [ticketInstructions, setTicketInstructions] = useState('')  // new
   const [coverUrl, setCoverUrl] = useState('')
   const [coverImage, setCoverImage] = useState(null)
   const [coverImagePreview, setCoverImagePreview] = useState('')
@@ -112,6 +113,7 @@ export default function EditEvent() {
         }
         
         setExternalUrl(eventWithTiers.external_ticket_url || '')
+        setTicketInstructions(eventWithTiers.external_ticket_instructions || '')
         setCoverUrl(eventWithTiers.cover_url || '')
         setCoverImagePreview(eventWithTiers.cover_url || '')
         
@@ -309,6 +311,7 @@ export default function EditEvent() {
           categories,
           venue_id: venue_id, // Use the venue_id we determined above
           external_ticket_url: externalUrl || null,
+          external_ticket_instructions: ticketInstructions || null,
           cover_url: coverImagePreview || coverUrl || null
         })
         .eq('id', event.id)
@@ -608,19 +611,32 @@ export default function EditEvent() {
                 )}
             </section>
 
-            {/* External ticket link */}
+            {/* Tickets (link-out only) */}
             <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                <div className="w-10 h-10 bg-blue-100 rounded-full grid place-items-center">
+                  <svg className="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Ticketing</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Tickets</h2>
               </div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">External ticket link (optional)</label>
-              <input type="url" value={externalUrl} onChange={(e)=>setExternalUrl(e.target.value)} placeholder="https://…" className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" />
-              <p className="text-xs text-gray-500 mt-2">Attendees will be redirected to this link to get tickets.</p>
+              <div className="space-y-4">
+                <input
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
+                  placeholder="External ticket link (https://…)"
+                  value={externalUrl}
+                  onChange={(e) => setExternalUrl(e.target.value)}
+                />
+                <textarea
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
+                  rows={5}
+                  placeholder={`Short instructions (optional). Example:\n1) Click the link above\n2) Choose seat & quantity\n3) Pay via Momo/VietQR\n4) Keep your confirmation email`}
+                  value={ticketInstructions}
+                  onChange={(e) => setTicketInstructions(e.target.value)}
+                />
+                <p className="text-sm text-gray-500">If left blank, the event page won't show a Tickets section.</p>
+              </div>
             </section>
 
             {/* Submit Buttons */}

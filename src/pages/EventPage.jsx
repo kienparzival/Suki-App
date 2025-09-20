@@ -137,6 +137,8 @@ export default function EventPage() {
           status: data.status,
           creator_id: data.creator_id,
           admission: data.admission || 'ticketed',
+          external_ticket_url: data.external_ticket_url || null,
+          external_ticket_instructions: data.external_ticket_instructions || null,
           organizer: { name: 'Organizer' }, // Default organizer info
           tiers: tiersWithSoldCounts
         }
@@ -204,32 +206,16 @@ export default function EventPage() {
     }
   }, [id])
 
-  // Real-time subscription to ticket changes for this event
-  useEffect(() => {
-    if (!id) return
+  // Ticketing removed → no realtime subscription to tickets
 
-    // Subscribe to changes in the tickets table for this event
-    const subscription = supabase
-      .channel(`event-tickets-${id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'tickets',
-          filter: `event_id=eq.${id}`
-        },
-        (payload) => {
-          // Immediately reload event data to show updated availability
-          loadEvent()
-        }
-      )
-      .subscribe()
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [id])
+  // Helper: linkify + preserve newlines for instructions
+  const renderInstructions = (text = '') => {
+    const url = /(https?:\/\/[^\s)]+)([)\]]?)/gi
+    const html = text
+      .replace(url, '<a href="$1" target="_blank" rel="noopener">$1</a>$2')
+      .replace(/\n/g, '<br/>')
+    return <div className="prose [&_a]:underline" dangerouslySetInnerHTML={{ __html: html }} />
+  }
 
   // Force refresh when page becomes visible (catches missed real-time updates)
   useEffect(() => {
@@ -347,7 +333,7 @@ export default function EventPage() {
           </div>
           
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            {/* External ticket CTA */}
+            {/* External ticket CTA (top) */}
             {event?.external_ticket_url ? (
               <a href={event.external_ticket_url} target="_blank" rel="noopener" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">Get tickets on organizer site</a>
             ) : null}
@@ -396,6 +382,26 @@ export default function EventPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
+            {/* Tickets section (only if something was provided) */}
+            {(event.external_ticket_url || event.external_ticket_instructions) && (
+              <section className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">How to get tickets</h2>
+                {event.external_ticket_url && (
+                  <div className="mb-3">
+                    <a
+                      href={event.external_ticket_url}
+                      target="_blank"
+                      rel="noopener"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    >
+                      Get tickets on organizer site
+                    </a>
+                  </div>
+                )}
+                {event.external_ticket_instructions && renderInstructions(event.external_ticket_instructions)}
+              </section>
+            )}
+
             {/* About Section */}
             <section className="prose prose-sm sm:prose max-w-none prose-a:underline prose-a:text-blue-600 break-anywhere">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About this event</h2>
