@@ -236,39 +236,45 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
-              <Header 
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="mb-16">
-          <div className="text-center relative">
-            {/* Background decorative elements */}
-            <div className="absolute inset-0 -z-10 hidden sm:block">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-brand-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-tl from-blue-100/30 to-cyan-100/30 rounded-full blur-2xl"></div>
-              <div className="absolute top-1/2 left-0 w-48 h-48 bg-gradient-to-r from-pink-100/30 to-rose-100/30 rounded-full blur-xl"></div>
+      <Header 
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+      
+      {/* Poster-style hero (Discover only) */}
+      <section className="relative overflow-hidden">
+        {/* soft color band */}
+        <div className="h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500" />
+        <div className="relative bg-gradient-to-r from-indigo-600 via-sky-500 to-cyan-500 text-white">
+          {/* decorative blobs */}
+          <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-white/10 blur-3xl" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur text-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+              <span>New events added daily</span>
             </div>
-            
-            {/* Main heading with enhanced styling */}
-            <h1 
-              className="text-3xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-6 sm:mb-8 leading-[1.15] inline-block pb-0.5"
-            >
+            <h1 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">
               Discover Amazing Events
             </h1>
-            
-            {/* Subtitle with modern typography */}
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 mx-auto max-w-3xl mb-10 sm:mb-12 leading-relaxed font-light">
-              Find and join events that match your interests, happening 
-              <span className="text-brand-600 font-semibold"> near you </span> 
-              or 
-              <span className="text-purple-600 font-semibold"> online</span>
+            <p className="mt-3 text-white/90 max-w-2xl">
+              Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            
-            {/* Decorative line */}
-            <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full my-8"></div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="/browse-events" className="inline-flex items-center px-5 py-2.5 rounded-xl bg-white text-indigo-700 font-semibold shadow-md hover:shadow-lg transition">
+                Browse all events
+              </a>
+              <a href="/create" className="inline-flex items-center px-5 py-2.5 rounded-xl border border-white/50 text-white hover:bg-white/10 transition">
+                Create an event
+              </a>
+            </div>
           </div>
         </div>
+      </section>
+
+      {/* main content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         
         <div className="mb-12">
           <FilterBar 
