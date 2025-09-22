@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { MapPin, Ticket, Heart, Star, Plus, User, LogIn, ChevronDown, Search } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
+import { trackSearch } from '../lib/analytics.js'
 
 const cities = [
   // Major Cities & Provinces
@@ -218,6 +219,13 @@ export default function Header({ searchTerm, setSearchTerm }) {
     if (searchTerm.trim()) {
       addToRecentSearches(searchTerm)
       setSearchFocused(false)
+      
+      // Track search event
+      trackSearch({
+        q: searchTerm.trim(),
+        category: 'all', // Default category, could be enhanced later
+        city: userLocation?.city || 'All locations'
+      })
     }
   }
 
@@ -225,6 +233,13 @@ export default function Header({ searchTerm, setSearchTerm }) {
     setSearchTerm(search)
     addToRecentSearches(search)
     setSearchFocused(false)
+    
+    // Track search event when selecting from recent searches
+    trackSearch({
+      q: search.trim(),
+      category: 'all', // Default category, could be enhanced later
+      city: userLocation?.city || 'All locations'
+    })
   }
 
   const useCurrentLocation = () => {

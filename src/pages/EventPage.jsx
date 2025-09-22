@@ -13,6 +13,7 @@ import 'leaflet/dist/leaflet.css'
 import DescriptionBlock from '../components/DescriptionBlock.jsx'
 import '../styles.css'
 import { PAYMENTS_ENABLED } from '../config/payments'
+import { trackEventView, trackCTAClick } from '../lib/analytics.js'
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl
@@ -148,6 +149,13 @@ export default function EventPage() {
         
         setEvent(transformedEvent)
         
+        // Track event view
+        trackEventView({
+          event_id: transformedEvent.id,
+          city: transformedEvent.venue?.name || 'Unknown',
+          category: transformedEvent.category || 'Unknown'
+        })
+        
         // Calculate remaining tickets - use the remaining count from tier_inventory RPC
         // For free events, this will be the event capacity minus sold tickets
         // For tiered events, this will be the sum of remaining from all tiers
@@ -282,6 +290,15 @@ export default function EventPage() {
     } catch {}
   }
 
+  const handleExternalTicketClick = (url) => {
+    // Track CTA click
+    trackCTAClick({
+      event_id: event.id,
+      url: url,
+      cta_type: 'external_ticket_link'
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
       <Header />
@@ -336,7 +353,15 @@ export default function EventPage() {
           <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             {/* External ticket CTA (top) */}
             {event?.external_ticket_url ? (
-              <a href={event.external_ticket_url} target="_blank" rel="noopener" className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">Get tickets on organizer site</a>
+              <a 
+                href={event.external_ticket_url} 
+                target="_blank" 
+                rel="noopener" 
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                onClick={() => handleExternalTicketClick(event.external_ticket_url)}
+              >
+                Get tickets on organizer site
+              </a>
             ) : null}
             <button
               className={`px-6 py-3 border rounded-lg font-medium transition-colors flex items-center gap-2 ${
@@ -394,6 +419,7 @@ export default function EventPage() {
                       target="_blank"
                       rel="noopener"
                       className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                      onClick={() => handleExternalTicketClick(event.external_ticket_url)}
                     >
                       Get tickets on organizer site
                     </a>

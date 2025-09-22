@@ -17,12 +17,21 @@ import EditEvent from './pages/EditEvent.jsx'
 import CopyEvent from './pages/CopyEvent.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { LocationProvider } from './context/LocationContext.jsx'
+import RouteTracker from './components/RouteTracker.jsx'
+
+// Initialize analytics and UTM tracking
+import './lib/analytics.js'
+import { getFirstAttribution } from './lib/utm.js'
+
+// Capture UTM parameters and referrer on first visit
+getFirstAttribution()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
       <LocationProvider>
         <BrowserRouter>
+          <RouteTracker />
           <Routes>
             <Route path="/" element={<App />} />
             <Route path="/auth" element={<AuthPage />} />

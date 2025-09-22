@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import EmailCapture from './EmailCapture.jsx'
 
 export default function Footer() {
   return (
@@ -39,6 +40,13 @@ export default function Footer() {
               Use the "Today" / "Weekend" time filters on the Discover or Browse page.
             </p>
           </details>
+        </div>
+
+        {/* Email Capture Section */}
+        <div className="mb-10 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+          <h3 className="text-xl font-bold text-gray-900 mb-3">Stay updated with weekly event digests</h3>
+          <p className="text-gray-600 mb-4">Get the best events in your city delivered to your inbox every Friday.</p>
+          <EmailCapture defaultCity="Hanoi" />
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">

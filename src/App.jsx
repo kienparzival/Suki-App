@@ -5,7 +5,10 @@ import Header from './components/Header.jsx'
 import Footer from './components/Footer.jsx'
 import FilterBar from './components/FilterBar.jsx'
 import EventList from './components/EventList.jsx'
+import EmailCapture from './components/EmailCapture.jsx'
 import { supabase } from './lib/supabase.js'
+import { getFirstAttribution } from './lib/utm.js'
+import { posthog } from './lib/analytics.js'
 import './styles.css'
 
 function App() {
@@ -168,6 +171,81 @@ function App() {
     }
   }, [userLocation])
 
+  // Handle UTM attribution and user identification
+  useEffect(() => {
+    const handleAttribution = async () => {
+      try {
+        // Get attribution data (this will be cached after first call)
+        const attribution = getFirstAttribution()
+        
+        // Identify user in PostHog if logged in
+        if (user?.id) {
+          posthog.identify(user.id, {
+            email: user.email,
+            name: user.user_metadata?.name || user.user_metadata?.full_name,
+            city: user.user_metadata?.city,
+            first_visit: attribution.ts,
+            utm_source: attribution.utm_source,
+            utm_medium: attribution.utm_medium,
+            utm_campaign: attribution.utm_campaign,
+            utm_content: attribution.utm_content,
+            utm_term: attribution.utm_term,
+            referrer: attribution.referrer,
+            landing_page: attribution.landing_page
+          })
+          
+          // Store attribution data in Supabase for querying
+          await storeAttributionData(user.id, attribution)
+        } else {
+          // For anonymous users, set properties without identifying
+          posthog.people.set({
+            first_visit: attribution.ts,
+            utm_source: attribution.utm_source,
+            utm_medium: attribution.utm_medium,
+            utm_campaign: attribution.utm_campaign,
+            utm_content: attribution.utm_content,
+            utm_term: attribution.utm_term,
+            referrer: attribution.referrer,
+            landing_page: attribution.landing_page
+          })
+        }
+      } catch (error) {
+        console.error('Error handling attribution:', error)
+      }
+    }
+
+    handleAttribution()
+  }, [user])
+
+  // Function to store attribution data in Supabase
+  const storeAttributionData = async (userId, attribution) => {
+    try {
+      const { error } = await supabase
+        .from('user_attribution')
+        .upsert({
+          user_id: userId,
+          first_visit: attribution.ts,
+          utm_source: attribution.utm_source,
+          utm_medium: attribution.utm_medium,
+          utm_campaign: attribution.utm_campaign,
+          utm_content: attribution.utm_content,
+          utm_term: attribution.utm_term,
+          referrer: attribution.referrer,
+          landing_page: attribution.landing_page,
+          user_agent: attribution.user_agent,
+          updated_at: new Date().toISOString()
+        })
+
+      if (error) {
+        console.error('Error storing attribution data:', error)
+      } else {
+        console.log('Attribution data stored successfully')
+      }
+    } catch (error) {
+      console.error('Error storing attribution data:', error)
+    }
+  }
+
   // Filter events based on time (location, search, and category are now handled by the database)
   const filtered = useMemo(() => {
     const filteredEvents = events.filter(event => {
@@ -277,6 +355,11 @@ function App() {
             >
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
+            
+            {/* Email Capture */}
+            <div className="mt-8 max-w-md mx-auto">
+              <EmailCapture defaultCity={userCity || 'Hanoi'} />
+            </div>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
         </div>
