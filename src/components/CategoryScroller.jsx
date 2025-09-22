@@ -1,14 +1,63 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CATEGORY_ITEMS } from '../constants/categories'
 
 export default function CategoryScroller({ selected, onChange }) {
+  const scrollerRef = useRef(null)
+  const [canLeft, setCanLeft] = useState(false)
+  const [canRight, setCanRight] = useState(false)
+
+  // Keep arrow enable/disable in sync
+  const updateArrows = () => {
+    const el = scrollerRef.current
+    if (!el) return
+    setCanLeft(el.scrollLeft > 0)
+    setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1)
+  }
+
+  useEffect(() => {
+    const el = scrollerRef.current
+    if (!el) return
+
+    // 1) Windows-friendly: convert vertical wheel → horizontal scroll
+    const onWheel = (e) => {
+      // If user is actually scrolling vertically inside children, don't hijack.
+      const mostlyVertical = Math.abs(e.deltaY) > Math.abs(e.deltaX)
+      if (mostlyVertical && el.scrollWidth > el.clientWidth) {
+        el.scrollLeft += e.deltaY
+        e.preventDefault() // IMPORTANT: allow horizontal scroll with mouse wheel
+        updateArrows()
+      }
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+
+    // 2) Keep arrow state fresh
+    el.addEventListener('scroll', updateArrows, { passive: true })
+    updateArrows()
+
+    return () => {
+      el.removeEventListener('wheel', onWheel)
+      el.removeEventListener('scroll', updateArrows)
+    }
+  }, [])
+
   return (
     <div className="relative">
-      <div className="pointer-events-none hidden sm:block absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-white to-transparent" />
-      <div className="pointer-events-none hidden sm:block absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-white to-transparent" />
+      {/* left arrow */}
+      <button
+        type="button"
+        aria-label="Scroll categories left"
+        onClick={() => { scrollerRef.current?.scrollBy({ left: -240, behavior: 'smooth' }); }}
+        disabled={!canLeft}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex items-center justify-center
+                   h-9 w-9 rounded-full shadow bg-white/90 hover:bg-white disabled:opacity-40"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
 
       <div
-        className="flex gap-7 lg:gap-8 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 -mx-4 px-4"
+        ref={scrollerRef}
+        className="horizontal-scroll relative mx-10 sm:mx-12 flex gap-7 lg:gap-8 overflow-x-auto overscroll-x-contain
+                   whitespace-nowrap scroll-smooth scrollbar-thin snap-x snap-mandatory pb-2"
         role="tablist"
         aria-label="Browse by category"
       >
@@ -40,6 +89,18 @@ export default function CategoryScroller({ selected, onChange }) {
           )
         })}
       </div>
+
+      {/* right arrow */}
+      <button
+        type="button"
+        aria-label="Scroll categories right"
+        onClick={() => { scrollerRef.current?.scrollBy({ left: 240, behavior: 'smooth' }); }}
+        disabled={!canRight}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-10 hidden sm:flex items-center justify-center
+                   h-9 w-9 rounded-full shadow bg-white/90 hover:bg-white disabled:opacity-40"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+      </button>
     </div>
   )
 }

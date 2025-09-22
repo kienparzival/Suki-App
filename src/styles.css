@@ -107,3 +107,21 @@ img { max-width: 100%; height: auto; }
 .badge {
   @apply text-xs px-2 py-1 rounded-lg bg-neutral-100 border border-neutral-200 text-neutral-700;
 }
+
+/* Horizontal scroller styles */
+.horizontal-scroll {
+  scrollbar-gutter: stable both-edges; /* keeps layout steady when scrollbar shows (chromium) */
+  scrollbar-width: thin;               /* Firefox */
+}
+
+/* WebKit (Chromium/Edge) */
+.horizontal-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.horizontal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.25);
+  border-radius: 9999px;
+}
+.horizontal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
