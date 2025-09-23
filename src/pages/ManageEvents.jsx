@@ -265,7 +265,7 @@ export default function ManageEvents() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('manage.title')}</h1>
-          <p className="text-lg text-gray-600">Monitor and manage your events and make updates</p>
+          <p className="text-lg text-gray-600">{t('manage.tagline')}</p>
         </div>
 
         {/* View Mode Toggle */}
@@ -280,7 +280,7 @@ export default function ManageEvents() {
               }`}
             >
               <List className="w-4 h-4" />
-              List
+              {t('manage.view.list')}
             </button>
             <button
               onClick={() => setViewMode('calendar')}
@@ -291,12 +291,12 @@ export default function ManageEvents() {
               }`}
             >
               <CalendarDays className="w-4 h-4" />
-              Calendar
+              {t('manage.view.calendar')}
             </button>
           </div>
           
           <a href="/create" className="btn btn-primary">
-            Create New Event
+            {t('manage.createNew')}
           </a>
         </div>
 

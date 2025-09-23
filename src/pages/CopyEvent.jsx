@@ -7,12 +7,14 @@ import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../he
 import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import { CATEGORIES } from '../constants/categories'
 import '../styles.css'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function CopyEvent() {
   const { user } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const originalEvent = location.state?.event
+  const { t, fmtDate } = useLang()
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -206,7 +208,7 @@ export default function CopyEvent() {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Copy Event</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('copyEvent.title')}</h1>
             <p className="text-lg text-gray-600">
               Your event copy will have the same event info and settings, without attendee information.
             </p>
@@ -465,14 +467,14 @@ export default function CopyEvent() {
                 onClick={() => navigate('/manage-events')}
                 className="btn btn-outline flex-1"
               >
-                Cancel
+                {t('form.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
                 className="btn btn-primary flex-1"
               >
-                {loading ? 'Creating...' : 'Create Event Copy'}
+                {loading ? t('create.publishing') : t('eventForm.createCopy')}
               </button>
             </div>
           </form>

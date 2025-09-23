@@ -180,5 +180,14 @@
   "event.duration": "Duration",
   "event.capacity": "Capacity",
   "event.location": "Location",
-  "event.unlimited": "Unlimited"
+  "event.unlimited": "Unlimited",
+  "browse.title": "Browse events",
+  "manage.createNew": "Create new event",
+  "manage.view.list": "List view",
+  "manage.view.calendar": "Calendar view",
+  "manage.tagline": "Monitor and manage your events and make updates.",
+  "editEvent.title": "Edit event",
+  "copyEvent.title": "Copy event",
+  "eventForm.updateEvent": "Update event",
+  "eventForm.createCopy": "Create copy"
 }

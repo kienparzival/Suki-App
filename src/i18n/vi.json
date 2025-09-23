@@ -180,5 +180,14 @@
   "event.duration": "Thời lượng",
   "event.capacity": "Sức chứa",
   "event.location": "Địa điểm",
-  "event.unlimited": "Không giới hạn"
+  "event.unlimited": "Không giới hạn",
+  "browse.title": "Tìm sự kiện",
+  "manage.createNew": "Tạo sự kiện mới",
+  "manage.view.list": "Dạng danh sách",
+  "manage.view.calendar": "Dạng lịch",
+  "manage.tagline": "Theo dõi và quản lý sự kiện của bạn, cập nhật khi cần.",
+  "editEvent.title": "Chỉnh sửa sự kiện",
+  "copyEvent.title": "Sao chép sự kiện",
+  "eventForm.updateEvent": "Cập nhật sự kiện",
+  "eventForm.createCopy": "Tạo bản sao"
 }

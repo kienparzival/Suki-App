@@ -5,9 +5,11 @@ import Footer from '../components/Footer.jsx'
 import FilterBar from '../components/FilterBar.jsx'
 import EventList from '../components/EventList.jsx'
 import { supabase } from '../lib/supabase.js'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function BrowseEvents() {
   const { userLocation, setUserLocation } = useLocation()
+  const { t } = useLang()
 
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
@@ -198,8 +200,8 @@ export default function BrowseEvents() {
       <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Browse Events</h1>
-          <p className="text-lg text-gray-600">Discover and explore events from around the world</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('browse.title')}</h1>
+          <p className="text-lg text-gray-600">{t('discoverSub')}</p>
         </div>
         
         <div className="mb-8">
@@ -216,10 +218,10 @@ export default function BrowseEvents() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              {filtered.length} Event{filtered.length !== 1 ? 's' : ''} Found
+              {t('resultsFound', { n: filtered.length, plural: filtered.length !== 1 ? 's' : '' })}
             </h2>
             {userCity && userCity !== 'All locations' && (
-              <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">in {userCity}</div>
+              <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{t('inCity', { city: userCity })}</div>
             )}
           </div>
           <EventList events={filtered} />
