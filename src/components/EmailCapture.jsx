@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase.js'
 import { getFirstAttribution } from '../lib/utm.js'
 import { posthog } from '../lib/analytics.js'
 
-export default function EmailCapture() {
+export default function EmailCapture({ onSubscribed }) {
   const [email, setEmail] = useState('')
   const [ok, setOk] = useState(false)
   const [err, setErr] = useState('')
@@ -58,6 +58,7 @@ export default function EmailCapture() {
     posthog.capture('subscribe_email', { 
       email_domain: clean.split('@')[1] || '' 
     })
+    onSubscribed?.()
   }
 
   return (

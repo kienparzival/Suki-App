@@ -6,6 +6,7 @@ import Footer from './components/Footer.jsx'
 import FilterBar from './components/FilterBar.jsx'
 import EventList from './components/EventList.jsx'
 import EmailCapture from './components/EmailCapture.jsx'
+import Modal from './components/Modal.jsx'
 import { supabase } from './lib/supabase.js'
 import { getFirstAttribution } from './lib/utm.js'
 import { posthog } from './lib/analytics.js'
@@ -20,6 +21,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [userCity, setUserCity] = useState('')
   const [selectedTimeFilter, setSelectedTimeFilter] = useState('all')
+  const [showSubscribe, setShowSubscribe] = useState(false)
 
   // Preset cities for easy location selection
   const PRESET_CITIES = {
@@ -170,6 +172,21 @@ function App() {
       setUserCity('All locations')
     }
   }, [userLocation])
+
+  // Show subscribe modal once on first visit
+  useEffect(() => {
+    const KEY = 'suki_subscribe_gate_v1'
+    const seen = localStorage.getItem(KEY)
+    if (!seen) {
+      // open once after a short delay for nicer UX
+      const t = setTimeout(() => {
+        setShowSubscribe(true)
+        // mark as shown immediately so reloads don't re-open
+        localStorage.setItem(KEY, JSON.stringify({ status: 'shown', ts: Date.now() }))
+      }, 1200)
+      return () => clearTimeout(t)
+    }
+  }, [])
 
   // Handle UTM attribution and user identification
   useEffect(() => {
@@ -352,11 +369,6 @@ function App() {
             >
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
-            
-            {/* Email Capture — modern card */}
-            <div className="mt-8 max-w-xl mx-auto">
-              <EmailCapture />
-            </div>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
         </div>
@@ -432,6 +444,23 @@ function App() {
         </div>
       </div>
       <Footer />
+
+      {/* One-time subscribe modal */}
+      <Modal
+        open={showSubscribe}
+        onClose={() => {
+          setShowSubscribe(false)
+          // keep the "shown" marker; never re-open again
+        }}
+      >
+        <EmailCapture onSubscribed={() => {
+          // mark as subscribed (optional, but nice to have)
+          try {
+            localStorage.setItem('suki_subscribe_gate_v1', JSON.stringify({ status: 'subscribed', ts: Date.now() }))
+          } catch {}
+          setShowSubscribe(false)
+        }} />
+      </Modal>
     </div>
   )
 }
