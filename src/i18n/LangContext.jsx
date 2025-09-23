@@ -9,7 +9,10 @@ const LangContext = createContext({ lang: 'en', setLang: () => {}, t: (k, v) => 
 
 export function LangProvider({ children }) {
   const [lang, setLang] = useState(() => localStorage.getItem('suki_lang') || 'en')
-  useEffect(() => { localStorage.setItem('suki_lang', lang) }, [lang])
+  useEffect(() => { 
+    localStorage.setItem('suki_lang', lang)
+    document.documentElement.lang = lang
+  }, [lang])
   const t = useMemo(() => (key, vars = {}) => {
     let s = DICT[lang]?.[key] ?? DICT.en?.[key] ?? key
     if ((process.env.NODE_ENV !== 'production') && (s === key)) {

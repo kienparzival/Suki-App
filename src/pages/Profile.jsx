@@ -420,11 +420,11 @@ export default function Profile() {
                     onChange={(e) => handleInputChange('prefix', e.target.value)}
                     disabled={!isEditing}
                   >
-                    <option value="Mr.">Mr.</option>
-                    <option value="Ms.">Ms.</option>
-                    <option value="Mrs.">Mrs.</option>
-                    <option value="Dr.">Dr.</option>
-                    <option value="Prof.">Prof.</option>
+                    <option value="Mr.">{t('profile.prefix.mr')}</option>
+                    <option value="Ms.">{t('profile.prefix.ms')}</option>
+                    <option value="Mrs.">{t('profile.prefix.mrs')}</option>
+                    <option value="Dr.">{t('profile.prefix.dr')}</option>
+                    <option value="Prof.">{t('profile.prefix.prof')}</option>
                   </select>
                 </div>
                 <div>

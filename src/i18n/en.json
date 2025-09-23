@@ -285,5 +285,14 @@
   "validate.dateStart": "Please select a date and start time",
   "validate.cover": "Please upload a cover image",
   "validate.venue": "Please enter a venue name or select \"To be announced\"",
-  "validate.endAfterStart": "End must be after start"
+  "validate.endAfterStart": "End must be after start",
+  "create.stats.events": "10K+ Events",
+  "create.capacity.title": "Event Capacity",
+  "create.capacity.description": "Set the maximum number of attendees for your event.",
+  "create.capacity.note": "One free General Admission pool will be created automatically.",
+  "profile.prefix.mr": "Mr.",
+  "profile.prefix.ms": "Ms.",
+  "profile.prefix.mrs": "Mrs.",
+  "profile.prefix.dr": "Dr.",
+  "profile.prefix.prof": "Prof."
 }

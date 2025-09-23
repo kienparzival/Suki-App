@@ -238,5 +238,14 @@
   "validate.dateStart": "Vui lòng chọn ngày và giờ bắt đầu",
   "validate.cover": "Vui lòng tải ảnh bìa",
   "validate.venue": "Vui lòng nhập địa điểm hoặc chọn \"Sẽ công bố\"",
-  "validate.endAfterStart": "Thời gian kết thúc phải sau thời gian bắt đầu"
+  "validate.endAfterStart": "Thời gian kết thúc phải sau thời gian bắt đầu",
+  "create.stats.events": "10K+ Sự kiện",
+  "create.capacity.title": "Sức chứa sự kiện",
+  "create.capacity.description": "Đặt số lượng người tham dự tối đa cho sự kiện của bạn.",
+  "create.capacity.note": "Một pool Vé chung miễn phí sẽ được tạo tự động.",
+  "profile.prefix.mr": "Ông",
+  "profile.prefix.ms": "Cô",
+  "profile.prefix.mrs": "Bà",
+  "profile.prefix.dr": "Bác sĩ",
+  "profile.prefix.prof": "Giáo sư"
 }

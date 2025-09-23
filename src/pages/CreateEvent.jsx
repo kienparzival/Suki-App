@@ -172,7 +172,7 @@ export default function CreateEventPage() {
                   <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                   </svg>
-                  <span>10K+ Events</span>
+                  <span>{t('create.stats.events')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
@@ -583,9 +583,9 @@ export default function CreateEventPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Event Capacity</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('create.capacity.title')}</h2>
           </div>
-          <p className="text-gray-600 mb-6">Set the maximum number of attendees for your event.</p>
+          <p className="text-gray-600 mb-6">{t('create.capacity.description')}</p>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -599,7 +599,7 @@ export default function CreateEventPage() {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
               placeholder={t('create.maxAttendeesPlaceholder')}
             />
-            <p className="text-sm text-gray-500 mt-2">One free General Admission pool will be created automatically.</p>
+            <p className="text-sm text-gray-500 mt-2">{t('create.capacity.note')}</p>
           </div>
         </section> */}
 
