@@ -11,7 +11,11 @@ export function LangProvider({ children }) {
   const [lang, setLang] = useState(() => localStorage.getItem('suki_lang') || 'en')
   useEffect(() => { localStorage.setItem('suki_lang', lang) }, [lang])
   const t = useMemo(() => (key, vars = {}) => {
-    let s = DICT[lang]?.[key] ?? key
+    let s = DICT[lang]?.[key] ?? DICT.en?.[key] ?? key
+    if ((process.env.NODE_ENV !== 'production') && (s === key)) {
+      // eslint-disable-next-line no-console
+      console.warn(`[i18n] Missing key in ${lang}:`, key)
+    }
     Object.entries(vars).forEach(([k, v]) => { s = s.replaceAll(`{${k}}`, String(v)) })
     return s
   }, [lang])

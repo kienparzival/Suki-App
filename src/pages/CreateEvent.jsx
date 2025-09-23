@@ -586,7 +586,7 @@ export default function CreateEventPage() {
               value={capacity} 
               onChange={(e) => setCapacity(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-              placeholder="Enter maximum number of attendees"
+              placeholder={t('create.maxAttendeesPlaceholder')}
             />
             <p className="text-sm text-gray-500 mt-2">One free General Admission pool will be created automatically.</p>
           </div>
