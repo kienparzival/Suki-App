@@ -147,5 +147,21 @@
   "create.categoryRequired": "Vui lòng chọn ít nhất một danh mục",
   "create.imageRequired": "Vui lòng tải lên ảnh bìa",
   "create.venueRequired": "Vui lòng nhập tên địa điểm hoặc chọn \"Sẽ thông báo sau\"",
-  "create.endAfterStart": "Thời gian kết thúc phải sau thời gian bắt đầu"
+  "create.endAfterStart": "Thời gian kết thúc phải sau thời gian bắt đầu",
+  "manage.title": "Quản lý sự kiện",
+  "manage.note.offsite": "Bán vé ở trang ngoài qua đường dẫn của bạn.",
+  "manage.status.draft": "Bản nháp",
+  "manage.status.published": "Đã xuất bản",
+  "manage.actions.edit": "Sửa",
+  "manage.actions.view": "Xem",
+  "manage.actions.delete": "Xoá",
+  "manage.empty": "Bạn chưa tạo sự kiện nào.",
+  "manage.copy": "Sao chép",
+  "manage.viewMode": "Chế độ xem",
+  "manage.listView": "Xem danh sách",
+  "manage.calendarView": "Xem lịch",
+  "manage.status.onSale": "Đang bán",
+  "manage.status.past": "Đã qua",
+  "manage.status.cancelled": "Đã hủy",
+  "manage.calendarComingSoon": "Chế độ xem lịch sắp ra mắt! Hãy sử dụng chế độ danh sách tạm thời."
 }

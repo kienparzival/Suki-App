@@ -5,10 +5,12 @@ import { Edit, Trash2, Eye, Calendar, MoreVertical, List, CalendarDays, Link, Co
 import { supabase } from '../lib/supabase'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function ManageEvents() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const { t, fmtDate } = useLang()
   const [userLocation, setUserLocation] = useState({ city: 'HCMC', lat: 10.7769, lng: 106.7009 })
   const [myEvents, setMyEvents] = useState([])
   const [loading, setLoading] = useState(false)
@@ -155,7 +157,7 @@ export default function ManageEvents() {
   }
 
   const handleDeleteEvent = async (eventId) => {
-    if (!window.confirm('Delete this event? This cannot be undone.')) return
+    if (!window.confirm(t('eventForm.deleteConfirm'))) return
     
     try {
       const { error } = await supabase
@@ -193,17 +195,17 @@ export default function ManageEvents() {
     const now = new Date()
     const eventDate = new Date(event.start_at)
     
-    if (event.status === 'cancelled') return 'Cancelled'
-    if (eventDate < now) return 'Past'
-    if (event.status === 'published') return 'On Sale'
-    return 'Draft'
+    if (event.status === 'cancelled') return t('manage.status.cancelled')
+    if (eventDate < now) return t('manage.status.past')
+    if (event.status === 'published') return t('manage.status.onSale')
+    return t('manage.status.draft')
   }
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'On Sale': return 'text-green-600 bg-green-100'
-      case 'Past': return 'text-gray-600 bg-gray-100'
-      case 'Cancelled': return 'text-red-600 bg-red-100'
+      case t('manage.status.onSale'): return 'text-green-600 bg-green-100'
+      case t('manage.status.past'): return 'text-gray-600 bg-gray-100'
+      case t('manage.status.cancelled'): return 'text-red-600 bg-red-100'
       default: return 'text-yellow-600 bg-yellow-100'
     }
   }
@@ -262,7 +264,7 @@ export default function ManageEvents() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Manage My Events</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('manage.title')}</h1>
           <p className="text-lg text-gray-600">Monitor and manage your events and make updates</p>
         </div>
 
@@ -379,14 +381,14 @@ export default function ManageEvents() {
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Eye className="w-4 h-4 mr-2" />
-                                  View
+                                  {t('manage.actions.view')}
                                 </button>
                                 <button
                                   onClick={() => handleEditEvent(event)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Edit className="w-4 h-4 mr-2" />
-                                  Edit
+                                  {t('manage.actions.edit')}
                                 </button>
                                 <button
                                   onClick={() => copyEventLink(event.id)}
@@ -400,14 +402,14 @@ export default function ManageEvents() {
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <CopyIcon className="w-4 h-4 mr-2" />
-                                  Copy Event
+                                  {t('manage.copy')}
                                 </button>
                                 <button
                                   onClick={() => handleDeleteEvent(event.id)}
                                   className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
-                                  Delete
+                                  {t('manage.actions.delete')}
                                 </button>
                               </div>
                             )}
@@ -426,8 +428,8 @@ export default function ManageEvents() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CalendarDays className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Calendar View</h3>
-            <p className="text-gray-600">Calendar view coming soon! Use list view for now.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('manage.calendarView')}</h3>
+            <p className="text-gray-600">{t('manage.calendarComingSoon')}</p>
           </div>
         )}
 

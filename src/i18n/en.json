@@ -147,5 +147,21 @@
   "create.categoryRequired": "Please select at least one category",
   "create.imageRequired": "Please upload a cover image",
   "create.venueRequired": "Please enter a venue name or select \"To be announced\"",
-  "create.endAfterStart": "End must be after start"
+  "create.endAfterStart": "End must be after start",
+  "manage.title": "Manage my events",
+  "manage.note.offsite": "Ticketing handled off-site via your external link.",
+  "manage.status.draft": "Draft",
+  "manage.status.published": "Published",
+  "manage.actions.edit": "Edit",
+  "manage.actions.view": "View",
+  "manage.actions.delete": "Delete",
+  "manage.empty": "You haven't created any events yet.",
+  "manage.copy": "Copy",
+  "manage.viewMode": "View mode",
+  "manage.listView": "List view",
+  "manage.calendarView": "Calendar view",
+  "manage.status.onSale": "On Sale",
+  "manage.status.past": "Past",
+  "manage.status.cancelled": "Cancelled",
+  "manage.calendarComingSoon": "Calendar view coming soon! Use list view for now."
 }
