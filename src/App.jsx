@@ -221,19 +221,16 @@ function App() {
   const storeAttributionData = async (userId, attribution) => {
     try {
       const { error } = await supabase
-        .from('user_attribution')
+        .from('session_attributions')
         .upsert({
-          user_id: userId,
-          first_visit: attribution.ts,
+          // session-level attribution (no user_id in this table)
           utm_source: attribution.utm_source,
           utm_medium: attribution.utm_medium,
           utm_campaign: attribution.utm_campaign,
           utm_content: attribution.utm_content,
           utm_term: attribution.utm_term,
           referrer: attribution.referrer,
-          landing_page: attribution.landing_page,
-          user_agent: attribution.user_agent,
-          updated_at: new Date().toISOString()
+          created_at: new Date().toISOString()
         })
 
       if (error) {

@@ -11,17 +11,23 @@ export default function EmailCapture({ defaultCity = 'Hanoi' }) {
   useEffect(() => {
     // store first-touch UTM once (ignore errors)
     const attrib = getFirstAttribution()
-    supabase.from('session_attributions').insert({
-      utm_source: attrib.utm_source, 
-      utm_medium: attrib.utm_medium,
-      utm_campaign: attrib.utm_campaign, 
-      utm_content: attrib.utm_content, 
-      utm_term: attrib.utm_term,
-      referrer: attrib.referrer
-    }).catch(err => {
-      // Ignore errors - this is just for attribution tracking
-      console.log('Attribution tracking error (ignored):', err)
-    })
+    ;(async () => {
+      try {
+        const { error } = await supabase.from('session_attributions').insert({
+          utm_source: attrib.utm_source,
+          utm_medium: attrib.utm_medium,
+          utm_campaign: attrib.utm_campaign,
+          utm_content: attrib.utm_content,
+          utm_term: attrib.utm_term,
+          referrer: attrib.referrer
+        })
+        if (error) {
+          console.log('Attribution tracking error (ignored):', error)
+        }
+      } catch (e) {
+        console.log('Attribution tracking error (ignored):', e)
+      }
+    })()
   }, [])
 
   async function onSubmit(e) {

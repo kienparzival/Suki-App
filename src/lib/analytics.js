@@ -1,17 +1,15 @@
 import posthog from 'posthog-js'
 
-// Initialize PostHog with your project key
-// Replace <YOUR_POSTHOG_KEY> with your actual PostHog project key from app.posthog.com
-const KEY = '<YOUR_POSTHOG_KEY>'  // TODO: Replace with actual PostHog key
+// Initialize PostHog using env var and correct cloud host
+const KEY = import.meta.env.VITE_POSTHOG_KEY
 
-// Initialize PostHog
-posthog.init(KEY, { 
-  api_host: 'https://app.posthog.com', 
+posthog.init(KEY, {
+  api_host: 'https://us.i.posthog.com',
   autocapture: true,
-  // Disable in development if needed
-  loaded: (posthog) => {
+  capture_pageview: true,
+  loaded: (ph) => {
     if (process.env.NODE_ENV === 'development') {
-      posthog.debug()
+      ph.debug()
     }
   }
 })
