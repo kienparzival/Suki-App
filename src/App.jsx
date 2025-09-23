@@ -382,9 +382,11 @@ function App() {
             >
               {t('discoverSub')}
             </p>
-            {/* subtle bilingual SEO lines inside hero */}
-            <p className="mt-3 text-sm text-slate-600 opacity-80">{t('seoPitch')}</p>
-            <p className="text-sm text-slate-600 opacity-80">{t('seoPitch2')}</p>
+            {/* Keep SEO copy in DOM but hide visually (not interactive, not announced) */}
+            <div style={{position:'absolute', left:'-9999px', width:'1px', height:'1px', overflow:'hidden'}} aria-hidden="true">
+              <p>{t('seoPitch')}</p>
+              <p>{t('seoPitch2')}</p>
+            </div>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
         </div>
@@ -448,11 +450,11 @@ function App() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-            {filtered.length} Event{filtered.length !== 1 ? 's' : ''} Found
+            {t('resultsFound', { n: filtered.length, plural: filtered.length !== 1 ? 's' : '' })}
           </h2>
             {userCity && userCity !== 'All locations' && (
               <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                in {userCity}
+                {t('inCity', { city: userCity })}
               </div>
             )}
           </div>
