@@ -20,6 +20,12 @@ export default function EditEvent() {
   const event = location.state?.event
   const { t, fmtDate } = useLang()
 
+  // Helper function to get translated category name
+  const getCategoryLabel = (category) => {
+    const key = `categories.${category.toLowerCase().replace(/\s+/g, '')}`
+    return t(key) || category
+  }
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
@@ -142,9 +148,9 @@ export default function EditEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please Sign In</h2>
-            <p className="text-gray-600 mb-6">You need to be signed in to edit events.</p>
-            <a href="/auth" className="btn btn-primary">Sign In</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('editEvent.signInRequired')}</h2>
+            <p className="text-gray-600 mb-6">{t('editEvent.signInPrompt')}</p>
+            <a href="/auth" className="btn btn-primary">{t('editEvent.signInBtn')}</a>
           </div>
         </div>
       </div>
@@ -158,9 +164,9 @@ export default function EditEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Event Not Found</h2>
-            <p className="text-gray-600 mb-6">The event you're trying to edit doesn't exist.</p>
-            <a href="/manage-events" className="btn btn-primary">Back to Events</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('editEvent.notFound')}</h2>
+            <p className="text-gray-600 mb-6">{t('editEvent.notFoundPrompt')}</p>
+            <a href="/manage-events" className="btn btn-primary">{t('editEvent.backToEvents')}</a>
           </div>
         </div>
       </div>
@@ -267,7 +273,7 @@ export default function EditEvent() {
           
           if (venueError) {
             console.error('Error creating/updating venue:', venueError)
-            alert('Could not create/update venue: ' + venueError.message)
+            alert(t('create.venueError', { msg: venueError.message }))
             setLoading(false)
             return
           }
@@ -353,13 +359,13 @@ export default function EditEvent() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file (PNG, JPG, JPEG, etc.)')
+      alert(t('create.imageFileType'))
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image file size must be less than 5MB')
+      alert(t('create.imageFileSize'))
       return
     }
     
@@ -435,7 +441,7 @@ export default function EditEvent() {
                 onChange={(e) => setTitle(e.target.value)}
                 required
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg"
-                placeholder="Enter event title"
+                placeholder={t('create.titlePlaceholder')}
               />
             </section>
 
@@ -455,7 +461,7 @@ export default function EditEvent() {
                 rows={8}
                 maxLength={4000}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
-                placeholder="About this event (up to 4,000 characters)"
+                placeholder={t('create.descriptionPlaceholder')}
               />
             </section>
 
@@ -489,7 +495,7 @@ export default function EditEvent() {
                       }`}
                       aria-pressed={selected}
                     >
-                      {opt}
+                      {getCategoryLabel(opt)}
                     </button>
                   )
                 })}
@@ -511,7 +517,7 @@ export default function EditEvent() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.startDate')} *</label>
                 <input
                   type="date"
                   value={date}
@@ -521,7 +527,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Time *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.startTime')} *</label>
                 <input
                   type="time"
                   value={startTime}
@@ -531,7 +537,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.endDate')}</label>
                 <input
                   type="date"
                   value={endDate}
@@ -541,7 +547,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.endTime')}</label>
                 <input
                   type="time"
                   value={endTime}
@@ -561,7 +567,7 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('event.location')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
               </div>
               <LocationSelector 
                 onLocationChange={setLocationData}
@@ -580,15 +586,15 @@ export default function EditEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.cover')}</h2>
               </div>
-              <p className="text-gray-600 mb-6">Upload a cover image to make your event stand out. Recommended size: 1600×900 pixels.</p>
+              <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
               
               {event?.id ? (
                 <div className="space-y-6">
                   {event.cover_url && (
                     <div className="relative">
-                      <img src={event.cover_url} alt="Current cover" className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                      <img src={event.cover_url} alt={t('create.coverPreview')} className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
                       <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                        Current Cover
+                        {t('create.currentCover')}
                     </div>
                     </div>
                   )}
@@ -607,8 +613,8 @@ export default function EditEvent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Cover Image Upload</h3>
-                  <p className="text-gray-500">Save the event first to upload a cover image</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('create.coverUpload')}</h3>
+                  <p className="text-gray-500">{t('create.saveFirst')}</p>
                   </div>
                 )}
             </section>
@@ -626,18 +632,18 @@ export default function EditEvent() {
               <div className="space-y-4">
                 <input
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder="External ticket link (https://…)"
+                  placeholder={t('create.externalLinkPlaceholder')}
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
                 />
                 <textarea
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
                   rows={5}
-                  placeholder={`Short instructions (optional). Example:\n1) Click the link above\n2) Choose seat & quantity\n3) Pay via Momo/VietQR\n4) Keep your confirmation email`}
+                  placeholder={t('create.ticketInstructionsPlaceholder')}
                   value={ticketInstructions}
                   onChange={(e) => setTicketInstructions(e.target.value)}
                 />
-                <p className="text-sm text-gray-500">If left blank, the event page won't show a Tickets section.</p>
+                <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
               </div>
             </section>
 

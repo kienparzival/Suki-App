@@ -25,6 +25,12 @@ export default function CreateEventPage() {
   const { user } = useAuth()
   const { t } = useLang()
 
+  // Helper function to get translated category name
+  const getCategoryLabel = (category) => {
+    const key = `categories.${category.toLowerCase().replace(/\s+/g, '')}`
+    return t(key) || category
+  }
+
   // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
   // Basics
   const [title, setTitle] = useState('')
@@ -116,8 +122,8 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Create in Minutes</h3>
-                <p className="text-gray-600">Set up your event with our intuitive form in just a few clicks</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature1.title')}</h3>
+                <p className="text-gray-600">{t('create.feature1.desc')}</p>
               </div>
               
               <div className="text-center p-6">
@@ -126,8 +132,8 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Reach More People</h3>
-                <p className="text-gray-600">Connect with attendees who trust our platform for great events</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature2.title')}</h3>
+                <p className="text-gray-600">{t('create.feature2.desc')}</p>
               </div>
               
               <div className="text-center p-6">
@@ -136,14 +142,14 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">100% Free</h3>
-                <p className="text-gray-600">No hidden fees, no subscriptions - create events completely free</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature3.title')}</h3>
+                <p className="text-gray-600">{t('create.feature3.desc')}</p>
               </div>
             </div>
 
             {/* Social Proof */}
             <div className="text-center">
-              <p className="text-gray-500 mb-4">Trusted by event organizers in Vietnam</p>
+              <p className="text-gray-500 mb-4">{t('create.trusted')}</p>
               <div className="flex justify-center items-center gap-8 text-gray-400">
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -161,7 +167,7 @@ export default function CreateEventPage() {
                   <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>Free Forever</span>
+                  <span>{t('create.freeForever')}</span>
                 </div>
               </div>
             </div>
@@ -189,13 +195,13 @@ export default function CreateEventPage() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file (PNG, JPG, JPEG, etc.)')
+      alert(t('create.imageFileType'))
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image file size must be less than 5MB')
+      alert(t('create.imageFileSize'))
       return
     }
     
@@ -276,7 +282,7 @@ export default function CreateEventPage() {
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert('Could not create venue: ' + venueError.message)
+            alert(t('create.venueError', { msg: venueError.message }))
             setPublishing(false)
             return
           }
@@ -295,7 +301,7 @@ export default function CreateEventPage() {
         
         if (venueError) {
           console.error('Error creating venue:', venueError)
-          alert('Could not create venue: ' + venueError.message)
+          alert(t('create.venueError', { msg: venueError.message }))
           setPublishing(false)
           return
         }
@@ -324,7 +330,7 @@ export default function CreateEventPage() {
 
       if (eventError) {
         console.error('Error creating event:', eventError)
-        alert('Failed to create event: ' + eventError.message)
+        alert(t('create.eventError', { msg: eventError.message }))
       } else {
         console.log('Event created successfully:', eventData)
         
@@ -338,7 +344,7 @@ export default function CreateEventPage() {
       }
     } catch (error) {
       console.error('Error creating event:', error)
-      alert('Failed to create event: ' + error.message)
+      alert(t('create.eventError', { msg: error.message }))
     } finally {
       setPublishing(false)
     }
@@ -362,12 +368,12 @@ export default function CreateEventPage() {
               className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
               style={{ lineHeight: '1.6' }}
             >
-              Create Event
+              {t('create.heroTitle')}
             </h1>
             
             {/* Subtitle with modern typography */}
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-              Share your event with the world in just a few simple steps
+              {t('create.heroSubtitle')}
             </p>
             
             {/* Decorative line */}
@@ -510,7 +516,7 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Location</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
             </div>
             <LocationSelector 
               onLocationChange={setLocationData}
@@ -526,9 +532,9 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.categories')}</h2>
             </div>
-            <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
+            <p className="text-gray-600 mb-6">{t('create.categoriesHelp')}</p>
           <div className="flex flex-wrap gap-2">
               {CATEGORIES.map(opt => {
                 const selected = categories.includes(opt)
@@ -548,13 +554,13 @@ export default function CreateEventPage() {
                     }`}
                     aria-pressed={selected}
                   >
-                    {opt}
+                    {getCategoryLabel(opt)}
                   </button>
                 )
               })}
           </div>
             {categories.length === 0 && (
-              <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+              <p className="text-sm text-gray-500 mt-2">{t('validate.category')}</p>
           )}
         </section>
 
@@ -596,9 +602,9 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Cover Image</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.cover')}</h2>
             </div>
-            <p className="text-gray-600 mb-6">Upload a cover image for your event. This will be displayed prominently.</p>
+            <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
           
           {/* Cover Image Upload Area */}
           <div
@@ -614,7 +620,7 @@ export default function CreateEventPage() {
                 <div className="space-y-4">
                 <img 
                   src={coverImagePreview} 
-                  alt="Cover preview" 
+                  alt={t('create.coverPreview')} 
                     className="mx-auto max-w-full max-h-64 object-cover rounded-xl border border-gray-200 shadow-lg"
                 />
                   <div className="flex justify-center gap-3">
@@ -623,14 +629,14 @@ export default function CreateEventPage() {
                     onClick={() => document.getElementById('coverImageInput').click()}
                       className="btn btn-outline"
                   >
-                    Change Image
+                    {t('create.changeImage')}
                   </button>
                   <button
                     type="button"
                     onClick={removeCoverImage}
                       className="btn btn-ghost text-red-600 hover:text-red-700"
                   >
-                    Remove
+                    {t('create.remove')}
                   </button>
                 </div>
               </div>
@@ -643,10 +649,10 @@ export default function CreateEventPage() {
                 </div>
                 <div>
                     <p className="text-xl font-medium text-gray-700">
-                    Drop your cover image here
+                    {t('create.dropCover')}
                   </p>
                     <p className="text-gray-500">
-                    or click to browse files
+                    {t('create.clickBrowse')}
                   </p>
                 </div>
                 <button
@@ -654,10 +660,10 @@ export default function CreateEventPage() {
                   onClick={() => document.getElementById('coverImageInput').click()}
                     className="btn btn-outline"
                 >
-                  Browse Files
+                  {t('create.browseFiles')}
                 </button>
                   <p className="text-sm text-gray-400">
-                  PNG, JPG, JPEG up to 5MB
+                  {t('create.fileTypes')}
                 </p>
               </div>
             )}
@@ -679,7 +685,7 @@ export default function CreateEventPage() {
               className="btn btn-ghost text-lg px-8 py-3" 
               onClick={() => navigate(-1)}
             >
-              Cancel
+              {t('create.actions.cancel')}
             </button>
             <button 
               className="btn btn-primary text-lg px-8 py-3 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl" 

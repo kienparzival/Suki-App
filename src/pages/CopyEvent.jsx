@@ -26,6 +26,12 @@ export default function CopyEvent() {
   const originalEvent = location.state?.event
   const { t, fmtDate } = useLang()
 
+  // Helper function to get translated category name
+  const getCategoryLabel = (category) => {
+    const key = `categories.${category.toLowerCase().replace(/\s+/g, '')}`
+    return t(key) || category
+  }
+
   // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
   // Basics
   const [title, setTitle] = useState('')
@@ -187,7 +193,7 @@ export default function CopyEvent() {
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert('Could not create venue: ' + venueError.message)
+            alert(t('create.venueError', { msg: venueError.message }))
             setLoading(false)
             return
           }
@@ -206,7 +212,7 @@ export default function CopyEvent() {
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert('Could not create venue: ' + venueError.message)
+            alert(t('create.venueError', { msg: venueError.message }))
             setLoading(false)
             return
           }
@@ -226,7 +232,7 @@ export default function CopyEvent() {
 
         if (uploadError) {
           console.error('Cover upload error:', uploadError)
-          alert('Failed to upload cover image: ' + uploadError.message)
+          alert(t('create.uploadError', { msg: uploadError.message }))
           setLoading(false)
           return
         }
@@ -257,16 +263,16 @@ export default function CopyEvent() {
 
       if (error) {
         console.error('Event creation error:', error)
-        alert('Failed to copy event: ' + error.message)
+        alert(t('create.eventError', { msg: error.message }))
         setLoading(false)
         return
       }
 
-      alert('Event copied successfully!')
+      alert(t('create.copySuccess'))
       navigate('/manage-events')
     } catch (error) {
       console.error('Error copying event:', error)
-      alert('Failed to copy event: ' + error.message)
+      alert(t('create.eventError', { msg: error.message }))
     } finally {
       setLoading(false)
     }
@@ -279,9 +285,9 @@ export default function CopyEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please Sign In</h2>
-            <p className="text-gray-600 mb-6">You need to be signed in to copy events.</p>
-            <a href="/auth" className="btn btn-primary">Sign In</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('copy.signInRequired')}</h2>
+            <p className="text-gray-600 mb-6">{t('copy.signInPrompt')}</p>
+            <a href="/auth" className="btn btn-primary">{t('copy.signInBtn')}</a>
           </div>
         </div>
       </div>
@@ -295,9 +301,9 @@ export default function CopyEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Event Not Found</h2>
-            <p className="text-gray-600 mb-6">The event you're trying to copy doesn't exist.</p>
-            <a href="/manage-events" className="btn btn-primary">Back to Events</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('copy.notFound')}</h2>
+            <p className="text-gray-600 mb-6">{t('copy.notFoundPrompt')}</p>
+            <a href="/manage-events" className="btn btn-primary">{t('copy.backToEvents')}</a>
           </div>
         </div>
       </div>
@@ -319,7 +325,7 @@ export default function CopyEvent() {
           
           {/* Subtitle with modern typography */}
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-            Your event copy will have the same event info and settings, without attendee information.
+            {t('copy.subtitle')}
           </p>
         </div>
 
@@ -335,7 +341,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.title')} <span className="text-red-500">*</span></h2>
               </div>
-              <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
+              <p className="text-gray-600 mb-6">{t('create.titleHelp')}</p>
               <input 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
                 placeholder={t('create.titlePlaceholder')} 
@@ -355,7 +361,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.description')}</h2>
               </div>
-              <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
+              <p className="text-gray-600 mb-6">{t('create.descriptionHelp')}</p>
               <textarea 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
                 rows={8} 
@@ -377,7 +383,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.categories')}</h2>
               </div>
-              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
+              <p className="text-gray-600 mb-6">{t('create.categoriesHelp')}</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
@@ -397,13 +403,13 @@ export default function CopyEvent() {
                       }`}
                       aria-pressed={selected}
                     >
-                      {opt}
+                      {getCategoryLabel(opt)}
                     </button>
                   )
                 })}
               </div>
               {categories.length === 0 && (
-                <p className="text-sm text-red-500 mt-3">Please select at least one category</p>
+                <p className="text-sm text-red-500 mt-3">{t('validate.category')}</p>
               )}
             </section>
 
@@ -469,7 +475,7 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('event.location')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
               </div>
               <LocationSelector 
                 onLocationChange={setLocationData}
@@ -487,7 +493,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.cover')}</h2>
               </div>
-              <p className="text-gray-600 mb-6">Upload a cover image to make your event stand out. Recommended size: 1600×900 pixels.</p>
+              <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
               
               <EventCoverUploader
                 onUpload={handleCoverImageUpload}
@@ -505,8 +511,8 @@ export default function CopyEvent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Cover Image Upload</h3>
-                  <p className="text-sm text-gray-500">Drag and drop an image here, or click to select</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('create.coverUpload')}</h3>
+                  <p className="text-sm text-gray-500">{t('create.dropCover')}</p>
                 </div>
               )}
             </section>
