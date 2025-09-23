@@ -452,7 +452,7 @@ export default function EventPage() {
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-blue-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Duration</div>
+                    <div className="font-medium text-gray-900">{t('event.duration')}</div>
                     <div className="text-gray-600">{durationHours} hour{durationHours !== 1 ? 's' : ''}</div>
                   </div>
                 </div>
@@ -460,8 +460,8 @@ export default function EventPage() {
                 <div className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-blue-600" />
                   <div>
-                    <div className="font-medium text-gray-900">Capacity</div>
-                    <div className="text-gray-600">{event.capacity || 'Unlimited'}</div>
+                    <div className="font-medium text-gray-900">{t('event.capacity')}</div>
+                    <div className="text-gray-600">{event.capacity || t('event.unlimited')}</div>
                   </div>
                 </div>
               </div>
@@ -469,7 +469,7 @@ export default function EventPage() {
 
             {/* Location Section */}
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Location</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('event.location')}</h2>
               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-start gap-3 mb-4">

@@ -176,5 +176,9 @@
   "event.loading": "Đang tải sự kiện...",
   "event.notFound": "Không tìm thấy sự kiện",
   "event.error": "Lỗi khi tải sự kiện",
-  "common.goBack": "Quay lại"
+  "common.goBack": "Quay lại",
+  "event.duration": "Thời lượng",
+  "event.capacity": "Sức chứa",
+  "event.location": "Địa điểm",
+  "event.unlimited": "Không giới hạn"
 }

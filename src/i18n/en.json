@@ -176,5 +176,9 @@
   "event.loading": "Loading event...",
   "event.notFound": "Event not found",
   "event.error": "Error loading event",
-  "common.goBack": "Go Back"
+  "common.goBack": "Go Back",
+  "event.duration": "Duration",
+  "event.capacity": "Capacity",
+  "event.location": "Location",
+  "event.unlimited": "Unlimited"
 }
