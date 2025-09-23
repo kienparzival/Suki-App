@@ -91,22 +91,22 @@ export default function SEO({ lang='en', city='Hanoi', events=[] }) {
       <link rel="canonical" href={pageUrl} />
 
       {/* basic SEO */}
-      <title>{texts.title}</title>
-      <meta name="description" content={texts.desc} />
+      <title>Hanoi events this week • Sự kiện ở Hà Nội | Suki</title>
+      <meta name="description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
       
       {/* Google Search Console verification */}
       <meta name="google-site-verification" content="VSVSC5PkZDX4qkw7Xjj_sPXk0anOckGXpDcOT6Zc7aM" />
 
       {/* Open Graph & Twitter */}
       <meta property="og:type" content="website" />
-      <meta property="og:title" content={texts.title} />
-      <meta property="og:description" content={texts.og || texts.desc} />
+      <meta property="og:title" content="Hanoi events this week • Sự kiện ở Hà Nội | Suki" />
+      <meta property="og:description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
       <meta property="og:url" content={pageUrl} />
-      {coverUrl && <meta property="og:image" content={coverUrl} />}
+      <meta property="og:image" content={`${siteUrl}/og-cover.png`} />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={texts.title} />
-      <meta name="twitter:description" content={texts.og || texts.desc} />
-      {coverUrl && <meta name="twitter:image" content={coverUrl} />}
+      <meta name="twitter:title" content="Hanoi events this week • Sự kiện ở Hà Nội | Suki" />
+      <meta name="twitter:description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
+      <meta name="twitter:image" content={`${siteUrl}/og-cover.png`} />
 
       {/* JSON-LD */}
       <script type="application/ld+json" dangerouslySetInnerHTML={json(org)} />

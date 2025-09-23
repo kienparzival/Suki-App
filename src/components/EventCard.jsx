@@ -18,8 +18,8 @@ export default function EventCard({ event }) {
             ? <img
                 src={event.cover_url}
                 alt={event.title}
-                className="w-full h-full object-cover"
                 loading="lazy"
+                className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
                 onError={(e) => {
                   const img = e.currentTarget

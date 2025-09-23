@@ -388,7 +388,7 @@ export default function EventPage() {
         <div className="mb-8">
           <div className="aspect-[16/9] bg-gray-100 rounded-2xl overflow-hidden">
             {event.cover_url ? (
-              <img src={event.cover_url} alt={event.title} className="w-full h-full object-cover" />
+              <img src={event.cover_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
             ) : (
               <div className="w-full h-full grid place-items-center text-gray-400">
                 <div className="text-center">

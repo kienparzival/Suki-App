@@ -40,7 +40,7 @@ export default function EventDetail({ event, remaining, onClose }) {
           <div className="space-y-3">
             <div className="aspect-video bg-neutral-100 rounded-xl overflow-hidden">
               {event.cover_url
-                ? <img src={event.cover_url} alt={event.title} className="w-full h-full object-cover" />
+                ? <img src={event.cover_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
                 : <div className="w-full h-full grid place-items-center text-neutral-500">No image</div>
               }
             </div>

@@ -381,6 +381,16 @@ function App() {
         </div>
       </section>
 
+      {/* EN/VI intro text block */}
+      <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-slate-700">
+        <p>
+          <strong>Sự kiện ở Hà Nội</strong> • <strong>Hanoi events this week</strong> — concerts, meetups, workshops, nightlife, family activities and more curated on Suki.
+        </p>
+        <p className="mt-1">
+          Khám phá hoạt động cuối tuần, vé và địa điểm hot quanh bạn.
+        </p>
+      </div>
+
       {/* main content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         
