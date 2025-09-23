@@ -214,27 +214,27 @@ export default function EditEvent() {
 
     // Validate required fields
     if (!title.trim()) {
-      alert('Please enter a title')
+      alert(t('validate.title'))
       setLoading(false)
       return
     }
     if (!date || !startTime) {
-      alert('Please select a date and start time')
+      alert(t('validate.dateStart'))
       setLoading(false)
       return
     }
     if (categories.length === 0) {
-      alert('Please select at least one category')
+      alert(t('validate.category'))
       setLoading(false)
       return
     }
     if (!coverImagePreview && !coverUrl) {
-      alert('Please upload a cover image')
+      alert(t('validate.cover'))
       setLoading(false)
       return
     }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) {
-      alert('Please enter a venue name or select "To be announced"')
+      alert(t('validate.venue'))
       setLoading(false)
       return
     }
@@ -248,7 +248,7 @@ export default function EditEvent() {
 
       // Validate timeline
       if (startAt && endAt && new Date(endAt) < new Date(startAt)) {
-        alert('End must be after start')
+        alert(t('validate.endAfterStart'))
         setLoading(false)
         return
       }
@@ -337,11 +337,11 @@ export default function EditEvent() {
         console.error('Error reloading event data:', reloadError)
       }
 
-      alert('Event updated successfully!')
+      alert(t('editEvent.saved'))
       navigate('/manage-events')
     } catch (error) {
       console.error('Error updating event:', error)
-      alert('Failed to update event: ' + error.message)
+      alert(t('editEvent.saveError', { msg: error.message }))
     } finally {
       setLoading(false)
     }
@@ -409,7 +409,7 @@ export default function EditEvent() {
             
             {/* Subtitle with modern typography */}
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-              Update your event details and settings
+              {t('editEvent.subtitle')}
             </p>
             
             {/* Decorative line */}
@@ -469,7 +469,7 @@ export default function EditEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.categories')}</h2>
             </div>
-              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
+              <p className="text-gray-600 mb-6">{t('eventForm.categoriesHelp')}</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
@@ -495,7 +495,7 @@ export default function EditEvent() {
                 })}
             </div>
               {categories.length === 0 && (
-                <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+                <p className="text-sm text-gray-500 mt-2">{t('validate.category')}</p>
               )}
             </section>
 

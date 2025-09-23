@@ -87,11 +87,11 @@ export default function CreateEventPage() {
                   className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
                   style={{ lineHeight: '1.6' }}
                 >
-                  Create Amazing Events
+                  {t('create.heroTitle')}
               </h1>
                 
                 <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-                  Easily create events for free on a platform that attendees love and trust
+                  {t('create.heroSubtitle')}
               </p>
                 
                 <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full mb-8"></div>
@@ -104,7 +104,7 @@ export default function CreateEventPage() {
                 onClick={handleGetStarted}
                 className="btn btn-primary btn-lg text-lg px-8 py-4 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                Get Started
+                {t('create.getStarted')}
               </button>
             </div>
 
@@ -386,7 +386,7 @@ export default function CreateEventPage() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">{t('create.title')} <span className="text-red-500">*</span></h2>
             </div>
-            <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
+            <p className="text-gray-600 mb-6">{t('create.titleHelp')}</p>
             <input 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
               placeholder={t('create.titlePlaceholder')} 
@@ -405,7 +405,7 @@ export default function CreateEventPage() {
               </div>
               <h2 className="text-2xl font-bold text-gray-900">{t('create.description')}</h2>
             </div>
-            <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
+            <p className="text-gray-600 mb-6">{t('create.descriptionHelp')}</p>
             <textarea 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
               rows={8} 
