@@ -4,10 +4,20 @@ import { useAuth } from '../context/AuthContext.jsx'
 import Header from '../components/Header.jsx'
 import { supabase } from '../lib/supabase.js'
 import { composeBangkokIso, extractBangkokDate, extractBangkokTime } from '../helpers/time'
-import { ADMISSION_TICKETED, ADMISSION_OPEN } from '../helpers/event'
 import { CATEGORIES } from '../constants/categories'
+import LocationSelector from '../components/LocationSelector.jsx'
+import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import '../styles.css'
 import { useLang } from '../i18n/LangContext.jsx'
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
 
 export default function CopyEvent() {
   const { user } = useAuth()
@@ -16,22 +26,39 @@ export default function CopyEvent() {
   const originalEvent = location.state?.event
   const { t, fmtDate } = useLang()
 
+  // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
+  // Basics
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState('Music')
   const [categories, setCategories] = useState([])
-  const [date, setDate] = useState('')
-  const [startTime, setStartTime] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [endTime, setEndTime] = useState('')
-  const [locationMode, setLocationMode] = useState('venue')
-  const [venueName, setVenueName] = useState('')
-  const [capacity, setCapacity] = useState('')
-  const [minPrice, setMinPrice] = useState('')
-  const [maxPrice, setMaxPrice] = useState('')
-  const [admission, setAdmission] = useState(ADMISSION_TICKETED)
-  const [coverUrl, setCoverUrl] = useState('')
+
+  // Schedule
+  const [date, setDate] = useState('')          // yyyy-mm-dd
+  const [startTime, setStartTime] = useState('') // HH:mm
+  const [endDate, setEndDate] = useState('')     // yyyy-mm-dd
+  const [endTime, setEndTime] = useState('')     // HH:mm
+
+  // Location
+  const [locationData, setLocationData] = useState({
+    mode: 'venue',
+    name: '',
+    coordinates: null,
+    address: null
+  })
+
+  // External tickets
+  const [externalUrl, setExternalUrl] = useState('')
+  const [ticketInstructions, setTicketInstructions] = useState('')
+
+  // Media
+  const [coverImage, setCoverImage] = useState(null)
+  const [coverImagePreview, setCoverImagePreview] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // Description character limits
+  const descMax = 4000
+  const descCount = description.length
 
   useEffect(() => {
     if (!originalEvent) {
@@ -43,7 +70,6 @@ export default function CopyEvent() {
     setTitle(`${originalEvent.title} (Copy)`)
     setDescription(originalEvent.description || '')
     setCategory(originalEvent.category || '')
-    setAdmission(originalEvent.admission || ADMISSION_TICKETED)
     
     // Prefill categories (multi-category support)
     setCategories(
@@ -65,132 +91,176 @@ export default function CopyEvent() {
       setEndTime(extractBangkokTime(originalEvent.end_at))
     }
     
-    if (originalEvent.venue && originalEvent.venue.name && originalEvent.venue.name !== 'TBD') {
-      setLocationMode('venue')
-      setVenueName(originalEvent.venue.name)
+    // Set up location data
+    if (originalEvent.venue?.name && originalEvent.venue.name !== 'TBD') {
+      setLocationData({
+        mode: 'venue',
+        name: originalEvent.venue.name,
+        coordinates: originalEvent.venue.latitude && originalEvent.venue.longitude 
+          ? [originalEvent.venue.latitude, originalEvent.venue.longitude] 
+          : null,
+        address: originalEvent.venue.address || null
+      })
     } else {
-      setLocationMode('online')
+      setLocationData({ mode: 'online', name: 'Online', coordinates: null, address: null })
     }
     
-    setCapacity(originalEvent.capacity?.toString() || '')
-    setMinPrice(originalEvent.min_price?.toString() || '')
-    setMaxPrice(originalEvent.max_price?.toString() || '')
-    setCoverUrl(originalEvent.cover_url || '')
+    // Set cover and external ticket info
+    setCoverImagePreview(originalEvent.cover_url || '')
+    setExternalUrl(originalEvent.external_ticket_url || '')
+    setTicketInstructions(originalEvent.external_ticket_instructions || '')
   }, [originalEvent, navigate])
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Please Sign In</h1>
-            <p className="text-gray-600">You need to be signed in to copy events.</p>
-          </div>
-        </div>
-      </div>
-    )
+  const handleCoverImageUpload = async (file) => {
+    setCoverImage(file)
+    const preview = await readFileAsDataUrl(file)
+    setCoverImagePreview(preview)
   }
 
-  if (!originalEvent) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <p className="text-gray-600">The event you're trying to copy doesn't exist.</p>
-          </div>
-        </div>
-      </div>
-    )
+  const handleCoverImageDrop = (e) => {
+    e.preventDefault()
+    const files = Array.from(e.dataTransfer.files)
+    if (files.length > 0) {
+      handleCoverImageUpload(files[0])
+    }
+  }
+
+  const handleCoverImageDragOver = (e) => {
+    e.preventDefault()
+  }
+
+  const removeCoverImage = () => {
+    setCoverImage(null)
+    setCoverImagePreview('')
+  }
+
+  const toIso = (d, t) => {
+    // Use Bangkok timezone utility with explicit +07:00 offset
+    return composeBangkokIso(d, t)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!user) {
+      alert(t('create.signInRequired'))
+      return
+    }
+
+    if (!title.trim()) { alert(t('create.titleRequired')); return }
+    if (!date || !startTime) { alert(t('create.dateRequired')); return }
+    if (categories.length === 0) { alert(t('create.categoryRequired')); return }
+    if (!coverImagePreview && (!coverImage)) { alert(t('create.imageRequired')); return }
+    if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
+      alert(t('create.venueRequired')); 
+      return 
+    }
+
+    const start_at = toIso(date, startTime)
+    const effectiveEndDate = endDate || date
+    const end_at = endTime ? toIso(effectiveEndDate, endTime) : start_at
+
+    // Validate timeline
+    if (new Date(end_at) < new Date(start_at)) {
+      alert(t('create.endAfterStart'))
+      return
+    }
+
+    let venue
+    if (locationData.mode === 'online') venue = { name: 'Online' }
+    else if (locationData.mode === 'tba') venue = { name: 'To be announced' }
+    else venue = { name: (locationData.name || '').trim() }
+
     setLoading(true)
 
-    // Validate required fields
-    if (!title.trim()) {
-      alert('Please enter a title')
-      setLoading(false)
-      return
-    }
-    if (!date || !startTime) {
-      alert('Please select a date and start time')
-      setLoading(false)
-      return
-    }
-    if (categories.length === 0) {
-      alert('Please select at least one category')
-      setLoading(false)
-      return
-    }
-    if (!coverUrl) {
-      alert('Please upload a cover image')
-      setLoading(false)
-      return
-    }
-    if (locationMode === 'venue' && !venueName?.trim()) {
-      alert('Please enter a venue name or select "To be announced"')
-      setLoading(false)
-      return
-    }
-    if (admission === ADMISSION_TICKETED && !capacity && (!ticketTiers || ticketTiers.length === 0)) {
-      alert('Please set capacity for ticketed events')
-      setLoading(false)
-      return
-    }
-
     try {
-      const startAt = composeBangkokIso(date, startTime)
-      const effectiveEndDate = endDate || date
-      const endAt = endTime ? composeBangkokIso(effectiveEndDate, endTime) : startAt
+      // 1) Create a venue if user provided a custom place
+      let venue_id = null
+      if (locationData.mode === 'venue' && locationData.name?.trim()) {
+        if (locationData.coordinates) {
+          // Use the new RPC function for venues with coordinates
+          const { data: venueId, error: venueError } = await supabase.rpc('upsert_custom_venue', {
+            p_name: locationData.name.trim(),
+            p_address: locationData.address || null,
+            p_lat: locationData.coordinates[0],
+            p_lng: locationData.coordinates[1]
+          })
+          
+          if (venueError) {
+            console.error('Error creating venue:', venueError)
+            alert('Could not create venue: ' + venueError.message)
+            setLoading(false)
+            return
+          }
+          venue_id = venueId
+          console.log('Venue created successfully with coordinates:', venueId)
+        } else {
+          // Fallback for venues without coordinates
+          const { data: venueData, error: venueError } = await supabase
+            .from('venues')
+            .insert({
+                name: locationData.name.trim(),
+                address: locationData.address || null
+            })
+            .select('id')
+            .single()
+          
+          if (venueError) {
+            console.error('Error creating venue:', venueError)
+            alert('Could not create venue: ' + venueError.message)
+            setLoading(false)
+            return
+          }
+          venue_id = venueData.id
+        }
+      }
 
-      // Validate timeline
-      if (new Date(endAt) < new Date(startAt)) {
-        alert('End must be after start')
+      // 2) Upload cover image if provided
+      let cover_url = coverImagePreview || null
+      if (coverImage) {
+        const fileExt = coverImage.name.split('.').pop()
+        const fileName = `${Math.random()}.${fileExt}`
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('event-covers')
+          .upload(fileName, coverImage)
+
+        if (uploadError) {
+          console.error('Cover upload error:', uploadError)
+          alert('Failed to upload cover image: ' + uploadError.message)
+          setLoading(false)
+          return
+        }
+
+        const { data: publicUrlData } = supabase.storage
+          .from('event-covers')
+          .getPublicUrl(uploadData.path)
+        
+        cover_url = publicUrlData.publicUrl
+      }
+
+      // 3) Create event
+      const { error } = await supabase
+        .from('events')
+        .insert({
+          title: title.trim(),
+          description: description.trim() || null,
+          start_at,
+          end_at,
+          venue_id,
+          cover_url,
+          categories: categories.length > 0 ? categories : null,
+          external_ticket_url: externalUrl || null,
+          external_ticket_instructions: ticketInstructions || null,
+          status: 'published',
+          creator_id: user.id
+        })
+
+      if (error) {
+        console.error('Event creation error:', error)
+        alert('Failed to copy event: ' + error.message)
         setLoading(false)
         return
       }
-
-      // Create venue if needed
-      let venueId = null
-      if (locationMode === 'venue' && venueName) {
-        const { data: venueData, error: venueError } = await supabase
-          .from('venues')
-          .insert([{ name: venueName }])
-          .select()
-        
-        if (venueError) throw venueError
-        venueId = venueData[0].id
-      }
-
-      // Create new event
-      const isTicketed = admission === ADMISSION_TICKETED
-      const finalCapacity = isTicketed ? (capacity ? parseInt(capacity) : null) : null
-      const minP = isTicketed ? (minPrice ? parseInt(minPrice) : 0) : 0
-      const maxP = isTicketed ? (maxPrice ? parseInt(maxPrice) : 0) : 0
-
-      const { error } = await supabase
-        .from('events')
-        .insert([{
-          title,
-          description,
-          start_at: startAt,
-          end_at: endAt,
-          categories,
-          venue_id: venueId,
-          admission,
-          capacity: finalCapacity,
-          min_price: minP,
-          max_price: maxP,
-          cover_url: coverUrl || null,
-          status: 'published',
-          creator_id: user.id
-        }])
-
-      if (error) throw error
 
       alert('Event copied successfully!')
       navigate('/manage-events')
@@ -202,54 +272,112 @@ export default function CopyEvent() {
     }
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('copyEvent.title')}</h1>
-            <p className="text-lg text-gray-600">
-              Your event copy will have the same event info and settings, without attendee information.
-            </p>
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-6 py-12">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🔒</div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please Sign In</h2>
+            <p className="text-gray-600 mb-6">You need to be signed in to copy events.</p>
+            <a href="/auth" className="btn btn-primary">Sign In</a>
           </div>
+        </div>
+      </div>
+    )
+  }
 
-          <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 space-y-6">
+  if (!originalEvent) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <div className="container mx-auto px-6 py-12">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">❌</div>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Event Not Found</h2>
+            <p className="text-gray-600 mb-6">The event you're trying to copy doesn't exist.</p>
+            <a href="/manage-events" className="btn btn-primary">Back to Events</a>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Main heading with enhanced styling */}
+        <div className="text-center mb-12">
+          <h1 
+            className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
+            style={{ lineHeight: '1.6' }}
+          >
+            {t('copyEvent.title')}
+          </h1>
+          
+          {/* Subtitle with modern typography */}
+          <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
+            Your event copy will have the same event info and settings, without attendee information.
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Event Title */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Event Title *
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.title')} <span className="text-red-500">*</span></h2>
+              </div>
+              <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
+              <input 
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
+                placeholder={t('create.titlePlaceholder')} 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter event title"
               />
-            </div>
+            </section>
 
             {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Describe your event"
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.description')}</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
+              <textarea 
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
+                rows={8} 
+                maxLength={descMax} 
+                placeholder={t('create.descriptionPlaceholder')}
+                value={description} 
+                onChange={e => setDescription(e.target.value)} 
               />
-            </div>
+              <div className="text-sm text-gray-500 text-right mt-2">{descCount}/{descMax}</div>
+            </section>
 
             {/* Categories */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Categories
-              </label>
-              <p className="text-sm text-gray-600 mb-3">Select one or more categories that best describe your event.</p>
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.categories')}</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
@@ -262,10 +390,10 @@ export default function CopyEvent() {
                           prev.includes(opt) ? prev.filter(x => x !== opt) : [...prev, opt]
                         )
                       }
-                      className={`px-3 py-1 rounded-full border transition-colors ${
+                      className={`px-4 py-2 rounded-full border-2 font-medium transition-all duration-200 ${
                         selected 
-                          ? 'bg-blue-600 text-white border-blue-600' 
-                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-300'
+                          ? 'bg-brand-600 text-white border-brand-600 shadow-md' 
+                          : 'bg-white text-gray-700 border-gray-200 hover:border-brand-300 hover:bg-brand-50'
                       }`}
                       aria-pressed={selected}
                     >
@@ -275,204 +403,158 @@ export default function CopyEvent() {
                 })}
               </div>
               {categories.length === 0 && (
-                <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
+                <p className="text-sm text-red-500 mt-3">Please select at least one category</p>
               )}
-            </div>
+            </section>
 
-            {/* Date and Time */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date *
-                </label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+            {/* Schedule */}
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('create.whenWhere')}</h2>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Time *
-                </label>
-                <input
-                  type="time"
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  value={endDate}
-                  min={date}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Time
-                </label>
-                <input
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            {/* Admission */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Admission</label>
-              <div className="flex gap-6">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="admission"
-                    checked={admission === ADMISSION_TICKETED}
-                    onChange={() => setAdmission(ADMISSION_TICKETED)}
-                    className="mr-2"
+              <div className="grid md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startDate')} *</label>
+                  <input 
+                    type="date" 
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
+                    value={date} 
+                    onChange={e => setDate(e.target.value)} 
+                    required
                   />
-                  Ticketed (paid/free tickets, capacity applies)
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="admission"
-                    checked={admission === ADMISSION_OPEN}
-                    onChange={() => setAdmission(ADMISSION_OPEN)}
-                    className="mr-2"
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startTime')} *</label>
+                  <input 
+                    type="time" 
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
+                    value={startTime} 
+                    onChange={e => setStartTime(e.target.value)} 
+                    required
                   />
-                  Open — no ticket required, unlimited capacity
-                </label>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endDate')}</label>
+                  <input 
+                    type="date" 
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
+                    value={endDate} 
+                    min={date}
+                    onChange={e => setEndDate(e.target.value)} 
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endTime')}</label>
+                  <input 
+                    type="time" 
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
+                    value={endTime} 
+                    onChange={e => setEndTime(e.target.value)} 
+                  />
+                </div>
               </div>
-            </div>
+            </section>
 
             {/* Location */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location Type
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="venue"
-                    checked={locationMode === 'venue'}
-                    onChange={(e) => setLocationMode(e.target.value)}
-                    className="mr-2"
-                  />
-                  Venue
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    value="online"
-                    checked={locationMode === 'online'}
-                    onChange={(e) => setLocationMode(e.target.value)}
-                    className="mr-2"
-                  />
-                  Online
-                </label>
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('event.location')}</h2>
               </div>
-            </div>
-
-            {locationMode === 'venue' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Venue Name
-                </label>
-                <input
-                  type="text"
-                  value={venueName}
-                  onChange={(e) => setVenueName(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter venue name"
-                />
-              </div>
-            )}
-
-            {/* Capacity and Pricing (ticketed only) */}
-            {admission === ADMISSION_TICKETED && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Capacity
-                </label>
-                <input
-                  type="number"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  min="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Unlimited"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Min Price (VND)
-                </label>
-                <input
-                  type="number"
-                  value={minPrice}
-                  onChange={(e) => setMinPrice(e.target.value)}
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Max Price (VND)
-                </label>
-                <input
-                  type="number"
-                  value={maxPrice}
-                  onChange={(e) => setMaxPrice(e.target.value)}
-                  min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="0"
-                />
-              </div>
-            </div>
-            )}
+              <LocationSelector 
+                onLocationChange={setLocationData}
+                initialLocation={locationData}
+              />
+            </section>
 
             {/* Cover Image */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Cover Image URL
-              </label>
-              <input
-                type="url"
-                value={coverUrl}
-                onChange={(e) => setCoverUrl(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://example.com/image.jpg"
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+                  <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.cover')}</h2>
+              </div>
+              <p className="text-gray-600 mb-6">Upload a cover image to make your event stand out. Recommended size: 1600×900 pixels.</p>
+              
+              <EventCoverUploader
+                onUpload={handleCoverImageUpload}
+                onDrop={handleCoverImageDrop}
+                onDragOver={handleCoverImageDragOver}
+                onRemove={removeCoverImage}
+                preview={coverImagePreview}
+                loading={loading}
               />
-            </div>
+              
+              {!coverImagePreview && (
+                <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Cover Image Upload</h3>
+                  <p className="text-sm text-gray-500">Drag and drop an image here, or click to select</p>
+                </div>
+              )}
+            </section>
+
+            {/* Tickets (link-out only) */}
+            <section className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-blue-100 rounded-full grid place-items-center">
+                  <svg className="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{t('create.tickets')}</h2>
+              </div>
+              <p className="text-gray-600 mb-4">
+                {t('create.ticketsDescription')}
+              </p>
+              <div className="space-y-4">
+                <input
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
+                  placeholder={t('create.externalLink')}
+                  value={externalUrl}
+                  onChange={e => setExternalUrl(e.target.value)}
+                />
+                <textarea
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
+                  rows={5}
+                  placeholder={t('create.ticketInstructions')}
+                  value={ticketInstructions}
+                  onChange={e => setTicketInstructions(e.target.value)}
+                />
+                <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
+              </div>
+            </section>
 
             {/* Submit Buttons */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex gap-4 pt-8">
               <button
                 type="button"
                 onClick={() => navigate('/manage-events')}
-                className="btn btn-outline flex-1"
+                className="btn btn-ghost text-lg px-8 py-3 flex-1"
               >
                 {t('form.cancel')}
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary flex-1"
+                className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
                 {loading ? t('create.publishing') : t('eventForm.createCopy')}
               </button>
