@@ -1,4 +1,4 @@
-// Language context for EN/VI translation support
+// Language context for EN/VI translation support - Updated for Vercel deployment
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import en from './en.json'
 import vi from './vi.json'
