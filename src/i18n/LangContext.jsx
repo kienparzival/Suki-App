@@ -1,3 +1,4 @@
+// Language context for EN/VI translation support
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import en from './en.json'
 import vi from './vi.json'
