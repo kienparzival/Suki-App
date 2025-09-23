@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { CATEGORY_ITEMS } from '../constants/categories'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function CategoryScroller({ selected, onChange }) {
+  const { t } = useLang()
   const scrollerRef = useRef(null)
   const [canLeft, setCanLeft] = useState(false)
   const [canRight, setCanRight] = useState(false)
@@ -83,7 +85,7 @@ export default function CategoryScroller({ selected, onChange }) {
                 className={`mt-2 text-[13px] sm:text-sm font-medium text-center leading-snug whitespace-normal`}
                 style={{ wordBreak: 'break-word' }}
               >
-                {label}
+                {t(`categories.${key.toLowerCase()}`) || label}
               </span>
             </button>
           )

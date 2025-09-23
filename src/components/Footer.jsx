@@ -1,8 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import EmailCapture from './EmailCapture.jsx'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function Footer() {
+  const { t } = useLang()
+  
   return (
     <footer className="mt-16 border-t bg-gradient-to-b from-indigo-50 via-sky-50 to-white">
       <div className="h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500" />
@@ -10,76 +13,75 @@ export default function Footer() {
         {/* FAQ */}
         <div className="space-y-4 mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Frequently asked questions about Suki
+            {t('footer.faq.title')}
           </h2>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>What are the best events to attend?</span>
+              <span>{t('footer.faq.bestEvents')}</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              Explore "Trending" or use filters for category, date, and location to find top picks.
+              {t('footer.faq.bestEventsAnswer')}
             </p>
           </details>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>How do I find events near me?</span>
+              <span>{t('footer.faq.nearMe')}</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              Open Discover or Browse, click the Location filter, and choose your city (e.g., Ha Noi).
-              You can also pick "Current location" to use your device's GPS or "All locations" to see everything.
+              {t('footer.faq.nearMeAnswer')}
             </p>
           </details>
           <details className="group pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>Which events are coming up?</span>
+              <span>{t('footer.faq.upcoming')}</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              Use the "Today" / "Weekend" time filters on the Discover or Browse page.
+              {t('footer.faq.upcomingAnswer')}
             </p>
           </details>
         </div>
 
         {/* Email Capture Section */}
         <div className="mb-10 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">Stay updated with weekly event digests</h3>
-          <p className="text-gray-600 mb-4">Get the best events in your city delivered to your inbox every Friday.</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('footer.email.title')}</h3>
+          <p className="text-gray-600 mb-4">{t('footer.email.subtitle')}</p>
           <EmailCapture />
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
           <div className="space-y-2">
             <div className="font-semibold text-gray-900">Suki</div>
-            <p className="text-gray-600">A discovery-first events directory for Vietnam.</p>
+            <p className="text-gray-600">{t('footer.suki.description')}</p>
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-gray-900">Product</div>
+            <div className="font-semibold text-gray-900">{t('footer.product.title')}</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
-              <li><Link to="/browse-events">Browse events</Link></li>
-              <li><Link to="/create">Create an event</Link></li>
-              <li><Link to="/saved">Saved</Link></li>
-              <li><Link to="/manage-events">Manage my events</Link></li>
+              <li><Link to="/browse-events">{t('nav.browseEvents')}</Link></li>
+              <li><Link to="/create">{t('nav.create')}</Link></li>
+              <li><Link to="/saved">{t('nav.saved')}</Link></li>
+              <li><Link to="/manage-events">{t('nav.manage')}</Link></li>
             </ul>
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-gray-900">Company</div>
+            <div className="font-semibold text-gray-900">{t('footer.company.title')}</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
               <li><a href="https://status.suki.example" target="_blank" rel="noopener">Status</a></li>
-              <li><a href="/terms" onClick={e => e.preventDefault()}>Terms</a></li>
-              <li><a href="/privacy" onClick={e => e.preventDefault()}>Privacy</a></li>
+              <li><a href="/terms" onClick={e => e.preventDefault()}>{t('footer.terms')}</a></li>
+              <li><a href="/privacy" onClick={e => e.preventDefault()}>{t('footer.privacy')}</a></li>
               <li><a href="/accessibility" onClick={e => e.preventDefault()}>Accessibility</a></li>
             </ul>
           </div>
 
           {/* Contact us */}
           <div className="space-y-3">
-            <div className="font-semibold text-gray-900">Contact us</div>
+            <div className="font-semibold text-gray-900">{t('footer.contact.title')}</div>
             <p className="text-gray-600">
-              Questions or feedback? We'd love to hear from you.
+              {t('footer.contact.subtitle')}
             </p>
             <div className="space-y-1">
               <a
@@ -101,9 +103,9 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
           <span>© {new Date().getFullYear()} Suki</span>
           <div className="flex items-center gap-3">
-            <a href="/cookies" onClick={e => e.preventDefault()}>Cookies</a>
+            <a href="/cookies" onClick={e => e.preventDefault()}>{t('footer.cookies')}</a>
             <span>•</span>
-            <span>Vietnam</span>
+            <span>{t('footer.vietnam')}</span>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { CATEGORIES } from '../constants/categories'
 // Removed TicketTierManager – free-only single tier is auto-managed
 import LocationSelector from '../components/LocationSelector.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
+import { useLang } from '../i18n/LangContext.jsx'
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -22,6 +23,7 @@ function readFileAsDataUrl(file) {
 export default function CreateEventPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { t } = useLang()
 
   // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
   // Basics
@@ -226,16 +228,16 @@ export default function CreateEventPage() {
 
   const publish = async () => {
     if (!user) {
-      alert('Please sign in to create events')
+      alert(t('create.signInRequired'))
       return
     }
 
-    if (!title.trim()) { alert('Please enter a title'); return }
-    if (!date || !startTime) { alert('Please select a date and start time'); return }
-    if (categories.length === 0) { alert('Please select at least one category'); return }
-    if (!coverImagePreview && (!images || images.length === 0)) { alert('Please upload a cover image'); return }
+    if (!title.trim()) { alert(t('create.titleRequired')); return }
+    if (!date || !startTime) { alert(t('create.dateRequired')); return }
+    if (categories.length === 0) { alert(t('create.categoryRequired')); return }
+    if (!coverImagePreview && (!images || images.length === 0)) { alert(t('create.imageRequired')); return }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
-      alert('Please enter a venue name or select "To be announced"'); 
+      alert(t('create.venueRequired')); 
       return 
     }
     // Ticketing removed
@@ -246,7 +248,7 @@ export default function CreateEventPage() {
 
     // Validate timeline
     if (new Date(end_at) < new Date(start_at)) {
-      alert('End must be after start')
+      alert(t('create.endAfterStart'))
       return
     }
 
@@ -382,12 +384,12 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Event Title <span className="text-red-500">*</span></h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.title')} <span className="text-red-500">*</span></h2>
             </div>
             <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
             <input 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
-              placeholder="Enter your event title" 
+              placeholder={t('create.titlePlaceholder')} 
               value={title} 
               onChange={e => setTitle(e.target.value)} 
             />
@@ -401,14 +403,14 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">Description</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.description')}</h2>
             </div>
             <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
             <textarea 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
               rows={8} 
               maxLength={descMax} 
-              placeholder="About this event (up to 4,000 characters)"
+              placeholder={t('create.descriptionPlaceholder')}
               value={description} 
               onChange={e => setDescription(e.target.value)} 
             />
@@ -423,11 +425,11 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">When & Where</h2>
+              <h2 className="text-2xl font-bold text-gray-900">{t('create.whenWhere')}</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">Start date *</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startDate')} *</label>
                 <input 
                   type="date" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -437,7 +439,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">Start time *</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startTime')} *</label>
                 <input 
                   type="time" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -447,7 +449,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">End date</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endDate')}</label>
                 <input 
                   type="date" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -457,7 +459,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">End time</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endTime')}</label>
                 <input 
                   type="time" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -476,27 +478,26 @@ export default function CreateEventPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Tickets</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('create.tickets')}</h2>
           </div>
           <p className="text-gray-600 mb-4">
-            Suki doesn't process payments. Add a link to your checkout (Ticketbox, 8theatre, VietQR, Momo, Google Form)
-            and a short guide for attendees. This section is optional.
+            {t('create.ticketsDescription')}
           </p>
           <div className="space-y-4">
             <input
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-              placeholder="External ticket link (https://…)"
+              placeholder={t('create.externalLink')}
               value={externalUrl}
               onChange={e => setExternalUrl(e.target.value)}
             />
             <textarea
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
               rows={5}
-              placeholder={`Short instructions (optional). Example:\n1) Click the link above\n2) Choose seat & quantity\n3) Pay via Momo/VietQR\n4) Keep your confirmation email`}
+              placeholder={t('create.ticketInstructions')}
               value={ticketInstructions}
               onChange={e => setTicketInstructions(e.target.value)}
             />
-            <p className="text-sm text-gray-500">If left blank, the event page won't show a Tickets section.</p>
+            <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
           </div>
         </section>
 
@@ -685,7 +686,7 @@ export default function CreateEventPage() {
               onClick={publish} 
               disabled={publishing}
             >
-              {publishing ? 'Publishing…' : 'Publish Event'}
+              {publishing ? t('create.publishing') : t('create.publish')}
             </button>
             </div>
         </div>

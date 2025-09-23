@@ -11,10 +11,16 @@ export function LangProvider({ children }) {
   useEffect(() => { localStorage.setItem('suki_lang', lang) }, [lang])
   const t = useMemo(() => (key, vars = {}) => {
     let s = DICT[lang]?.[key] ?? key
-    Object.entries(vars).forEach(([k, v]) => { s = s.replaceAll(`{${k}}`, v) })
+    Object.entries(vars).forEach(([k, v]) => { s = s.replaceAll(`{${k}}`, String(v)) })
     return s
   }, [lang])
-  return <LangContext.Provider value={{ lang, setLang, t }}>{children}</LangContext.Provider>
+  const fmtDate = useMemo(() => (d, opts={ dateStyle:'medium', timeStyle:'short' }) => {
+    try { return new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-US', opts).format(new Date(d)) }
+    catch { return d }
+  }, [lang])
+  const fmtNumber = useMemo(() => (n) => new Intl.NumberFormat(lang === 'vi' ? 'vi-VN' : 'en-US').format(n), [lang])
+
+  return <LangContext.Provider value={{ lang, setLang, t, fmtDate, fmtNumber }}>{children}</LangContext.Provider>
 }
 
 export const useLang = () => useContext(LangContext)
