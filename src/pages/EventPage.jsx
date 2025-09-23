@@ -14,6 +14,7 @@ import DescriptionBlock from '../components/DescriptionBlock.jsx'
 import '../styles.css'
 import { PAYMENTS_ENABLED } from '../config/payments'
 import { trackEventView, trackCTAClick } from '../lib/analytics.js'
+import { useLang } from '../i18n/LangContext.jsx'
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl
@@ -55,6 +56,7 @@ export default function EventPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { t, fmtDate } = useLang()
   const [openBuy, setOpenBuy] = useState(false)
   const [event, setEvent] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -261,9 +263,9 @@ export default function EventPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="text-6xl mb-4">❌</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
-            <p className="text-gray-600 mb-6">The event you're looking for doesn't exist or has been removed.</p>
-            <button className="btn btn-primary" onClick={() => navigate(-1)}>Go Back</button>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('event.notFound')}</h1>
+            <p className="text-gray-600 mb-6">{t('event.error')}</p>
+            <button className="btn btn-primary" onClick={() => navigate(-1)}>{t('common.goBack')}</button>
           </div>
         </div>
       </div>
@@ -360,7 +362,7 @@ export default function EventPage() {
                 className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 onClick={() => handleExternalTicketClick(event.external_ticket_url)}
               >
-                Get tickets on organizer site
+                {t('event.cta.external')}
               </a>
             ) : null}
             <button
@@ -372,14 +374,14 @@ export default function EventPage() {
               onClick={toggleSave}
             >
               <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
-              {isSaved ? 'Saved' : 'Save Event'}
+              {isSaved ? t('event.unsave') : t('event.save')}
             </button>
             <button 
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
               onClick={share}
             >
               <Share2 className="w-4 h-4" />
-              Share Event
+              {t('event.share')}
             </button>
           </div>
         </div>
@@ -421,7 +423,7 @@ export default function EventPage() {
                       className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                       onClick={() => handleExternalTicketClick(event.external_ticket_url)}
                     >
-                      Get tickets on organizer site
+                      {t('event.cta.external')}
                     </a>
                   </div>
                 )}
@@ -431,7 +433,7 @@ export default function EventPage() {
 
             {/* About Section */}
             <section className="prose prose-sm sm:prose max-w-none prose-a:underline prose-a:text-blue-600 break-anywhere">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">About this event</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('event.about')}</h2>
               <DescriptionBlock text={event.description} />
             </section>
 
@@ -550,7 +552,7 @@ export default function EventPage() {
               <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Info</h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Categories</span>
+                  <span className="text-gray-600">{t('event.categories')}</span>
                   <div className="text-right">
                     {Array.isArray(event.categories) && event.categories.length > 0 ? (
                       <div className="flex flex-wrap gap-1 justify-end">

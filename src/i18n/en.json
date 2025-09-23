@@ -163,5 +163,18 @@
   "manage.status.onSale": "On Sale",
   "manage.status.past": "Past",
   "manage.status.cancelled": "Cancelled",
-  "manage.calendarComingSoon": "Calendar view coming soon! Use list view for now."
+  "manage.calendarComingSoon": "Calendar view coming soon! Use list view for now.",
+  "event.about": "About",
+  "event.when": "When",
+  "event.where": "Where",
+  "event.categories": "Categories",
+  "event.share": "Share",
+  "event.save": "Save",
+  "event.unsave": "Saved",
+  "event.cta.external": "Get tickets on organizer site",
+  "event.cta.readMore": "See description for how to join.",
+  "event.loading": "Loading event...",
+  "event.notFound": "Event not found",
+  "event.error": "Error loading event",
+  "common.goBack": "Go Back"
 }

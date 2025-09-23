@@ -163,5 +163,18 @@
   "manage.status.onSale": "Đang bán",
   "manage.status.past": "Đã qua",
   "manage.status.cancelled": "Đã hủy",
-  "manage.calendarComingSoon": "Chế độ xem lịch sắp ra mắt! Hãy sử dụng chế độ danh sách tạm thời."
+  "manage.calendarComingSoon": "Chế độ xem lịch sắp ra mắt! Hãy sử dụng chế độ danh sách tạm thời.",
+  "event.about": "Giới thiệu",
+  "event.when": "Thời gian",
+  "event.where": "Địa điểm",
+  "event.categories": "Danh mục",
+  "event.share": "Chia sẻ",
+  "event.save": "Lưu",
+  "event.unsave": "Đã lưu",
+  "event.cta.external": "Mua vé trên trang ban tổ chức",
+  "event.cta.readMore": "Xem mô tả để biết cách tham gia.",
+  "event.loading": "Đang tải sự kiện...",
+  "event.notFound": "Không tìm thấy sự kiện",
+  "event.error": "Lỗi khi tải sự kiện",
+  "common.goBack": "Quay lại"
 }
