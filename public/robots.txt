@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://suki-app-two.vercel.app/sitemap.txt

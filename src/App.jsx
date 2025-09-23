@@ -7,6 +7,7 @@ import FilterBar from './components/FilterBar.jsx'
 import EventList from './components/EventList.jsx'
 import EmailCapture from './components/EmailCapture.jsx'
 import Modal from './components/Modal.jsx'
+import SEO from './components/SEO.jsx'
 import { supabase } from './lib/supabase.js'
 import { getFirstAttribution } from './lib/utm.js'
 import { posthog } from './lib/analytics.js'
@@ -327,11 +328,17 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
-      <Header 
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+    <>
+      <SEO 
+        lang="en" 
+        city={userCity || 'Hanoi'} 
+        events={filtered?.slice(0, 10) || []} 
       />
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-x-hidden">
+        <Header 
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
       
       {/* Poster-style hero (Discover only) */}
       <section className="relative overflow-visible"> {/* keep overflow visible so text never clips */}
@@ -461,7 +468,8 @@ function App() {
           setShowSubscribe(false)
         }} />
       </Modal>
-    </div>
+      </div>
+    </>
   )
 }
 
