@@ -46,7 +46,7 @@ export default function Footer() {
         <div className="mb-10 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
           <h3 className="text-xl font-bold text-gray-900 mb-3">Stay updated with weekly event digests</h3>
           <p className="text-gray-600 mb-4">Get the best events in your city delivered to your inbox every Friday.</p>
-          <EmailCapture defaultCity="Hanoi" />
+          <EmailCapture />
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">

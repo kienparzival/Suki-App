@@ -353,9 +353,9 @@ function App() {
               Explore what's happening around you — concerts, meetups, workshops, and more.
             </p>
             
-            {/* Email Capture */}
-            <div className="mt-8 max-w-md mx-auto">
-              <EmailCapture defaultCity={userCity || 'Hanoi'} />
+            {/* Email Capture — modern card */}
+            <div className="mt-8 max-w-xl mx-auto">
+              <EmailCapture />
             </div>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
