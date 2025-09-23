@@ -93,6 +93,9 @@ export default function SEO({ lang='en', city='Hanoi', events=[] }) {
       {/* basic SEO */}
       <title>{texts.title}</title>
       <meta name="description" content={texts.desc} />
+      
+      {/* Google Search Console verification */}
+      <meta name="google-site-verification" content="VSVSC5PkZDX4qkw7Xjj_sPXk0anOckGXpDcOT6Zc7aM" />
 
       {/* Open Graph & Twitter */}
       <meta property="og:type" content="website" />
