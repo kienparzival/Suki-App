@@ -8,12 +8,15 @@ import EventList from './components/EventList.jsx'
 import EmailCapture from './components/EmailCapture.jsx'
 import Modal from './components/Modal.jsx'
 import SEO from './components/SEO.jsx'
+import { useLang } from './i18n/LangContext.jsx'
+import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import { supabase } from './lib/supabase.js'
 import { getFirstAttribution } from './lib/utm.js'
 import { posthog } from './lib/analytics.js'
 import './styles.css'
 
 function App() {
+  const { t, lang } = useLang()
   const { user } = useAuth()
   const { userLocation, setUserLocation } = useLocation()
   const [events, setEvents] = useState([])
@@ -330,7 +333,7 @@ function App() {
   return (
     <>
       <SEO 
-        lang="en" 
+        lang={lang} 
         city={userCity || 'Hanoi'} 
         events={filtered?.slice(0, 10) || []} 
       />
@@ -349,6 +352,9 @@ function App() {
           {/* removed decorative blobs to avoid any stacking/mix issues */}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+            <div className="max-w-7xl mx-auto flex justify-end">
+              <LanguageSwitcher />
+            </div>
             <h1
               className="
                 relative z-[9999] inline-block pb-2
@@ -364,7 +370,7 @@ function App() {
                 transform: 'translateZ(0)'             // own layer
               }}
             >
-              Discover Amazing Events
+              {t('discoverH1')}
             </h1>
             <p
               className="
@@ -374,22 +380,15 @@ function App() {
                 max-w-3xl mx-auto
               "
             >
-              Explore what's happening around you — concerts, meetups, workshops, and more.
+              {t('discoverSub')}
             </p>
+            {/* subtle bilingual SEO lines inside hero */}
+            <p className="mt-3 text-sm text-slate-600 opacity-80">{t('seoPitch')}</p>
+            <p className="text-sm text-slate-600 opacity-80">{t('seoPitch2')}</p>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
         </div>
       </section>
-
-      {/* EN/VI intro text block */}
-      <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-slate-700">
-        <p>
-          <strong>Sự kiện ở Hà Nội</strong> • <strong>Hanoi events this week</strong> — concerts, meetups, workshops, nightlife, family activities and more curated on Suki.
-        </p>
-        <p className="mt-1">
-          Khám phá hoạt động cuối tuần, vé và địa điểm hot quanh bạn.
-        </p>
-      </div>
 
       {/* main content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
