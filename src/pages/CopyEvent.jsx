@@ -28,8 +28,19 @@ export default function CopyEvent() {
 
   // Helper function to get translated category name
   const getCategoryLabel = (category) => {
-    const key = `categories.${category.toLowerCase().replace(/\s+/g, '')}`
-    return t(key) || category
+    // normalize: lower, remove all non-alphanumerics to create a stable key
+    const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, '')
+    // try exact (clean) key first, then try a few common alternates, then fallback
+    const candidates = [
+      `categories.${slug}`,
+      // also try using hyphen word-joins if needed
+      `categories.${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+    ]
+    for (const k of candidates) {
+      const val = t(k)
+      if (val !== k) return val
+    }
+    return t(`categories.other`) || category
   }
 
   // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
@@ -320,7 +331,7 @@ export default function CopyEvent() {
             className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
             style={{ lineHeight: '1.6' }}
           >
-            {t('copyEvent.title')}
+            {t('copy.title')}
           </h1>
           
           {/* Subtitle with modern typography */}
