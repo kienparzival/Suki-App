@@ -372,7 +372,7 @@ export default function EventPage() {
               onClick={toggleSave}
             >
               <Heart className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
-              {isSaved ? "event unsave" : "event save"}
+              {isSaved ? "Saved" : "Save"}
             </button>
             <button 
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
@@ -459,7 +459,7 @@ export default function EventPage() {
                   <Users className="w-5 h-5 text-blue-600" />
                   <div>
                     <div className="font-medium text-gray-900">Capacity</div>
-                    <div className="text-gray-600">{event.capacity || "event unlimited"}</div>
+                    <div className="text-gray-600">{event.capacity || "Unlimited"}</div>
                   </div>
                 </div>
               </div>

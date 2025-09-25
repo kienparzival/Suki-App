@@ -653,7 +653,7 @@ export default function Profile() {
                   onClick={handleSave}
                   disabled={saving}
                 >
-                  {saving ? "profile saving" : "profile save Changes"}
+                  {saving ? "Saving..." : "Save Changes"}
                 </button>
                 <button 
                       className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium" 

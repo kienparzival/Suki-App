@@ -187,13 +187,13 @@ export default function CreateEventPage() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert("create image File Type")
+      alert("Please select a valid image file (JPG, PNG, GIF)")
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert("create image File Size")
+      alert("Image file size must be less than 5MB")
       return
     }
     
@@ -226,16 +226,16 @@ export default function CreateEventPage() {
 
   const publish = async () => {
     if (!user) {
-      alert("create sign In Required")
+      alert("Please sign in to create events")
       return
     }
 
-    if (!title.trim()) { alert("create title Required"); return }
-    if (!date || !startTime) { alert("create date Required"); return }
-    if (categories.length === 0) { alert("create category Required"); return }
-    if (!coverImagePreview && (!images || images.length === 0)) { alert("create image Required"); return }
+    if (!title.trim()) { alert("Please enter a title"); return }
+    if (!date || !startTime) { alert("Please select a date and start time"); return }
+    if (categories.length === 0) { alert("Please select at least one category"); return }
+    if (!coverImagePreview && (!images || images.length === 0)) { alert("Please upload a cover image"); return }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
-      alert("create venue Required"); 
+      alert("Please enter a venue name or select \"To be announced\""); 
       return 
     }
     // Ticketing removed
@@ -246,7 +246,7 @@ export default function CreateEventPage() {
 
     // Validate timeline
     if (new Date(end_at) < new Date(start_at)) {
-      alert("create end After Start")
+      alert("End time must be after start time")
       return
     }
 
@@ -684,7 +684,7 @@ export default function CreateEventPage() {
               onClick={publish} 
               disabled={publishing}
             >
-              {publishing ? "create publishing" : "create publish"}
+              {publishing ? "Publishing..." : "Publish"}
             </button>
             </div>
         </div>

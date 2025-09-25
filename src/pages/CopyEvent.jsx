@@ -156,16 +156,16 @@ export default function CopyEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!user) {
-      alert("create sign In Required")
+      alert("Please sign in to create events")
       return
     }
 
-    if (!title.trim()) { alert("create title Required"); return }
-    if (!date || !startTime) { alert("create date Required"); return }
-    if (categories.length === 0) { alert("create category Required"); return }
-    if (!coverImagePreview && (!coverImage)) { alert("create image Required"); return }
+    if (!title.trim()) { alert("Please enter a title"); return }
+    if (!date || !startTime) { alert("Please select a date and start time"); return }
+    if (categories.length === 0) { alert("Please select at least one category"); return }
+    if (!coverImagePreview && (!coverImage)) { alert("Please upload a cover image"); return }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
-      alert("create venue Required"); 
+      alert("Please enter a venue name or select \"To be announced\""); 
       return 
     }
 
@@ -175,7 +175,7 @@ export default function CopyEvent() {
 
     // Validate timeline
     if (new Date(end_at) < new Date(start_at)) {
-      alert("create end After Start")
+      alert("End time must be after start time")
       return
     }
 
@@ -276,11 +276,11 @@ export default function CopyEvent() {
         return
       }
 
-      alert("create copy Success")
+      alert("Event copied successfully!")
       navigate('/manage-events')
     } catch (error) {
       console.error('Error copying event:', error)
-      alert(t('create.eventError', { msg: error.message }))
+      alert(`Error creating event: ${error.message}`)
     } finally {
       setLoading(false)
     }
@@ -570,7 +570,7 @@ export default function CopyEvent() {
                 disabled={loading}
                 className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
-                {loading ? "create publishing" : "event Form create Copy"}
+                {loading ? "Publishing..." : "Create Copy"}
               </button>
             </div>
           </form>

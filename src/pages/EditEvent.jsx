@@ -212,27 +212,27 @@ export default function EditEvent() {
 
     // Validate required fields
     if (!title.trim()) {
-      alert("validate title")
+      alert("Please enter a title")
       setLoading(false)
       return
     }
     if (!date || !startTime) {
-      alert("validate date Start")
+      alert("Please select a date and start time")
       setLoading(false)
       return
     }
     if (categories.length === 0) {
-      alert("validate category")
+      alert("Please select at least one category")
       setLoading(false)
       return
     }
     if (!coverImagePreview && !coverUrl) {
-      alert("validate cover")
+      alert("Please upload a cover image")
       setLoading(false)
       return
     }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) {
-      alert("validate venue")
+      alert("Please enter a venue name or select \"To be announced\"")
       setLoading(false)
       return
     }
@@ -246,7 +246,7 @@ export default function EditEvent() {
 
       // Validate timeline
       if (startAt && endAt && new Date(endAt) < new Date(startAt)) {
-        alert("validate end After Start")
+        alert("End time must be after start time")
         setLoading(false)
         return
       }
@@ -335,7 +335,7 @@ export default function EditEvent() {
         console.error('Error reloading event data:', reloadError)
       }
 
-      alert("edit Event saved")
+      alert("Event updated successfully!")
       navigate('/manage-events')
     } catch (error) {
       console.error('Error updating event:', error)
@@ -351,13 +351,13 @@ export default function EditEvent() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert("create image File Type")
+      alert("Please select a valid image file (JPG, PNG, GIF)")
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert("create image File Size")
+      alert("Image file size must be less than 5MB")
       return
     }
     
@@ -653,7 +653,7 @@ export default function EditEvent() {
                 disabled={loading}
                 className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
-                {loading ? "create publishing" : "event Form update Event"}
+                {loading ? "Publishing..." : "Update Event"}
               </button>
             </div>
             
