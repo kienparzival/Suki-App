@@ -193,17 +193,17 @@ export default function ManageEvents() {
     const now = new Date()
     const eventDate = new Date(event.start_at)
     
-    if (event.status === 'cancelled') return "manage status cancelled"
-    if (eventDate < now) return "manage status past"
-    if (event.status === 'published') return "manage status on Sale"
-    return "manage status draft"
+    if (event.status === 'cancelled') return "Cancelled"
+    if (eventDate < now) return "Past"
+    if (event.status === 'published') return "Published"
+    return "Draft"
   }
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "manage status on Sale": return 'text-green-600 bg-green-100'
-      case "manage status past": return 'text-gray-600 bg-gray-100'
-      case "manage status cancelled": return 'text-red-600 bg-red-100'
+      case "Published": return 'text-green-600 bg-green-100'
+      case "Past": return 'text-gray-600 bg-gray-100'
+      case "Cancelled": return 'text-red-600 bg-red-100'
       default: return 'text-yellow-600 bg-yellow-100'
     }
   }
