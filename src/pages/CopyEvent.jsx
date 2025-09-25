@@ -240,7 +240,7 @@ export default function CopyEvent() {
 
         if (uploadError) {
           console.error('Cover upload error:', uploadError)
-          alert(t('create.uploadError', { msg: uploadError.message }))
+          alert(`Error uploading image: ${uploadError.message}`)
           setLoading(false)
           return
         }
@@ -271,7 +271,7 @@ export default function CopyEvent() {
 
       if (error) {
         console.error('Event creation error:', error)
-        alert(t('create.eventError', { msg: error.message }))
+        alert(`Error creating event: ${error.message}`)
         setLoading(false)
         return
       }

@@ -274,7 +274,7 @@ export default function CreateEventPage() {
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert(t('create.venueError', { msg: venueError.message }))
+            alert(`Error creating venue: ${venueError.message}`)
             setPublishing(false)
             return
           }
@@ -322,7 +322,7 @@ export default function CreateEventPage() {
 
       if (eventError) {
         console.error('Error creating event:', eventError)
-        alert(t('create.eventError', { msg: eventError.message }))
+        alert(`Error creating event: ${eventError.message}`)
       } else {
         console.log('Event created successfully:', eventData)
         
@@ -336,7 +336,7 @@ export default function CreateEventPage() {
       }
     } catch (error) {
       console.error('Error creating event:', error)
-      alert(t('create.eventError', { msg: error.message }))
+      alert(`Error creating event: ${error.message}`)
     } finally {
       setPublishing(false)
     }

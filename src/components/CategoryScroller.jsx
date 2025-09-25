@@ -83,7 +83,7 @@ export default function CategoryScroller({ selected, onChange }) {
                 className={`mt-2 text-[13px] sm:text-sm font-medium text-center leading-snug whitespace-normal`}
                 style={{ wordBreak: 'break-word' }}
               >
-                {t(`categories.${key.toLowerCase()}`) || label}
+                {label}
               </span>
             </button>
           )

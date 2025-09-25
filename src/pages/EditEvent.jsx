@@ -265,7 +265,7 @@ export default function EditEvent() {
           
           if (venueError) {
             console.error('Error creating/updating venue:', venueError)
-            alert(t('create.venueError', { msg: venueError.message }))
+            alert(`Error creating venue: ${venueError.message}`)
             setLoading(false)
             return
           }
@@ -339,7 +339,7 @@ export default function EditEvent() {
       navigate('/manage-events')
     } catch (error) {
       console.error('Error updating event:', error)
-      alert(t('editEvent.saveError', { msg: error.message }))
+      alert(`Error updating event: ${error.message}`)
     } finally {
       setLoading(false)
     }
