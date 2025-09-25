@@ -14,10 +14,20 @@ export function LangProvider({ children }) {
     document.documentElement.lang = lang
   }, [lang])
   const t = useMemo(() => (key, vars = {}) => {
-    let s = DICT[lang]?.[key] ?? DICT.en?.[key] ?? key
-    if ((process.env.NODE_ENV !== 'production') && (s === key)) {
-      // eslint-disable-next-line no-console
-      console.warn(`[i18n] Missing key in ${lang}:`, key)
+    let s
+    if (lang === 'vi') {
+      if (DICT.vi?.[key] != null) {
+        s = DICT.vi[key]
+      } else {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('[i18n] Missing VI key:', key)
+          s = DICT.en?.[key] ?? key   // helpful in DEV
+        } else {
+          s = '' // PROD: never show English if VI selected
+        }
+      }
+    } else {
+      s = DICT.en?.[key] ?? key
     }
     Object.entries(vars).forEach(([k, v]) => { s = s.replaceAll(`{${k}}`, String(v)) })
     return s

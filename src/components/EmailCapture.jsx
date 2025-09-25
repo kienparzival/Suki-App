@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase.js'
 import { getFirstAttribution } from '../lib/utm.js'
 import { posthog } from '../lib/analytics.js'
+import { useLang } from '../i18n/LangContext.jsx'
 
 export default function EmailCapture({ onSubscribed }) {
+  const { t } = useLang()
   const [email, setEmail] = useState('')
   const [ok, setOk] = useState(false)
   const [err, setErr] = useState('')
@@ -67,15 +69,15 @@ export default function EmailCapture({ onSubscribed }) {
       <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-400 rounded-2xl blur opacity-30" aria-hidden />
       <div className="relative rounded-2xl bg-white/70 backdrop-blur px-6 py-6 sm:px-8 sm:py-8 shadow-lg">
         <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
-          Get the <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-500">Suki Weekly</span>
+          {t('emailCapture.getThe')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-500">{t('emailCapture.sukiWeekly')}</span>
         </h3>
         <p className="mt-1.5 text-sm text-slate-600">
-          A short Friday email with the best events in Hà Nội. No spam. Unsubscribe anytime.
+          {t('emailCapture.description')}
         </p>
 
         {!ok ? (
           <form onSubmit={onSubmit} className="mt-4 flex flex-col sm:flex-row gap-3">
-            <label htmlFor="email-capture" className="sr-only">Email address</label>
+            <label htmlFor="email-capture" className="sr-only">{t('emailCapture.emailAddress')}</label>
             <input
               id="email-capture"
               type="email"
@@ -83,7 +85,7 @@ export default function EmailCapture({ onSubscribed }) {
               inputMode="email"
               autoComplete="email"
               className="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 outline-none text-slate-900 placeholder-slate-400 bg-white"
-              placeholder="you@example.com"
+              placeholder={t('emailCapture.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -100,12 +102,12 @@ export default function EmailCapture({ onSubscribed }) {
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden>
               <path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/>
             </svg>
-            Subscribed! We'll send your first digest this Friday.
+            {t('emailCapture.subscribed')}
           </div>
         )}
 
         <p className="mt-3 text-xs text-slate-500">
-          By subscribing, you agree to receive the weekly digest from Suki. We never share your email.
+          {t('emailCapture.privacy')}
         </p>
       </div>
     </div>

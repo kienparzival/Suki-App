@@ -294,5 +294,12 @@
   "profile.prefix.ms": "Ms.",
   "profile.prefix.mrs": "Mrs.",
   "profile.prefix.dr": "Dr.",
-  "profile.prefix.prof": "Prof."
+  "profile.prefix.prof": "Prof.",
+  "emailCapture.getThe": "Get the",
+  "emailCapture.sukiWeekly": "Suki Weekly",
+  "emailCapture.description": "A short Friday email with the best events in Hà Nội. No spam. Unsubscribe anytime.",
+  "emailCapture.emailAddress": "Email address",
+  "emailCapture.emailPlaceholder": "you@example.com",
+  "emailCapture.subscribed": "Subscribed! We'll send your first digest this Friday.",
+  "emailCapture.privacy": "By subscribing, you agree to receive the weekly digest from Suki. We never share your email."
 }

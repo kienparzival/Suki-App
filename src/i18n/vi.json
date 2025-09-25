@@ -247,5 +247,12 @@
   "profile.prefix.ms": "Cô",
   "profile.prefix.mrs": "Bà",
   "profile.prefix.dr": "Bác sĩ",
-  "profile.prefix.prof": "Giáo sư"
+  "profile.prefix.prof": "Giáo sư",
+  "emailCapture.getThe": "Nhận",
+  "emailCapture.sukiWeekly": "Suki Weekly",
+  "emailCapture.description": "Email ngắn thứ Sáu với những sự kiện hay nhất ở Hà Nội. Không spam. Hủy đăng ký bất cứ lúc nào.",
+  "emailCapture.emailAddress": "Địa chỉ email",
+  "emailCapture.emailPlaceholder": "ban@example.com",
+  "emailCapture.subscribed": "Đã đăng ký! Chúng tôi sẽ gửi bản tin đầu tiên vào thứ Sáu này.",
+  "emailCapture.privacy": "Bằng cách đăng ký, bạn đồng ý nhận bản tin hàng tuần từ Suki. Chúng tôi không bao giờ chia sẻ email của bạn."
 }
