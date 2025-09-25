@@ -154,7 +154,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
       </div>
       
       {/* Browsing Location Section */}
-      <div>
+      <div className="relative">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-base text-neutral-700 font-medium">Browsing events in</span>
           <button
@@ -162,7 +162,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
             onClick={() => setShowLocationDropdown(!showLocationDropdown)}
           >
             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLocationDropdown ? 'rotate-180' : ''}`} />
-            <span className="font-medium">{browsingLocation || "all Locations"}</span>
+            <span className="font-medium">{browsingLocation || "All locations"}</span>
           </button>
         </div>
         

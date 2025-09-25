@@ -87,6 +87,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
   const [searchFocused, setSearchFocused] = useState(false)
   const [recentSearches, setRecentSearches] = useState([])
   const containerRef = useRef(null)
+  const locationDropdownRef = useRef(null)
   const profileDropdownRef = useRef(null)
 
   useEffect(() => {
@@ -139,6 +140,15 @@ export default function Header({ searchTerm, setSearchTerm }) {
     const onClick = (e) => {
       if (!containerRef.current) return
       if (!containerRef.current.contains(e.target)) setOpen(false)
+    }
+    window.addEventListener('click', onClick)
+    return () => window.removeEventListener('click', onClick)
+  }, [])
+
+  useEffect(() => {
+    const onClick = (e) => {
+      if (!locationDropdownRef.current) return
+      if (!locationDropdownRef.current.contains(e.target)) setOpen(false)
     }
     window.addEventListener('click', onClick)
     return () => window.removeEventListener('click', onClick)
@@ -374,7 +384,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             <div className="border-l border-neutral-300"></div>
             
             {/* Location Input - Right */}
-            <div className="relative flex-1">
+            <div className="relative flex-1" ref={locationDropdownRef}>
               <MapPin className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
               <input
                 type="text"
@@ -580,7 +590,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
           </div>
 
           {/* Mobile Location */}
-          <div className="relative">
+          <div className="relative" ref={locationDropdownRef}>
             <MapPin className="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 pointer-events-none" />
             <input
               type="text"
