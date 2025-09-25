@@ -476,7 +476,7 @@ export default function CreateEventPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">{t('create.tickets')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Tickets (link-out only)</h2>
           </div>
           <p className="text-gray-600 mb-4">
             {t('create.ticketsDescription')}
@@ -484,18 +484,18 @@ export default function CreateEventPage() {
           <div className="space-y-4">
             <input
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-              placeholder={t('create.externalLink')}
+              placeholder="https://..."
               value={externalUrl}
               onChange={e => setExternalUrl(e.target.value)}
             />
             <textarea
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
               rows={5}
-              placeholder={t('create.ticketInstructions')}
+              placeholder="e.g. Pay via Momo / VietQR then fill this form..."
               value={ticketInstructions}
               onChange={e => setTicketInstructions(e.target.value)}
             />
-            <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
+            <p className="text-sm text-gray-500">Optional: Add external ticket link and instructions</p>
           </div>
         </section>
 
@@ -552,7 +552,7 @@ export default function CreateEventPage() {
               })}
           </div>
             {categories.length === 0 && (
-              <p className="text-sm text-gray-500 mt-2">{t('validate.category')}</p>
+              <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
           )}
         </section>
 
@@ -578,7 +578,7 @@ export default function CreateEventPage() {
               value={capacity} 
               onChange={(e) => setCapacity(e.target.value)}
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-              placeholder={t('create.maxAttendeesPlaceholder')}
+              placeholder="Maximum attendees"
             />
             <p className="text-sm text-gray-500 mt-2">{t('create.capacity.note')}</p>
           </div>
@@ -612,7 +612,7 @@ export default function CreateEventPage() {
                 <div className="space-y-4">
                 <img 
                   src={coverImagePreview} 
-                  alt={t('create.coverPreview')} 
+                    alt="Cover Preview"
                     className="mx-auto max-w-full max-h-64 object-cover rounded-xl border border-gray-200 shadow-lg"
                 />
                   <div className="flex justify-center gap-3">

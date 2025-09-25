@@ -10,54 +10,54 @@ export default function Footer() {
         {/* FAQ */}
         <div className="space-y-4 mb-10">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {t('footer.faq.title')}
+            Frequently Asked Questions
           </h2>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>{t('footer.faq.bestEvents')}</span>
+              <span>How do you find the best events?</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              {t('footer.faq.bestEventsAnswer')}
+              We curate events from trusted organizers and venues across Hanoi.
             </p>
           </details>
           <details className="group border-b pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>{t('footer.faq.nearMe')}</span>
+              <span>How do you find events near me?</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              {t('footer.faq.nearMeAnswer')}
+              Use our location filter to find events in your area.
             </p>
           </details>
           <details className="group pb-4">
             <summary className="flex justify-between cursor-pointer text-lg font-semibold text-gray-900">
-              <span>{t('footer.faq.upcoming')}</span>
+              <span>How often are events updated?</span>
               <span className="text-indigo-600 group-open:rotate-180 transition">⌄</span>
             </summary>
             <p className="mt-2 text-gray-600">
-              {t('footer.faq.upcomingAnswer')}
+              We update our event listings every Friday with fresh content.
             </p>
           </details>
         </div>
 
         {/* Email Capture Section */}
         <div className="mb-10 p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
-          <h3 className="text-xl font-bold text-gray-900 mb-3">{t('footer.email.title')}</h3>
-          <p className="text-gray-600 mb-4">{t('footer.email.subtitle')}</p>
+          <h3 className="text-xl font-bold text-gray-900 mb-3">Stay Updated</h3>
+          <p className="text-gray-600 mb-4">Get the best events in Hanoi delivered to your inbox</p>
           <EmailCapture />
         </div>
 
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
           <div className="space-y-2">
             <div className="font-semibold text-gray-900">Suki</div>
-            <p className="text-gray-600">{t('footer.suki.description')}</p>
+            <p className="text-gray-600">Suki is your guide to the best events happening in Hanoi this week.</p>
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-gray-900">{t('footer.product.title')}</div>
+            <div className="font-semibold text-gray-900">Product</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
-              <li><Link to="/browse-events">{t('nav.browseEvents')}</Link></li>
+              <li><Link to="/browse-events">Browse Events</Link></li>
               <li><Link to="/create">Create Event</Link></li>
               <li><Link to="/saved">Saved</Link></li>
               <li><Link to="/manage-events">Manage Events</Link></li>
@@ -65,7 +65,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-2">
-            <div className="font-semibold text-gray-900">{t('footer.company.title')}</div>
+            <div className="font-semibold text-gray-900">Company</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
               <li><a href="https://status.suki.example" target="_blank" rel="noopener">Status</a></li>
               <li><a href="/terms" onClick={e => e.preventDefault()}>Terms</a></li>
@@ -76,9 +76,9 @@ export default function Footer() {
 
           {/* Contact us */}
           <div className="space-y-3">
-            <div className="font-semibold text-gray-900">{t('footer.contact.title')}</div>
+            <div className="font-semibold text-gray-900">Contact</div>
             <p className="text-gray-600">
-              {t('footer.contact.subtitle')}
+              Get in touch with our team
             </p>
             <div className="space-y-1">
               <a
@@ -100,9 +100,9 @@ export default function Footer() {
         <div className="mt-12 pt-6 border-t text-xs text-gray-500 flex flex-wrap items-center justify-between gap-2">
           <span>© {new Date().getFullYear()} Suki</span>
           <div className="flex items-center gap-3">
-            <a href="/cookies" onClick={e => e.preventDefault()}>{t('footer.cookies')}</a>
+            <a href="/cookies" onClick={e => e.preventDefault()}>Cookies</a>
             <span>•</span>
-            <span>{t('footer.vietnam')}</span>
+            <span>Vietnam</span>
           </div>
         </div>
       </div>

@@ -293,9 +293,9 @@ export default function CopyEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('copy.signInRequired')}</h2>
-            <p className="text-gray-600 mb-6">{t('copy.signInPrompt')}</p>
-            <a href="/auth" className="btn btn-primary">{t('copy.signInBtn')}</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please sign in to copy events</h2>
+            <p className="text-gray-600 mb-6">You need to sign in to copy events</p>
+            <a href="/auth" className="btn btn-primary">Sign In</a>
           </div>
         </div>
       </div>
@@ -309,9 +309,9 @@ export default function CopyEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('copy.notFound')}</h2>
-            <p className="text-gray-600 mb-6">{t('copy.notFoundPrompt')}</p>
-            <a href="/manage-events" className="btn btn-primary">{t('copy.backToEvents')}</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Original event not found</h2>
+            <p className="text-gray-600 mb-6">The event you want to copy doesn't exist or was deleted</p>
+            <a href="/manage-events" className="btn btn-primary">Back to Events</a>
           </div>
         </div>
       </div>
@@ -347,12 +347,12 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.title')} <span className="text-red-500">*</span></h2>
+                <h2 className="text-2xl font-bold text-gray-900">Event Title <span className="text-red-500">*</span></h2>
               </div>
               <p className="text-gray-600 mb-6">{t('create.titleHelp')}</p>
               <input 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
-                placeholder={t('create.titlePlaceholder')} 
+                placeholder="Enter event title" 
                 value={title} 
                 onChange={e => setTitle(e.target.value)} 
                 required
@@ -367,14 +367,14 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.description')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Description</h2>
               </div>
               <p className="text-gray-600 mb-6">{t('create.descriptionHelp')}</p>
               <textarea 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
                 rows={8} 
                 maxLength={descMax} 
-                placeholder={t('create.descriptionPlaceholder')}
+                placeholder="About this event (up to 4,000 characters)"
                 value={description} 
                 onChange={e => setDescription(e.target.value)} 
               />
@@ -389,7 +389,7 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.categories')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
               </div>
               <p className="text-gray-600 mb-6">{t('create.categoriesHelp')}</p>
               <div className="flex flex-wrap gap-2">
@@ -417,7 +417,7 @@ export default function CopyEvent() {
                 })}
               </div>
               {categories.length === 0 && (
-                <p className="text-sm text-red-500 mt-3">{t('validate.category')}</p>
+                <p className="text-sm text-red-500 mt-3">Please select at least one category</p>
               )}
             </section>
 
@@ -429,11 +429,11 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.whenWhere')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">When & Where</h2>
               </div>
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startDate')} *</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Start Date *</label>
                   <input 
                     type="date" 
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -443,7 +443,7 @@ export default function CopyEvent() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startTime')} *</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">Start Time *</label>
                   <input 
                     type="time" 
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -453,7 +453,7 @@ export default function CopyEvent() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endDate')}</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">End Date</label>
                   <input 
                     type="date" 
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -463,7 +463,7 @@ export default function CopyEvent() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endTime')}</label>
+                  <label className="text-sm font-medium text-gray-700 block mb-2">End Time</label>
                   <input 
                     type="time" 
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -483,7 +483,7 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Venue</h2>
               </div>
               <LocationSelector 
                 onLocationChange={setLocationData}
@@ -499,9 +499,9 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.cover')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Cover Image</h2>
               </div>
-              <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
+              <p className="text-gray-600 mb-6">Drag & drop a 16:9 image (min 1200×675) or click to upload</p>
               
               <EventCoverUploader
                 onUpload={handleCoverImageUpload}
@@ -519,7 +519,7 @@ export default function CopyEvent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('create.coverUpload')}</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Upload New Cover</h3>
                   <p className="text-sm text-gray-500">{t('create.dropCover')}</p>
                 </div>
               )}
@@ -533,7 +533,7 @@ export default function CopyEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.tickets')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Tickets (link-out only)</h2>
               </div>
               <p className="text-gray-600 mb-4">
                 {t('create.ticketsDescription')}
@@ -541,18 +541,18 @@ export default function CopyEvent() {
               <div className="space-y-4">
                 <input
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder={t('create.externalLink')}
+                  placeholder="https://..."
                   value={externalUrl}
                   onChange={e => setExternalUrl(e.target.value)}
                 />
                 <textarea
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
                   rows={5}
-                  placeholder={t('create.ticketInstructions')}
+                  placeholder="e.g. Pay via Momo / VietQR then fill this form..."
                   value={ticketInstructions}
                   onChange={e => setTicketInstructions(e.target.value)}
                 />
-                <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
+                <p className="text-sm text-gray-500">Optional: Add external ticket link and instructions</p>
               </div>
             </section>
 
@@ -563,7 +563,7 @@ export default function CopyEvent() {
                 onClick={() => navigate('/manage-events')}
                 className="btn btn-ghost text-lg px-8 py-3 flex-1"
               >
-                {t('form.cancel')}
+                Cancel
               </button>
               <button
                 type="submit"

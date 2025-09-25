@@ -278,7 +278,7 @@ export default function ManageEvents() {
               }`}
             >
               <List className="w-4 h-4" />
-              {t('manage.view.list')}
+              List View
             </button>
             <button
               onClick={() => setViewMode('calendar')}
@@ -289,12 +289,12 @@ export default function ManageEvents() {
               }`}
             >
               <CalendarDays className="w-4 h-4" />
-              {t('manage.view.calendar')}
+              Calendar View
             </button>
           </div>
           
           <a href="/create" className="btn btn-primary">
-            {t('manage.createNew')}
+            Create New Event
           </a>
         </div>
 
@@ -379,14 +379,14 @@ export default function ManageEvents() {
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Eye className="w-4 h-4 mr-2" />
-                                  {t('manage.actions.view')}
+                                  View
                                 </button>
                                 <button
                                   onClick={() => handleEditEvent(event)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Edit className="w-4 h-4 mr-2" />
-                                  {t('manage.actions.edit')}
+                                  Edit
                                 </button>
                                 <button
                                   onClick={() => copyEventLink(event.id)}
@@ -400,14 +400,14 @@ export default function ManageEvents() {
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <CopyIcon className="w-4 h-4 mr-2" />
-                                  {t('manage.copy')}
+                                  Copy
                                 </button>
                                 <button
                                   onClick={() => handleDeleteEvent(event.id)}
                                   className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
-                                  {t('manage.actions.delete')}
+                                  Delete
                                 </button>
                               </div>
                             )}
@@ -426,8 +426,8 @@ export default function ManageEvents() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CalendarDays className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('manage.calendarView')}</h3>
-            <p className="text-gray-600">{t('manage.calendarComingSoon')}</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Calendar View</h3>
+            <p className="text-gray-600">Calendar view coming soon!</p>
           </div>
         )}
 

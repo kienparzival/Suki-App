@@ -261,9 +261,9 @@ export default function EventPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="text-6xl mb-4">❌</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">{t('event.notFound')}</h1>
-            <p className="text-gray-600 mb-6">{t('event.error')}</p>
-            <button className="btn btn-primary" onClick={() => navigate(-1)}>{t('common.goBack')}</button>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Event Not Found</h1>
+            <p className="text-gray-600 mb-6">Error loading event</p>
+            <button className="btn btn-primary" onClick={() => navigate(-1)}>Go Back</button>
           </div>
         </div>
       </div>
@@ -450,7 +450,7 @@ export default function EventPage() {
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-blue-600" />
                   <div>
-                    <div className="font-medium text-gray-900">{t('event.duration')}</div>
+                    <div className="font-medium text-gray-900">Duration</div>
                     <div className="text-gray-600">{durationHours} hour{durationHours !== 1 ? 's' : ''}</div>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function EventPage() {
                 <div className="flex items-center gap-3">
                   <Users className="w-5 h-5 text-blue-600" />
                   <div>
-                    <div className="font-medium text-gray-900">{t('event.capacity')}</div>
+                    <div className="font-medium text-gray-900">Capacity</div>
                     <div className="text-gray-600">{event.capacity || t('event.unlimited')}</div>
                   </div>
                 </div>
@@ -467,7 +467,7 @@ export default function EventPage() {
 
             {/* Location Section */}
             <section>
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('event.location')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Location</h2>
               <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-start gap-3 mb-4">

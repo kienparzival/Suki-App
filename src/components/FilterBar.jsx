@@ -149,14 +149,14 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
     <section className="space-y-6">
       {/* Category Filter */}
       <div>
-        <label className="text-sm text-neutral-500 mb-3 block font-medium">{t('categoryLabel')}</label>
+        <label className="text-sm text-neutral-500 mb-3 block font-medium">Category</label>
         <CategoryScroller selected={selectedCategory} onChange={onCategoryChange} />
       </div>
       
       {/* Browsing Location Section */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-base text-neutral-700 font-medium">{t('browsingEventsIn')}</span>
+          <span className="text-base text-neutral-700 font-medium">Browsing events in</span>
           <button
             className="flex items-center gap-1 text-brand-600 hover:text-brand-700 transition-colors"
             onClick={() => setShowLocationDropdown(!showLocationDropdown)}
@@ -178,7 +178,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
                 <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-gray-600 font-medium">{t('browseAllLocations')}</span>
+                <span className="text-gray-600 font-medium">Browse all locations</span>
               </div>
             </button>
             
@@ -193,7 +193,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-blue-600 font-medium">{t('useCurrentLocation')}</span>
+                <span className="text-blue-600 font-medium">Use current location</span>
               </div>
             </button>
             
@@ -207,7 +207,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
                 <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="text-green-600 font-medium">{t('browseOnlineEvents')}</span>
+                <span className="text-green-600 font-medium">Browse online events</span>
               </div>
             </button>
           </div>
@@ -226,7 +226,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
               }`}
               onClick={() => onTimeFilterChange('all')}
             >
-              {t('all')}
+              All
             </button>
             <button
               className={`pb-3 px-1 font-medium transition-all duration-200 ${
@@ -236,7 +236,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
               }`}
               onClick={() => onTimeFilterChange('today')}
             >
-              {t('today')}
+              Today
             </button>
             <button
               className={`pb-3 px-1 font-medium transition-all duration-200 ${
@@ -246,7 +246,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
               }`}
               onClick={() => onTimeFilterChange('weekend')}
             >
-              {t('thisWeekend')}
+              This Weekend
             </button>
           </div>
         </div>

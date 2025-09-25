@@ -433,7 +433,7 @@ export default function Profile() {
                     value={profile.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.firstName')}
+                    placeholder="First Name"
                   />
                 </div>
                 <div>

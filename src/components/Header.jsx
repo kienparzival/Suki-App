@@ -331,7 +331,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                 <input
                   type="text"
                   className="w-full px-3 py-2 pl-10 border-0 focus:outline-none focus:ring-0"
-                  placeholder={t('searchPlaceholder')}
+                  placeholder="Search events, artists, venues..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onFocus={() => setSearchFocused(true)}
@@ -343,7 +343,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
               {searchFocused && recentSearches.length > 0 && (
                 <div className="absolute z-20 mt-1 w-full bg-white border border-neutral-200 rounded-lg shadow-lg">
                   <div className="p-2">
-                    <div className="text-xs font-medium text-neutral-500 mb-2 px-2">{t('recentSearches')}</div>
+                    <div className="text-xs font-medium text-neutral-500 mb-2 px-2">Recent searches</div>
                     {recentSearches.map((search, index) => (
                       <div key={index} className="flex items-center justify-between group hover:bg-neutral-50 rounded px-2 py-2">
                         <button
@@ -379,7 +379,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
               <input
                 type="text"
                 className="w-full px-3 py-2 pl-10 border-0 focus:outline-none focus:ring-0"
-                placeholder={t('locationPlaceholder')}
+                placeholder="Choose location"
                 value={locationInput}
                 onChange={(e) => { setLocationInput(e.target.value); setOpen(true) }}
                 onFocus={() => setOpen(true)}
@@ -394,7 +394,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                   >
                     <div className="flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-blue-500" />
-                      <span className="text-blue-600 font-medium">{t('useCurrentLocation')}</span>
+                      <span className="text-blue-600 font-medium">Use current location</span>
                     </div>
                   </button>
                   
@@ -408,7 +408,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                       <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <span className="text-green-600 font-medium">{t('browseOnlineEvents')}</span>
+                      <span className="text-green-600 font-medium">Browse online events</span>
                     </div>
                   </button>
                   
@@ -416,7 +416,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                   {suggestions.length > 0 && (
                     <>
                       <div className="px-3 py-2 text-xs font-medium text-neutral-500 bg-neutral-50 border-b border-neutral-100">
-                        {t('cities')}
+                        Cities
                       </div>
                   {suggestions.map(c => (
                     <button
@@ -440,18 +440,18 @@ export default function Header({ searchTerm, setSearchTerm }) {
         <nav className="flex items-center gap-1">
           <NavLink to="/" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
             <Star className="w-5 h-5 mb-1" />
-            <span className="text-xs">{t('discover')}</span>
+            <span className="text-xs">Discover</span>
           </NavLink>
           {/* Tickets removed */}
           {user && (
             <NavLink to="/saved" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
               <Heart className="w-5 h-5 mb-1"/> 
-              <span className="text-xs">{t('saved')}</span>
+              <span className="text-xs">Saved</span>
             </NavLink>
           )}
           <NavLink to="/create" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
             <Plus className="w-5 h-5 mb-1"/> 
-            <span className="text-xs">{t('createEvent')}</span>
+            <span className="text-xs">Create Event</span>
           </NavLink>
           
           {/* Profile/Sign In Section */}
@@ -498,28 +498,28 @@ export default function Header({ searchTerm, setSearchTerm }) {
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      {t('manageMyEvents')}
+                      Manage My Events
                     </NavLink>
                     <NavLink 
                       to="/saved" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      {t('saved')}
+                      Saved
                     </NavLink>
                     <NavLink 
                       to="/profile" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      {t('accountSettings')}
+                      Account Settings
                     </NavLink>
                     <hr className="my-2 border-neutral-200" />
                     <button
                       onClick={handleSignOut}
                       className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
-                      {t('logOut')}
+                      Log Out
                     </button>
                   </div>
                 </div>
@@ -527,7 +527,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             </div>
           ) : (
             <NavLink to="/auth" className="btn btn-ghost">
-              <LogIn className="size-4 mr-1"/> {t('signIn')}
+              <LogIn className="size-4 mr-1"/> Sign In
             </NavLink>
           )}
         </nav>
@@ -542,7 +542,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
               <input
                 type="text"
                 className="w-full h-11 pl-10 pr-3 text-[15px] border border-neutral-300 rounded-lg bg-white outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 placeholder:text-neutral-400"
-                placeholder={t('searchPlaceholder')}
+                placeholder="Search events, artists, venues..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onFocus={() => setSearchFocused(true)}
@@ -552,7 +552,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             {searchFocused && recentSearches.length > 0 && (
               <div className="absolute z-50 mt-1 w-full bg-white border border-neutral-200 rounded-lg shadow-lg">
                 <div className="p-2">
-                  <div className="text-xs font-medium text-neutral-500 mb-2 px-2">{t('recentSearches')}</div>
+                  <div className="text-xs font-medium text-neutral-500 mb-2 px-2">Recent searches</div>
                   {recentSearches.map((search, index) => (
                     <div key={index} className="flex items-center justify-between group hover:bg-neutral-50 rounded px-2 py-2">
                       <button
@@ -585,7 +585,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             <input
               type="text"
               className="w-full h-11 pl-10 pr-3 text-[15px] border border-neutral-300 rounded-lg bg-white outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 placeholder:text-neutral-400"
-              placeholder={t('locationPlaceholder')}
+              placeholder="Choose location"
               value={locationInput}
               onChange={(e) => { setLocationInput(e.target.value); setOpen(true) }}
               onFocus={() => setOpen(true)}
@@ -599,7 +599,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                 >
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-blue-500" />
-                    <span className="text-blue-600 font-medium">{t('useCurrentLocation')}</span>
+                    <span className="text-blue-600 font-medium">Use current location</span>
                   </div>
                 </button>
                 <button
@@ -611,13 +611,13 @@ export default function Header({ searchTerm, setSearchTerm }) {
                     <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span className="text-green-600 font-medium">{t('browseOnlineEvents')}</span>
+                    <span className="text-green-600 font-medium">Browse online events</span>
                   </div>
                 </button>
                 {suggestions.length > 0 && (
                   <>
                     <div className="px-3 py-2 text-xs font-medium text-neutral-500 bg-neutral-50 border-b border-neutral-100">
-                      {t('cities')}
+                      Cities
                     </div>
                     {suggestions.map(c => (
                       <button

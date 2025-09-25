@@ -140,9 +140,9 @@ export default function EditEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🔒</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('editEvent.signInRequired')}</h2>
-            <p className="text-gray-600 mb-6">{t('editEvent.signInPrompt')}</p>
-            <a href="/auth" className="btn btn-primary">{t('editEvent.signInBtn')}</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Please sign in to edit events</h2>
+            <p className="text-gray-600 mb-6">You need to sign in to edit events</p>
+            <a href="/auth" className="btn btn-primary">Sign In</a>
           </div>
         </div>
       </div>
@@ -156,9 +156,9 @@ export default function EditEvent() {
         <div className="container mx-auto px-6 py-12">
           <div className="text-center py-16">
             <div className="text-6xl mb-4">❌</div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-2">{t('editEvent.notFound')}</h2>
-            <p className="text-gray-600 mb-6">{t('editEvent.notFoundPrompt')}</p>
-            <a href="/manage-events" className="btn btn-primary">{t('editEvent.backToEvents')}</a>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-2">Event not found</h2>
+            <p className="text-gray-600 mb-6">The event you're trying to edit doesn't exist or was deleted</p>
+            <a href="/manage-events" className="btn btn-primary">Back to Events</a>
           </div>
         </div>
       </div>
@@ -425,7 +425,7 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.title')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Event Title</h2>
               </div>
               <input
                 type="text"
@@ -433,7 +433,7 @@ export default function EditEvent() {
                 onChange={(e) => setTitle(e.target.value)}
                 required
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg"
-                placeholder={t('create.titlePlaceholder')}
+                  placeholder="Enter event title"
               />
             </section>
 
@@ -445,7 +445,7 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.description')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Description</h2>
               </div>
               <textarea
                 value={description}
@@ -453,7 +453,7 @@ export default function EditEvent() {
                 rows={8}
                 maxLength={4000}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
-                placeholder={t('create.descriptionPlaceholder')}
+                placeholder="About this event (up to 4,000 characters)"
               />
             </section>
 
@@ -465,9 +465,9 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.categories')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
             </div>
-              <p className="text-gray-600 mb-6">{t('eventForm.categoriesHelp')}</p>
+              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
@@ -493,7 +493,7 @@ export default function EditEvent() {
                 })}
             </div>
               {categories.length === 0 && (
-                <p className="text-sm text-gray-500 mt-2">{t('validate.category')}</p>
+                <p className="text-sm text-gray-500 mt-2">Please select at least one category</p>
               )}
             </section>
 
@@ -505,11 +505,11 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.whenWhere')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">When & Where</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.startDate')} *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label>
                 <input
                   type="date"
                   value={date}
@@ -519,7 +519,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.startTime')} *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Time *</label>
                 <input
                   type="time"
                   value={startTime}
@@ -529,7 +529,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.endDate')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
                 <input
                   type="date"
                   value={endDate}
@@ -539,7 +539,7 @@ export default function EditEvent() {
                 />
               </div>
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('create.endTime')}</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">End Time</label>
                 <input
                   type="time"
                   value={endTime}
@@ -559,7 +559,7 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Venue</h2>
               </div>
               <LocationSelector 
                 onLocationChange={setLocationData}
@@ -576,17 +576,17 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('eventForm.cover')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Cover Image</h2>
               </div>
-              <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
+              <p className="text-gray-600 mb-6">Drag & drop a 16:9 image (min 1200×675) or click to upload</p>
               
               {event?.id ? (
                 <div className="space-y-6">
                   {event.cover_url && (
                     <div className="relative">
-                      <img src={event.cover_url} alt={t('create.coverPreview')} className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
+                      <img src={event.cover_url} alt="Cover Preview" className="w-full h-64 object-cover rounded-xl border border-gray-200 shadow-sm" />
                       <div className="absolute top-3 right-3 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                        {t('create.currentCover')}
+                        Current Cover
                     </div>
                     </div>
                   )}
@@ -605,8 +605,8 @@ export default function EditEvent() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('create.coverUpload')}</h3>
-                  <p className="text-gray-500">{t('create.saveFirst')}</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Upload New Cover</h3>
+                  <p className="text-gray-500">Save your event first to upload a cover image</p>
                   </div>
                 )}
             </section>
@@ -619,23 +619,23 @@ export default function EditEvent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m-9 4h12M7 15h10" />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">{t('create.tickets')}</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Tickets (link-out only)</h2>
               </div>
               <div className="space-y-4">
                 <input
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
-                  placeholder={t('create.externalLinkPlaceholder')}
+                    placeholder="https://..."
                   value={externalUrl}
                   onChange={(e) => setExternalUrl(e.target.value)}
                 />
                 <textarea
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
                   rows={5}
-                  placeholder={t('create.ticketInstructionsPlaceholder')}
+                  placeholder="e.g. Pay via Momo / VietQR then fill this form..."
                   value={ticketInstructions}
                   onChange={(e) => setTicketInstructions(e.target.value)}
                 />
-                <p className="text-sm text-gray-500">{t('create.ticketsOptional')}</p>
+                <p className="text-sm text-gray-500">Optional: Add external ticket link and instructions</p>
               </div>
             </section>
 
@@ -646,7 +646,7 @@ export default function EditEvent() {
                 onClick={() => navigate('/manage-events')}
                 className="btn btn-ghost text-lg px-8 py-3 flex-1"
               >
-                {t('form.cancel')}
+                Cancel
               </button>
               <button
                 type="submit"
