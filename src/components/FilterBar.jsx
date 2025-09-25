@@ -125,12 +125,12 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
         },
         (error) => {
           console.error('Error getting current location:', error);
-          alert('Could not get your current location. Please choose a city manually.');
+            alert("Could not get your current location. Please choose a city manually");
           setShowLocationDropdown(false);
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser.');
+      alert("Geolocation is not supported by your browser");
       setShowLocationDropdown(false);
     }
   };
@@ -162,7 +162,7 @@ export default function FilterBar({ selectedCategory, onCategoryChange, browsing
             onClick={() => setShowLocationDropdown(!showLocationDropdown)}
           >
             <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showLocationDropdown ? 'rotate-180' : ''}`} />
-            <span className="font-medium">{browsingLocation || t('allLocations')}</span>
+            <span className="font-medium">{browsingLocation || "all Locations"}</span>
           </button>
         </div>
         

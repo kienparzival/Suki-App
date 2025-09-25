@@ -11,8 +11,8 @@ export function toIsoInGMT7(dateString, timeString) {
   if (!dateString || !timeString) return ''
   
   // Create date in GMT+7 by manually adjusting for the timezone offset
-  const [year, month, day] = dateString.split('-').map(n => parseInt(n, 10))
-  const [hours, minutes] = timeString.split(':').map(n => parseInt(n, 10))
+  const [year, month, day] = dateString.split("-".map(n => parseInt(n, 10))
+  const [hours, minutes] = timeString.split(":".map(n => parseInt(n, 10))
   
   // Create date object in local time, then adjust for GMT+7
   const localDate = new Date(year, month - 1, day, hours, minutes, 0)
@@ -100,7 +100,7 @@ export function getCurrentGMT7() {
  */
 export function getTodayGMT7() {
   const today = getCurrentGMT7()
-  return today.toISOString().split('T')[0]
+  return today.toISOString().split("T"[0]
 }
 
 /**
@@ -108,5 +108,5 @@ export function getTodayGMT7() {
  */
 export function getCurrentTimeGMT7() {
   const now = getCurrentGMT7()
-  return now.toTimeString().split(' ')[0].substring(0, 5)
+  return now.toTimeString().split(""[0].substring(0, 5)
 }

@@ -51,7 +51,7 @@ export default function Profile() {
           const parsed = JSON.parse(savedProfile)
           // Ensure interests are properly formatted as array
           if (parsed.interests && typeof parsed.interests === 'string') {
-            parsed.interests = parsed.interests.split(',').map(s => s.trim()).filter(Boolean)
+              parsed.interests = parsed.interests.split(',').map(s => s.trim()).filter(Boolean)
           } else if (!parsed.interests) {
             parsed.interests = []
           }
@@ -154,7 +154,7 @@ export default function Profile() {
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('avatar_url')
+            .select("avatar_url")
             .eq('id', user.id)
             .single()
           
@@ -183,8 +183,8 @@ export default function Profile() {
     return new Promise((resolve) => {
       const img = new Image()
       img.onload = () => {
-        const canvas = document.createElement('canvas')
-        const ctx = canvas.getContext('2d')
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
         
         // Calculate new dimensions
         let { width, height } = img
@@ -653,7 +653,7 @@ export default function Profile() {
                   onClick={handleSave}
                   disabled={saving}
                 >
-                  {saving ? t('profile.saving') : t('profile.saveChanges')}
+                  {saving ? "profile saving" : "profile save Changes"}
                 </button>
                 <button 
                       className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium" 

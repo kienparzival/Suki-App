@@ -95,7 +95,7 @@ export default function CopyEvent() {
     // Set date to tomorrow by default
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    setDate(tomorrow.toISOString().split('T')[0])
+    setDate(tomorrow.toISOString().split("T")[0])
     
     // Use timezone helpers to extract date/time properly
     setStartTime(extractBangkokTime(originalEvent.start_at))
@@ -156,16 +156,16 @@ export default function CopyEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!user) {
-      alert(t('create.signInRequired'))
+      alert("create sign In Required")
       return
     }
 
-    if (!title.trim()) { alert(t('create.titleRequired')); return }
-    if (!date || !startTime) { alert(t('create.dateRequired')); return }
-    if (categories.length === 0) { alert(t('create.categoryRequired')); return }
-    if (!coverImagePreview && (!coverImage)) { alert(t('create.imageRequired')); return }
+    if (!title.trim()) { alert("create title Required"); return }
+    if (!date || !startTime) { alert("create date Required"); return }
+    if (categories.length === 0) { alert("create category Required"); return }
+    if (!coverImagePreview && (!coverImage)) { alert("create image Required"); return }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
-      alert(t('create.venueRequired')); 
+      alert("create venue Required"); 
       return 
     }
 
@@ -175,7 +175,7 @@ export default function CopyEvent() {
 
     // Validate timeline
     if (new Date(end_at) < new Date(start_at)) {
-      alert(t('create.endAfterStart'))
+      alert("create end After Start")
       return
     }
 
@@ -201,7 +201,7 @@ export default function CopyEvent() {
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert(t('create.venueError', { msg: venueError.message }))
+            alert(`Error creating venue: ${venueError.message}`)
             setLoading(false)
             return
           }
@@ -215,12 +215,12 @@ export default function CopyEvent() {
                 name: locationData.name.trim(),
                 address: locationData.address || null
             })
-            .select('id')
+            .select("id")
             .single()
           
           if (venueError) {
             console.error('Error creating venue:', venueError)
-            alert(t('create.venueError', { msg: venueError.message }))
+            alert(`Error creating venue: ${venueError.message}`)
             setLoading(false)
             return
           }
@@ -276,7 +276,7 @@ export default function CopyEvent() {
         return
       }
 
-      alert(t('create.copySuccess'))
+      alert("create copy Success")
       navigate('/manage-events')
     } catch (error) {
       console.error('Error copying event:', error)
@@ -349,7 +349,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Event Title <span className="text-red-500">*</span></h2>
               </div>
-              <p className="text-gray-600 mb-6">{t('create.titleHelp')}</p>
+              <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
               <input 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
                 placeholder="Enter event title" 
@@ -369,7 +369,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Description</h2>
               </div>
-              <p className="text-gray-600 mb-6">{t('create.descriptionHelp')}</p>
+              <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
               <textarea 
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
                 rows={8} 
@@ -391,7 +391,7 @@ export default function CopyEvent() {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
               </div>
-              <p className="text-gray-600 mb-6">{t('create.categoriesHelp')}</p>
+              <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
               <div className="flex flex-wrap gap-2">
                 {CATEGORIES.map(opt => {
                   const selected = categories.includes(opt)
@@ -520,7 +520,7 @@ export default function CopyEvent() {
                     </svg>
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">Upload New Cover</h3>
-                  <p className="text-sm text-gray-500">{t('create.dropCover')}</p>
+                  <p className="text-sm text-gray-500">Drop your cover image here</p>
                 </div>
               )}
             </section>
@@ -536,7 +536,7 @@ export default function CopyEvent() {
                 <h2 className="text-2xl font-bold text-gray-900">Tickets (link-out only)</h2>
               </div>
               <p className="text-gray-600 mb-4">
-                {t('create.ticketsDescription')}
+                Add an external link and optional instructions so attendees can buy on your site.
               </p>
               <div className="space-y-4">
                 <input
@@ -570,7 +570,7 @@ export default function CopyEvent() {
                 disabled={loading}
                 className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
-                {loading ? t('create.publishing') : t('eventForm.createCopy')}
+                {loading ? "create publishing" : "event Form create Copy"}
               </button>
             </div>
           </form>

@@ -56,7 +56,7 @@ export default function EmailCapture({ onSubscribed }) {
     setEmail('')
     // analytics
     posthog.capture('subscribe_email', { 
-      email_domain: clean.split('@')[1] || '' 
+        email_domain: clean.split('@')[1] || ''
     })
     onSubscribed?.()
   }

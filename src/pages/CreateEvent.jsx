@@ -114,8 +114,8 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature1.title')}</h3>
-                <p className="text-gray-600">{t('create.feature1.desc')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Easy Event Creation</h3>
+                <p className="text-gray-600">Create professional events in minutes with our intuitive interface</p>
               </div>
               
               <div className="text-center p-6">
@@ -124,8 +124,8 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature2.title')}</h3>
-                <p className="text-gray-600">{t('create.feature2.desc')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart Promotion</h3>
+                <p className="text-gray-600">Reach your target audience with our intelligent event discovery</p>
               </div>
               
               <div className="text-center p-6">
@@ -134,14 +134,14 @@ export default function CreateEventPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('create.feature3.title')}</h3>
-                <p className="text-gray-600">{t('create.feature3.desc')}</p>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Real-time Analytics</h3>
+                <p className="text-gray-600">Track attendance and engagement with detailed insights</p>
               </div>
             </div>
 
             {/* Social Proof */}
             <div className="text-center">
-              <p className="text-gray-500 mb-4">{t('create.trusted')}</p>
+              <p className="text-gray-500 mb-4">Trusted by event organizers across Hanoi</p>
               <div className="flex justify-center items-center gap-8 text-gray-400">
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -153,13 +153,13 @@ export default function CreateEventPage() {
                   <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                   </svg>
-                  <span>{t('create.stats.events')}</span>
+                  <span>10K+ Events</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 24 24">
                     <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{t('create.freeForever')}</span>
+                  <span>Free Forever</span>
                 </div>
               </div>
             </div>
@@ -187,13 +187,13 @@ export default function CreateEventPage() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert(t('create.imageFileType'))
+      alert("create image File Type")
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert(t('create.imageFileSize'))
+      alert("create image File Size")
       return
     }
     
@@ -226,16 +226,16 @@ export default function CreateEventPage() {
 
   const publish = async () => {
     if (!user) {
-      alert(t('create.signInRequired'))
+      alert("create sign In Required")
       return
     }
 
-    if (!title.trim()) { alert(t('create.titleRequired')); return }
-    if (!date || !startTime) { alert(t('create.dateRequired')); return }
-    if (categories.length === 0) { alert(t('create.categoryRequired')); return }
-    if (!coverImagePreview && (!images || images.length === 0)) { alert(t('create.imageRequired')); return }
+    if (!title.trim()) { alert("create title Required"); return }
+    if (!date || !startTime) { alert("create date Required"); return }
+    if (categories.length === 0) { alert("create category Required"); return }
+    if (!coverImagePreview && (!images || images.length === 0)) { alert("create image Required"); return }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) { 
-      alert(t('create.venueRequired')); 
+      alert("create venue Required"); 
       return 
     }
     // Ticketing removed
@@ -246,7 +246,7 @@ export default function CreateEventPage() {
 
     // Validate timeline
     if (new Date(end_at) < new Date(start_at)) {
-      alert(t('create.endAfterStart'))
+      alert("create end After Start")
       return
     }
 
@@ -288,12 +288,12 @@ export default function CreateEventPage() {
               name: locationData.name.trim(),
               address: locationData.address || null
           })
-          .select('id')
+          .select("id")
           .single()
         
         if (venueError) {
           console.error('Error creating venue:', venueError)
-          alert(t('create.venueError', { msg: venueError.message }))
+          alert(`Error creating venue: ${venueError.message}`)
           setPublishing(false)
           return
         }
@@ -329,7 +329,7 @@ export default function CreateEventPage() {
         // No internal tickets; link-out only
         
         // Dispatch event for other components to update
-        window.dispatchEvent(new CustomEvent('suki:events_updated'))
+          window.dispatchEvent(new CustomEvent('suki:events_updated'))
         console.log('Event created successfully, navigating to home page')
         console.log('Created event data:', eventData[0])
         navigate('/')
@@ -360,12 +360,12 @@ export default function CreateEventPage() {
               className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
               style={{ lineHeight: '1.6' }}
             >
-              {t('create.heroTitle')}
+              Create Event
             </h1>
             
             {/* Subtitle with modern typography */}
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-              {t('create.heroSubtitle')}
+              Share your event with the world in just a few simple steps
             </p>
             
             {/* Decorative line */}
@@ -479,7 +479,7 @@ export default function CreateEventPage() {
             <h2 className="text-2xl font-bold text-gray-900">Tickets (link-out only)</h2>
           </div>
           <p className="text-gray-600 mb-4">
-            {t('create.ticketsDescription')}
+            Add an external link and optional instructions so attendees can buy on your site.
           </p>
           <div className="space-y-4">
             <input
@@ -564,9 +564,9 @@ export default function CreateEventPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">{t('create.capacity.title')}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Event Capacity</h2>
           </div>
-          <p className="text-gray-600 mb-6">{t('create.capacity.description')}</p>
+          <p className="text-gray-600 mb-6">Set a maximum number of attendees for your event</p>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -580,7 +580,7 @@ export default function CreateEventPage() {
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors"
               placeholder="Maximum attendees"
             />
-            <p className="text-sm text-gray-500 mt-2">{t('create.capacity.note')}</p>
+            <p className="text-sm text-gray-500 mt-2">Leave empty for unlimited capacity</p>
           </div>
         </section> */}
 
@@ -621,14 +621,14 @@ export default function CreateEventPage() {
                     onClick={() => document.getElementById('coverImageInput').click()}
                       className="btn btn-outline"
                   >
-                    {t('create.changeImage')}
+                    Change Image
                   </button>
                   <button
                     type="button"
                     onClick={removeCoverImage}
                       className="btn btn-ghost text-red-600 hover:text-red-700"
                   >
-                    {t('create.remove')}
+                    Remove
                   </button>
                 </div>
               </div>
@@ -641,10 +641,10 @@ export default function CreateEventPage() {
                 </div>
                 <div>
                     <p className="text-xl font-medium text-gray-700">
-                    {t('create.dropCover')}
+                    Drop your cover image here
                   </p>
                     <p className="text-gray-500">
-                    {t('create.clickBrowse')}
+                    Click to browse
                   </p>
                 </div>
                 <button
@@ -652,10 +652,10 @@ export default function CreateEventPage() {
                   onClick={() => document.getElementById('coverImageInput').click()}
                     className="btn btn-outline"
                 >
-                  {t('create.browseFiles')}
+                  Browse Files
                 </button>
                   <p className="text-sm text-gray-400">
-                  {t('create.fileTypes')}
+                  JPG, PNG, GIF up to 5MB
                 </p>
               </div>
             )}
@@ -684,7 +684,7 @@ export default function CreateEventPage() {
               onClick={publish} 
               disabled={publishing}
             >
-              {publishing ? t('create.publishing') : t('create.publish')}
+              {publishing ? "create publishing" : "create publish"}
             </button>
             </div>
         </div>

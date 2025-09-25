@@ -28,7 +28,7 @@ export default function EventCoverUploader({ eventId, onDone }) {
       console.log('[EventCover] Event ID:', eventId)
 
       // Generate a safe filename (ignore original filename completely)
-      const ext = (file.name?.split('.').pop() || 'jpg').toLowerCase()
+        const ext = (file.name?.split('.').pop() || 'jpg').toLowerCase()
       // Always generate a simple, safe key: <event_id>/cover-<timestamp>.<ext>
       const path = `${eventId}/cover-${Date.now()}.${ext}`
 

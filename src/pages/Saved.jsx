@@ -32,7 +32,7 @@ export default function SavedPage() {
       try {
         const { data, error } = await supabase
           .from('events')
-          .select('*, venue:venues(*)')
+            .select('*, venue:venues(*)')
           .eq('status', 'published')
           .order('start_at', { ascending: true })
 
@@ -146,7 +146,7 @@ export default function SavedPage() {
                     await navigator.share({ title: e.title, text: 'Check out this event on Suki', url })
                   } else {
                     await navigator.clipboard.writeText(url)
-                    alert('Link copied to clipboard')
+                      alert("Link copied to clipboard")
                   }
                 } catch {}
               }

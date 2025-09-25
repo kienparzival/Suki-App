@@ -155,7 +155,7 @@ export default function ManageEvents() {
   }
 
   const handleDeleteEvent = async (eventId) => {
-    if (!window.confirm(t('eventForm.deleteConfirm'))) return
+    if (!window.confirm("event Form delete Confirm")) return
     
     try {
       const { error } = await supabase
@@ -180,7 +180,7 @@ export default function ManageEvents() {
   const copyEventLink = (eventId) => {
     const url = `${window.location.origin}/events/${eventId}`
     navigator.clipboard.writeText(url)
-    alert('Event link copied to clipboard!')
+      alert("Event link copied to clipboard!")
     setShowActionsMenu(null)
   }
 
@@ -193,17 +193,17 @@ export default function ManageEvents() {
     const now = new Date()
     const eventDate = new Date(event.start_at)
     
-    if (event.status === 'cancelled') return t('manage.status.cancelled')
-    if (eventDate < now) return t('manage.status.past')
-    if (event.status === 'published') return t('manage.status.onSale')
-    return t('manage.status.draft')
+    if (event.status === 'cancelled') return "manage status cancelled"
+    if (eventDate < now) return "manage status past"
+    if (event.status === 'published') return "manage status on Sale"
+    return "manage status draft"
   }
 
   const getStatusColor = (status) => {
     switch (status) {
-      case t('manage.status.onSale'): return 'text-green-600 bg-green-100'
-      case t('manage.status.past'): return 'text-gray-600 bg-gray-100'
-      case t('manage.status.cancelled'): return 'text-red-600 bg-red-100'
+      case "manage status on Sale": return 'text-green-600 bg-green-100'
+      case "manage status past": return 'text-gray-600 bg-gray-100'
+      case "manage status cancelled": return 'text-red-600 bg-red-100'
       default: return 'text-yellow-600 bg-yellow-100'
     }
   }
@@ -248,7 +248,7 @@ export default function ManageEvents() {
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.actions-menu')) {
+        if (!event.target.closest('.actions-menu')) {
         closeActionsMenu()
       }
     }

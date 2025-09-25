@@ -294,12 +294,12 @@ export default function Header({ searchTerm, setSearchTerm }) {
         },
         (error) => {
           console.error('Error getting current location:', error);
-          alert('Could not get your current location. Please choose a city manually.');
+            alert("Could not get your current location. Please choose a city manually.");
           setOpen(false);
         }
       );
     } else {
-      alert('Geolocation is not supported by your browser.');
+      alert("Geolocation is not supported by your browser");
       setOpen(false);
     }
   };
@@ -307,7 +307,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
   const setOnlineLocation = () => {
     const onlineLoc = { city: 'Online Events', lat: null, lng: null, mode: 'online' }
     setUserLocation(onlineLoc);
-    setLocationInput('Online Events');
+      setLocationInput('Online Events');
     localStorage.setItem('suki_user_location', JSON.stringify(onlineLoc));
     setOpen(false);
   };

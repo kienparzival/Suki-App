@@ -179,7 +179,7 @@ export default function EditEvent() {
     // Upsert the single free tier to match finalCapacity
     const { data: existing, error: checkError } = await supabase
       .from('ticket_tiers')
-      .select('id')
+      .select("id")
       .eq('event_id', event.id)
       .eq('price', 0)
       .limit(1)
@@ -212,27 +212,27 @@ export default function EditEvent() {
 
     // Validate required fields
     if (!title.trim()) {
-      alert(t('validate.title'))
+      alert("validate title")
       setLoading(false)
       return
     }
     if (!date || !startTime) {
-      alert(t('validate.dateStart'))
+      alert("validate date Start")
       setLoading(false)
       return
     }
     if (categories.length === 0) {
-      alert(t('validate.category'))
+      alert("validate category")
       setLoading(false)
       return
     }
     if (!coverImagePreview && !coverUrl) {
-      alert(t('validate.cover'))
+      alert("validate cover")
       setLoading(false)
       return
     }
     if (locationData.mode === 'venue' && !locationData.name?.trim()) {
-      alert(t('validate.venue'))
+      alert("validate venue")
       setLoading(false)
       return
     }
@@ -246,7 +246,7 @@ export default function EditEvent() {
 
       // Validate timeline
       if (startAt && endAt && new Date(endAt) < new Date(startAt)) {
-        alert(t('validate.endAfterStart'))
+        alert("validate end After Start")
         setLoading(false)
         return
       }
@@ -275,8 +275,8 @@ export default function EditEvent() {
           // Fallback for venues without coordinates - try to find existing venue first
         const { data: existingVenues, error: searchError } = await supabase
           .from('venues')
-          .select('id, name')
-            .eq('name', locationData.name)
+          .select("id, name")
+          .eq('name', locationData.name)
         
         if (!searchError && existingVenues && existingVenues.length > 0) {
           venue_id = existingVenues[0].id
@@ -288,7 +288,7 @@ export default function EditEvent() {
                 name: locationData.name,
                 address: locationData.address || null
               }])
-            .select('id, name')
+            .select("id, name")
           
           if (!createError && newVenue && newVenue.length > 0) {
             venue_id = newVenue[0].id
@@ -327,7 +327,7 @@ export default function EditEvent() {
       // Reload the event data to ensure we have the latest venue information
       const { data: updatedEvent, error: reloadError } = await supabase
         .from('events')
-        .select('*, venue:venues(*)')
+        .select("*, venue:venues(*)")
         .eq('id', event.id)
         .single()
       
@@ -335,7 +335,7 @@ export default function EditEvent() {
         console.error('Error reloading event data:', reloadError)
       }
 
-      alert(t('editEvent.saved'))
+      alert("edit Event saved")
       navigate('/manage-events')
     } catch (error) {
       console.error('Error updating event:', error)
@@ -351,13 +351,13 @@ export default function EditEvent() {
     
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert(t('create.imageFileType'))
+      alert("create image File Type")
       return
     }
     
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert(t('create.imageFileSize'))
+      alert("create image File Size")
       return
     }
     
@@ -653,7 +653,7 @@ export default function EditEvent() {
                 disabled={loading}
                 className="btn text-lg px-8 py-3 flex-1 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl"
               >
-                {loading ? t('create.publishing') : t('eventForm.updateEvent')}
+                {loading ? "create publishing" : "event Form update Event"}
               </button>
             </div>
             
