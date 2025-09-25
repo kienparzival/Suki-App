@@ -11,31 +11,12 @@ import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
 import '../styles.css'
-import { useLang } from '../i18n/LangContext.jsx'
 
 export default function EditEvent() {
   const { user } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
   const event = location.state?.event
-  const { t, fmtDate } = useLang()
-
-  // Helper function to get translated category name
-  const getCategoryLabel = (category) => {
-    // normalize: lower, remove all non-alphanumerics to create a stable key
-    const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, '')
-    // try exact (clean) key first, then try a few common alternates, then fallback
-    const candidates = [
-      `categories.${slug}`,
-      // also try using hyphen word-joins if needed
-      `categories.${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-    ]
-    for (const k of candidates) {
-      const val = t(k)
-      if (val !== k) return val
-    }
-    return t(`categories.other`) || category
-  }
 
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -421,12 +402,12 @@ export default function EditEvent() {
               className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
               style={{ lineHeight: '1.6' }}
             >
-              {t('editEvent.title')}
+              Edit Event
             </h1>
             
             {/* Subtitle with modern typography */}
             <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-              {t('editEvent.subtitle')}
+              Update your event details and settings
             </p>
             
             {/* Decorative line */}
@@ -506,7 +487,7 @@ export default function EditEvent() {
                       }`}
                       aria-pressed={selected}
                     >
-                      {getCategoryLabel(opt)}
+                      {opt}
                     </button>
                   )
                 })}

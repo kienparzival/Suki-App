@@ -4,7 +4,6 @@ import { MapPin, Ticket, Heart, Star, Plus, User, LogIn, ChevronDown, Search } f
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
 import { trackSearch } from '../lib/analytics.js'
-import { useLang } from '../i18n/LangContext.jsx'
 
 const cities = [
   // Major Cities & Provinces
@@ -82,8 +81,7 @@ const cities = [
 export default function Header({ searchTerm, setSearchTerm }) {
   const { user, signOut } = useAuth()
   const { userLocation, setUserLocation } = useLocation()
-  const { t } = useLang()
-  const [locationInput, setLocationInput] = useState(userLocation?.city || '')
+    const [locationInput, setLocationInput] = useState(userLocation?.city || '')
   const [open, setOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
   const [searchFocused, setSearchFocused] = useState(false)
@@ -493,7 +491,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      {t('browse.title')}
+                      Browse Events
                     </NavLink>
                     <NavLink 
                       to="/manage-events" 

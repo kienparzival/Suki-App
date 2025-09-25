@@ -2,11 +2,9 @@ import React, { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { CATEGORIES } from '../constants/categories'
 import CategoryScroller from './CategoryScroller'
-import { useLang } from '../i18n/LangContext.jsx'
 
 export default function FilterBar({ selectedCategory, onCategoryChange, browsingLocation, onLocationChange, selectedTimeFilter, onTimeFilterChange }) {
-	const { t } = useLang()
-	const [showAllCategories, setShowAllCategories] = useState(false)
+		const [showAllCategories, setShowAllCategories] = useState(false)
 	const [showLocationDropdown, setShowLocationDropdown] = useState(false)
 	
 	// Use categories from constants

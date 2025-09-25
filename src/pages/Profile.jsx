@@ -6,12 +6,10 @@ import Footer from '../components/Footer.jsx'
 import AvatarUploader from '../components/AvatarUploader.jsx'
 import { supabase } from '../lib/supabase.js'
 import { CATEGORIES } from '../constants/categories'
-import { useLang } from '../i18n/LangContext.jsx'
 
 export default function Profile() {
   const { user, signOut, updateProfile } = useAuth()
   const { updateLocationFromProfile } = useLocation()
-  const { t } = useLang()
   const [profile, setProfile] = useState({
     profilePhoto: null,
     avatar_url: null,
@@ -293,12 +291,12 @@ export default function Profile() {
           }
         }
         
-        setMessage(t('profile.save.success'))
+        setMessage('Profile saved successfully!')
         setIsEditing(false)
         setTimeout(() => setMessage(''), 3000)
       } catch (error) {
         console.error('Error saving profile:', error)
-        setMessage(t('profile.save.error', { msg: error.message }))
+        setMessage(`Failed to save profile: ${error.message}`)
         setTimeout(() => setMessage(''), 5000)
       } finally {
         setSaving(false)
@@ -316,8 +314,8 @@ export default function Profile() {
         <Header searchTerm="" setSearchTerm={() => {}} />
         <div className="container mt-10">
           <div className="card p-6 text-center">
-            <p>{t('profile.signInPrompt')}</p>
-            <a href="/auth" className="btn btn-primary mt-4">{t('profile.signInBtn')}</a>
+            <p>Please sign in to view your profile.</p>
+            <a href="/auth" className="btn btn-primary mt-4">Sign In</a>
           </div>
         </div>
       </div>
@@ -333,8 +331,8 @@ export default function Profile() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h1>
-              <p className="text-gray-600 mt-2">{t('profile.subtitle')}</p>
+              <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
+              <p className="text-gray-600 mt-2">Manage your account information and preferences</p>
             </div>
             <div className="flex gap-3">
               {!isEditing && (
@@ -342,14 +340,14 @@ export default function Profile() {
                   className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
                   onClick={() => setIsEditing(true)}
                 >
-                  {t('profile.edit')}
+                  Edit Profile
                 </button>
               )}
               <button 
                 className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                 onClick={handleSignOut}
               >
-                {t('profile.signOut')}
+                Sign Out
               </button>
             </div>
             </div>
@@ -370,14 +368,14 @@ export default function Profile() {
           {/* Left Column - Profile Photo */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.left.photo')}</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Photo</h2>
               
               <div className="text-center">
                 {(profile.avatar_url || profile.profilePhoto) ? (
                   <div className="mb-6">
                     <img 
                       src={profile.avatar_url || profile.profilePhoto} 
-                    alt={t('profile.avatar.alt')} 
+                      alt="Profile"
                       className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg mx-auto"
                     />
                   </div>
@@ -410,25 +408,25 @@ export default function Profile() {
             <div className="space-y-6">
               {/* Personal Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.section.personal')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Personal Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.prefix')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Prefix</label>
                   <select 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.prefix}
                     onChange={(e) => handleInputChange('prefix', e.target.value)}
                     disabled={!isEditing}
                   >
-                    <option value="Mr.">{t('profile.prefix.mr')}</option>
-                    <option value="Ms.">{t('profile.prefix.ms')}</option>
-                    <option value="Mrs.">{t('profile.prefix.mrs')}</option>
-                    <option value="Dr.">{t('profile.prefix.dr')}</option>
-                    <option value="Prof.">{t('profile.prefix.prof')}</option>
+                    <option value="Mr.">Mr.</option>
+                    <option value="Ms.">Ms.</option>
+                    <option value="Mrs.">Mrs.</option>
+                    <option value="Dr.">Dr.</option>
+                    <option value="Prof.">Prof.</option>
                   </select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.firstName')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
@@ -439,25 +437,25 @@ export default function Profile() {
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.lastName')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.lastName')}
+                      placeholder="Last Name"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.suffix')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Suffix</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.suffix}
                     onChange={(e) => handleInputChange('suffix', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.suffix')}
+                    placeholder="Suffix"
                   />
                 </div>
                 </div>
@@ -465,72 +463,72 @@ export default function Profile() {
 
               {/* Contact Information */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.section.contact')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Contact Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.homePhone')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Home Phone</label>
                   <input 
                     type="tel" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.homePhone}
                     onChange={(e) => handleInputChange('homePhone', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.homePhone')}
+                    placeholder="Home Phone"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.cellPhone')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Cell Phone</label>
                   <input 
                     type="tel" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.cellPhone}
                     onChange={(e) => handleInputChange('cellPhone', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.cellPhone')}
+                    placeholder="Cell Phone"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.jobTitle')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Job Title</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.jobTitle}
                     onChange={(e) => handleInputChange('jobTitle', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.jobTitle')}
+                    placeholder="Job Title"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.company')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.company}
                     onChange={(e) => handleInputChange('company', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.company')}
+                    placeholder="Company"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.website')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
                   <input 
                     type="url" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.website}
                     onChange={(e) => handleInputChange('website', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.website')}
+                    placeholder="Website"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.blog')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Blog</label>
                   <input 
                     type="url" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.blog}
                     onChange={(e) => handleInputChange('blog', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.blog')}
+                    placeholder="Blog"
                   />
                 </div>
               </div>
@@ -538,13 +536,13 @@ export default function Profile() {
 
             {/* Interests */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.section.interests')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Interests</h2>
             <div>
                   <label className="block text-sm font-medium text-gray-700 mb-4">
-                  {t('profile.interests.label')}
+                  Select your interests
                   {profile.interests.length > 0 && (
                     <span className="ml-2 text-sm font-normal text-gray-500">
-                      ({t('profile.interests.selected', { n: profile.interests.length })})
+                  ({profile.interests.length} selected)
                     </span>
                   )}
                 </label>
@@ -564,7 +562,7 @@ export default function Profile() {
                         }}
                         disabled={!isEditing}
                       />
-                      <span className="text-sm text-gray-700">{t(`categories.${category.toLowerCase()}`) || category}</span>
+                      <span className="text-sm text-gray-700">{category}</span>
                     </label>
                   ))}
                 </div>
@@ -573,73 +571,73 @@ export default function Profile() {
 
               {/* Address */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('profile.section.address')}</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Address</h2>
                 <div className="space-y-6">
             <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.address')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.address')}
+                    placeholder="Address"
                   />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.address2')}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Address Line 2</label>
                   <input 
                     type="text" 
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                     value={profile.address2}
                     onChange={(e) => handleInputChange('address2', e.target.value)}
                     disabled={!isEditing}
-                    placeholder={t('profile.address2')}
+                      placeholder="Address Line 2"
                   />
                 </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.city')}</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                     <input 
                       type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                       value={profile.city}
                       onChange={(e) => handleInputChange('city', e.target.value)}
                       disabled={!isEditing}
-                      placeholder={t('profile.city')}
+                      placeholder="City"
                     />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.country')}</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
                     <input 
                       type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                       value={profile.country}
                       onChange={(e) => handleInputChange('country', e.target.value)}
                       disabled={!isEditing}
-                      placeholder={t('profile.country')}
+                      placeholder="Country"
                     />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.zip')}</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
                     <input 
                       type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                       value={profile.zipCode}
                       onChange={(e) => handleInputChange('zipCode', e.target.value)}
                       disabled={!isEditing}
-                      placeholder={t('profile.zip')}
+                      placeholder="ZIP Code"
                     />
                   </div>
                   <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.state')}</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">State/Province</label>
                     <input 
                       type="text" 
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                       value={profile.state}
                       onChange={(e) => handleInputChange('state', e.target.value)}
                       disabled={!isEditing}
-                      placeholder={t('profile.state')}
+                      placeholder="State/Province"
                     />
                   </div>
                 </div>
@@ -662,7 +660,7 @@ export default function Profile() {
                   onClick={() => setIsEditing(false)}
                   disabled={saving}
                 >
-                  {t('form.cancel')}
+                  Cancel
                 </button>
                   </div>
               </div>

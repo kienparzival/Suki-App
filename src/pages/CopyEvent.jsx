@@ -8,7 +8,6 @@ import { CATEGORIES } from '../constants/categories'
 import LocationSelector from '../components/LocationSelector.jsx'
 import EventCoverUploader from '../components/EventCoverUploader.jsx'
 import '../styles.css'
-import { useLang } from '../i18n/LangContext.jsx'
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -24,9 +23,7 @@ export default function CopyEvent() {
   const location = useLocation()
   const navigate = useNavigate()
   const originalEvent = location.state?.event
-  const { t, fmtDate } = useLang()
-
-  // Helper function to get translated category name
+    // Helper function to get translated category name
   const getCategoryLabel = (category) => {
     // normalize: lower, remove all non-alphanumerics to create a stable key
     const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, '')
@@ -331,12 +328,12 @@ export default function CopyEvent() {
             className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
             style={{ lineHeight: '1.6' }}
           >
-            {t('copy.title')}
+            Copy Event
           </h1>
           
           {/* Subtitle with modern typography */}
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-            {t('copy.subtitle')}
+            Create a duplicate of this event
           </p>
         </div>
 
@@ -414,7 +411,7 @@ export default function CopyEvent() {
                       }`}
                       aria-pressed={selected}
                     >
-                      {getCategoryLabel(opt)}
+                      {opt}
                     </button>
                   )
                 })}

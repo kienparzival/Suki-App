@@ -5,13 +5,11 @@ import { Edit, Trash2, Eye, Calendar, MoreVertical, List, CalendarDays, Link, Co
 import { supabase } from '../lib/supabase'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
-import { useLang } from '../i18n/LangContext.jsx'
 
 export default function ManageEvents() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const { t, fmtDate } = useLang()
-  const [userLocation, setUserLocation] = useState({ city: 'HCMC', lat: 10.7769, lng: 106.7009 })
+    const [userLocation, setUserLocation] = useState({ city: 'HCMC', lat: 10.7769, lng: 106.7009 })
   const [myEvents, setMyEvents] = useState([])
   const [loading, setLoading] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -264,8 +262,8 @@ export default function ManageEvents() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('manage.title')}</h1>
-          <p className="text-lg text-gray-600">{t('manage.tagline')}</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Manage Events</h1>
+          <p className="text-lg text-gray-600">Monitor and manage your events and make updates</p>
         </div>
 
         {/* View Mode Toggle */}

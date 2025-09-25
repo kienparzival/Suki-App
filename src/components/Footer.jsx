@@ -1,12 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import EmailCapture from './EmailCapture.jsx'
-import { useLang } from '../i18n/LangContext.jsx'
 
 export default function Footer() {
-  const { t } = useLang()
-  
-  return (
+    return (
     <footer className="mt-16 border-t bg-gradient-to-b from-indigo-50 via-sky-50 to-white">
       <div className="h-1 bg-gradient-to-r from-indigo-500 via-sky-500 to-cyan-500" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -61,9 +58,9 @@ export default function Footer() {
             <div className="font-semibold text-gray-900">{t('footer.product.title')}</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
               <li><Link to="/browse-events">{t('nav.browseEvents')}</Link></li>
-              <li><Link to="/create">{t('nav.create')}</Link></li>
-              <li><Link to="/saved">{t('nav.saved')}</Link></li>
-              <li><Link to="/manage-events">{t('nav.manage')}</Link></li>
+              <li><Link to="/create">Create Event</Link></li>
+              <li><Link to="/saved">Saved</Link></li>
+              <li><Link to="/manage-events">Manage Events</Link></li>
             </ul>
           </div>
 
@@ -71,8 +68,8 @@ export default function Footer() {
             <div className="font-semibold text-gray-900">{t('footer.company.title')}</div>
             <ul className="[&_a]:text-gray-600 [&_a:hover]:text-gray-900 space-y-1">
               <li><a href="https://status.suki.example" target="_blank" rel="noopener">Status</a></li>
-              <li><a href="/terms" onClick={e => e.preventDefault()}>{t('footer.terms')}</a></li>
-              <li><a href="/privacy" onClick={e => e.preventDefault()}>{t('footer.privacy')}</a></li>
+              <li><a href="/terms" onClick={e => e.preventDefault()}>Terms</a></li>
+              <li><a href="/privacy" onClick={e => e.preventDefault()}>Privacy</a></li>
               <li><a href="/accessibility" onClick={e => e.preventDefault()}>Accessibility</a></li>
             </ul>
           </div>

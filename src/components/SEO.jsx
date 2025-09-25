@@ -2,20 +2,11 @@ import { Helmet } from 'react-helmet'
 
 function json(obj) { return { __html: JSON.stringify(obj, null, 2) } }
 
-export default function SEO({ lang='en', city='Hanoi', events=[] }) {
-  // Text strings for EN/VI. Keep short, keyword-rich, human.
-  const texts = {
-    en: {
-      title: `Hanoi events this week • Things to do in ${city} | Suki`,
-      desc:  `Discover events in ${city}: concerts, meetups, workshops, and more. Updated weekly on Suki.`,
-      og:    `Find the best ${city} events this week on Suki.`,
-    },
-    vi: {
-      title: `Sự kiện ở ${city} • Chơi gì tuần này | Suki`,
-      desc:  `Khám phá sự kiện ở ${city}: hòa nhạc, meetup, workshop và nhiều hơn nữa. Cập nhật hàng tuần trên Suki.`,
-      og:    `Tìm sự kiện hay ở ${city} tuần này trên Suki.`,
-    }
-  }[lang] || {}
+export default function SEO({ city='Hanoi', events=[] }) {
+  // English-only text strings. Keep short, keyword-rich, human.
+  const title = `Hanoi events this week • Things to do in ${city} | Suki`
+  const desc = `Discover events in ${city}: concerts, meetups, workshops, and more. Updated weekly on Suki.`
+  const og = `Find the best ${city} events this week on Suki.`
 
   const siteUrl   = typeof window !== 'undefined' ? window.location.origin : 'https://suki.example'
   const pageUrl   = typeof window !== 'undefined' ? window.location.href   : `${siteUrl}/discover`
@@ -87,25 +78,25 @@ export default function SEO({ lang='en', city='Hanoi', events=[] }) {
   return (
     <Helmet>
       {/* language + canonical */}
-      <html lang={lang} />
+      <html lang="en" />
       <link rel="canonical" href={pageUrl} />
 
       {/* basic SEO */}
-      <title>Hanoi events this week • Sự kiện ở Hà Nội | Suki</title>
-      <meta name="description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
+      <title>{title}</title>
+      <meta name="description" content={desc} />
       
       {/* Google Search Console verification */}
       <meta name="google-site-verification" content="VSVSC5PkZDX4qkw7Xjj_sPXk0anOckGXpDcOT6Zc7aM" />
 
       {/* Open Graph & Twitter */}
       <meta property="og:type" content="website" />
-      <meta property="og:title" content="Hanoi events this week • Sự kiện ở Hà Nội | Suki" />
-      <meta property="og:description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={desc} />
       <meta property="og:url" content={pageUrl} />
       <meta property="og:image" content={`${siteUrl}/og-cover.png`} />
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content="Hanoi events this week • Sự kiện ở Hà Nội | Suki" />
-      <meta name="twitter:description" content="Discover events in Hanoi: concerts, meetups, workshops, nightlife & more. Cập nhật hàng tuần trên Suki." />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={desc} />
       <meta name="twitter:image" content={`${siteUrl}/og-cover.png`} />
 
       {/* JSON-LD */}

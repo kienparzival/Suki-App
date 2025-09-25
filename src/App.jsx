@@ -8,15 +8,12 @@ import EventList from './components/EventList.jsx'
 import EmailCapture from './components/EmailCapture.jsx'
 import Modal from './components/Modal.jsx'
 import SEO from './components/SEO.jsx'
-import { useLang } from './i18n/LangContext.jsx'
-import LanguageSwitcher from './components/LanguageSwitcher.jsx'
 import { supabase } from './lib/supabase.js'
 import { getFirstAttribution } from './lib/utm.js'
 import { posthog } from './lib/analytics.js'
 import './styles.css'
 
 function App() {
-  const { t, lang } = useLang()
   const { user } = useAuth()
   const { userLocation, setUserLocation } = useLocation()
   const [events, setEvents] = useState([])
@@ -333,7 +330,6 @@ function App() {
   return (
     <>
       <SEO 
-        lang={lang} 
         city={userCity || 'Hanoi'} 
         events={filtered?.slice(0, 10) || []} 
       />
@@ -352,9 +348,6 @@ function App() {
           {/* removed decorative blobs to avoid any stacking/mix issues */}
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
-            <div className="max-w-7xl mx-auto flex justify-end">
-              <LanguageSwitcher />
-            </div>
             <h1
               className="
                 relative z-[9999] inline-block pb-2
@@ -370,7 +363,7 @@ function App() {
                 transform: 'translateZ(0)'             // own layer
               }}
             >
-              {t('discoverH1')}
+              Discover Amazing Events in Hanoi
             </h1>
             <p
               className="
@@ -380,12 +373,12 @@ function App() {
                 max-w-3xl mx-auto
               "
             >
-              {t('discoverSub')}
+              Find concerts, meetups, workshops, nightlife and more happening this week
             </p>
             {/* Keep SEO copy in DOM but hide visually (not interactive, not announced) */}
             <div style={{position:'absolute', left:'-9999px', width:'1px', height:'1px', overflow:'hidden'}} aria-hidden="true">
-              <p>{t('seoPitch')}</p>
-              <p>{t('seoPitch2')}</p>
+              <p>Discover the best events in Hanoi this week. Updated every Friday with fresh listings.</p>
+              <p>Find concerts, meetups, workshops, nightlife and more happening in Hanoi.</p>
             </div>
             {/* clean, modern tech vibe — no extra graphics */}
           </div>
@@ -450,11 +443,11 @@ function App() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
-            {t('resultsFound', { n: filtered.length, plural: filtered.length !== 1 ? 's' : '' })}
+            {filtered.length} event{filtered.length !== 1 ? 's' : ''}
           </h2>
             {userCity && userCity !== 'All locations' && (
               <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                {t('inCity', { city: userCity })}
+                in {userCity}
               </div>
             )}
           </div>

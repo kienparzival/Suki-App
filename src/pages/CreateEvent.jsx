@@ -9,7 +9,6 @@ import { CATEGORIES } from '../constants/categories'
 // Removed TicketTierManager – free-only single tier is auto-managed
 import LocationSelector from '../components/LocationSelector.jsx'
 import { PAYMENTS_ENABLED } from '../config/payments'
-import { useLang } from '../i18n/LangContext.jsx'
 
 function readFileAsDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -23,24 +22,6 @@ function readFileAsDataUrl(file) {
 export default function CreateEventPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { t } = useLang()
-
-  // Helper function to get translated category name
-  const getCategoryLabel = (category) => {
-    // normalize: lower, remove all non-alphanumerics to create a stable key
-    const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, '')
-    // try exact (clean) key first, then try a few common alternates, then fallback
-    const candidates = [
-      `categories.${slug}`,
-      // also try using hyphen word-joins if needed
-      `categories.${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-    ]
-    for (const k of candidates) {
-      const val = t(k)
-      if (val !== k) return val
-    }
-    return t(`categories.other`) || category
-  }
 
   // ALL HOOKS MUST BE DECLARED FIRST - before any conditional logic
   // Basics
@@ -104,11 +85,11 @@ export default function CreateEventPage() {
                   className="text-6xl md:text-7xl font-black bg-gradient-to-r from-gray-900 via-brand-600 to-purple-700 bg-clip-text text-transparent mb-8"
                   style={{ lineHeight: '1.6' }}
                 >
-                  {t('create.heroTitle')}
+                  Create Event
               </h1>
                 
                 <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto mb-12 leading-relaxed font-light">
-                  {t('create.heroSubtitle')}
+                  Share your event with the world in just a few simple steps
               </p>
                 
                 <div className="w-24 h-1 bg-gradient-to-r from-brand-500 to-purple-500 mx-auto rounded-full mb-8"></div>
@@ -121,7 +102,7 @@ export default function CreateEventPage() {
                 onClick={handleGetStarted}
                 className="btn btn-primary btn-lg text-lg px-8 py-4 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
-                {t('create.getStarted')}
+                Get Started
               </button>
             </div>
 
@@ -401,12 +382,12 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.title')} <span className="text-red-500">*</span></h2>
+              <h2 className="text-2xl font-bold text-gray-900">Event Title <span className="text-red-500">*</span></h2>
             </div>
-            <p className="text-gray-600 mb-6">{t('create.titleHelp')}</p>
+            <p className="text-gray-600 mb-6">This will be your event's title. Be specific and engaging to attract attendees!</p>
             <input 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors text-lg" 
-              placeholder={t('create.titlePlaceholder')} 
+                placeholder="Enter event title"
               value={title} 
               onChange={e => setTitle(e.target.value)} 
             />
@@ -420,14 +401,14 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.description')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Description</h2>
             </div>
-            <p className="text-gray-600 mb-6">{t('create.descriptionHelp')}</p>
+            <p className="text-gray-600 mb-6">Tell people what makes this special. You can use line breaks and emojis.</p>
             <textarea 
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none" 
               rows={8} 
               maxLength={descMax} 
-              placeholder={t('create.descriptionPlaceholder')}
+              placeholder="About this event (up to 4,000 characters)"
               value={description} 
               onChange={e => setDescription(e.target.value)} 
             />
@@ -442,11 +423,11 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.whenWhere')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">When & Where</h2>
             </div>
             <div className="grid md:grid-cols-2 gap-6 mb-6">
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startDate')} *</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">Start Date *</label>
                 <input 
                   type="date" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -456,7 +437,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.startTime')} *</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">Start Time *</label>
                 <input 
                   type="time" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -466,7 +447,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endDate')}</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">End Date</label>
                 <input 
                   type="date" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -476,7 +457,7 @@ export default function CreateEventPage() {
                 />
             </div>
             <div>
-                <label className="text-sm font-medium text-gray-700 block mb-2">{t('create.endTime')}</label>
+                <label className="text-sm font-medium text-gray-700 block mb-2">End Time</label>
                 <input 
                   type="time" 
                   className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors" 
@@ -527,7 +508,7 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.venue')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Venue</h2>
             </div>
             <LocationSelector 
               onLocationChange={setLocationData}
@@ -543,9 +524,9 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.categories')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
             </div>
-            <p className="text-gray-600 mb-6">{t('create.categoriesHelp')}</p>
+            <p className="text-gray-600 mb-6">Select one or more categories that best describe your event.</p>
           <div className="flex flex-wrap gap-2">
               {CATEGORIES.map(opt => {
                 const selected = categories.includes(opt)
@@ -565,7 +546,7 @@ export default function CreateEventPage() {
                     }`}
                     aria-pressed={selected}
                   >
-                    {getCategoryLabel(opt)}
+                    {opt}
                   </button>
                 )
               })}
@@ -613,9 +594,9 @@ export default function CreateEventPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('create.cover')}</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Cover Image</h2>
             </div>
-            <p className="text-gray-600 mb-6">{t('create.coverHelp')}</p>
+            <p className="text-gray-600 mb-6">Drag & drop a 16:9 image (min 1200×675) or click to upload.</p>
           
           {/* Cover Image Upload Area */}
           <div
@@ -696,7 +677,7 @@ export default function CreateEventPage() {
               className="btn btn-ghost text-lg px-8 py-3" 
               onClick={() => navigate(-1)}
             >
-              {t('create.actions.cancel')}
+              Cancel
             </button>
             <button 
               className="btn btn-primary text-lg px-8 py-3 bg-gradient-to-r from-brand-600 to-purple-600 border-0 hover:from-brand-700 hover:to-purple-700 shadow-lg hover:shadow-xl" 

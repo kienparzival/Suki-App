@@ -18,7 +18,6 @@ import CopyEvent from './pages/CopyEvent.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { LocationProvider } from './context/LocationContext.jsx'
 import RouteTracker from './components/RouteTracker.jsx'
-import { LangProvider } from './i18n/LangContext.jsx'
 
 // Initialize analytics and UTM tracking
 import './lib/analytics.js'
@@ -29,29 +28,27 @@ getFirstAttribution()
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <LangProvider>
-      <AuthProvider>
-        <LocationProvider>
-          <BrowserRouter>
-            <RouteTracker />
-            <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/auth" element={<AuthPage />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
-              <Route path="/profile" element={<ProfilePage />} />
-              <Route path="/organizer" element={<OrganizerDashboard />} />
+    <AuthProvider>
+      <LocationProvider>
+        <BrowserRouter>
+          <RouteTracker />
+          <Routes>
+            <Route path="/" element={<App />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/organizer" element={<OrganizerDashboard />} />
 
-              <Route path="/saved" element={<SavedPage />} />
-              <Route path="/create" element={<CreateEventPage />} />
-              <Route path="/events/:id" element={<EventPage />} />
-              <Route path="/browse-events" element={<BrowseEvents />} />
-              <Route path="/manage-events" element={<ManageEvents />} />
-              <Route path="/edit-event" element={<EditEvent />} />
-              <Route path="/copy-event" element={<CopyEvent />} />
-            </Routes>
-          </BrowserRouter>
-        </LocationProvider>
-      </AuthProvider>
-    </LangProvider>
+            <Route path="/saved" element={<SavedPage />} />
+            <Route path="/create" element={<CreateEventPage />} />
+            <Route path="/events/:id" element={<EventPage />} />
+            <Route path="/browse-events" element={<BrowseEvents />} />
+            <Route path="/manage-events" element={<ManageEvents />} />
+            <Route path="/edit-event" element={<EditEvent />} />
+            <Route path="/copy-event" element={<CopyEvent />} />
+          </Routes>
+        </BrowserRouter>
+      </LocationProvider>
+    </AuthProvider>
   </React.StrictMode>
 )
