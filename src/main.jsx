@@ -17,7 +17,7 @@ import EditEvent from './pages/EditEvent.jsx'
 import CopyEvent from './pages/CopyEvent.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { LocationProvider } from './context/LocationContext.jsx'
-import { I18nProvider } from './i18n.tsx'
+import { I18nProvider, GlobalAutoTranslate } from './i18n.tsx'
 import RouteTracker from './components/RouteTracker.jsx'
 
 // Initialize analytics and UTM tracking
@@ -35,21 +35,23 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <BrowserRouter>
             <RouteTracker />
             <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/organizer" element={<OrganizerDashboard />} />
+              <Route path="/" element={<App />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/organizer" element={<OrganizerDashboard />} />
 
-            <Route path="/saved" element={<SavedPage />} />
-            <Route path="/create" element={<CreateEventPage />} />
-            <Route path="/events/:id" element={<EventPage />} />
-            <Route path="/browse-events" element={<BrowseEvents />} />
-            <Route path="/manage-events" element={<ManageEvents />} />
-            <Route path="/edit-event" element={<EditEvent />} />
-            <Route path="/copy-event" element={<CopyEvent />} />
-          </Routes>
-        </BrowserRouter>
+              <Route path="/saved" element={<SavedPage />} />
+              <Route path="/create" element={<CreateEventPage />} />
+              <Route path="/events/:id" element={<EventPage />} />
+              <Route path="/browse-events" element={<BrowseEvents />} />
+              <Route path="/manage-events" element={<ManageEvents />} />
+              <Route path="/edit-event" element={<EditEvent />} />
+              <Route path="/copy-event" element={<CopyEvent />} />
+            </Routes>
+          </BrowserRouter>
+          {/* Instant, catch-all layer for any unwrapped English */}
+          <GlobalAutoTranslate />
         </I18nProvider>
       </LocationProvider>
     </AuthProvider>

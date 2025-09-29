@@ -203,3 +203,88 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className }) => {
     </button>
   );
 };
+
+export const GlobalAutoTranslate: React.FC = () => {
+  const { lang } = useI18n();
+
+  useEffect(() => {
+    if (lang !== "vi") return;
+
+    const SKIP_TAGS = new Set(["SCRIPT","STYLE","NOSCRIPT","CODE","PRE","TEXTAREA","SVG","IMG","VIDEO","CANVAS"]);
+    const seen = new Set<string>();
+    let stopped = false;
+
+    const translateTextNode = async (node: Text) => {
+      const original = node.nodeValue ?? "";
+      const text = original.trim();
+      // Heuristics: skip empty, short symbols, emails/URLs, mostly digits
+      if (
+        text.length < 2 ||
+        !/[A-Za-z]/.test(text) ||
+        /^https?:\/\//.test(text) ||
+        /@/.test(text) ||
+        /^[\d\s.,:/-]+$/.test(text)
+      ) return;
+
+      if (seen.has(text)) return;
+      seen.add(text);
+
+      try {
+        const functionsUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`;
+        const r = await fetch(functionsUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY!,
+            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY!}`,
+          },
+          body: JSON.stringify({ key: text, targetLang: "vi" }),
+        });
+        const j = await r.json();
+        const vi = j?.translated ?? text;
+        if (!stopped && node.nodeValue === original) {
+          node.nodeValue = vi;
+        }
+      } catch {
+        /* noop: keep EN if failure */
+      }
+    };
+
+    const walk = (root: Node) => {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode: (n) => {
+          const parent = (n as Text).parentElement;
+          if (!parent) return NodeFilter.FILTER_REJECT;
+          if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+          if (getComputedStyle(parent).visibility === "hidden" || getComputedStyle(parent).display === "none") {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      let node: Node | null;
+      while ((node = walker.nextNode())) translateTextNode(node as Text);
+    };
+
+    // Initial pass
+    walk(document.body);
+
+    // Watch for route changes / updates
+    const mo = new MutationObserver((muts) => {
+      for (const m of muts) {
+        if (m.addedNodes) {
+          m.addedNodes.forEach((n) => {
+            if (n.nodeType === Node.TEXT_NODE) translateTextNode(n as Text);
+            else if ((n as Element).nodeType === Node.ELEMENT_NODE) walk(n as Element);
+          });
+        }
+        if (m.type === "characterData") translateTextNode(m.target as Text);
+      }
+    });
+    mo.observe(document.body, { subtree: true, childList: true, characterData: true });
+
+    return () => { stopped = true; mo.disconnect(); };
+  }, [lang]);
+
+  return null;
+};
