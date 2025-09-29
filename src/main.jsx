@@ -17,6 +17,7 @@ import EditEvent from './pages/EditEvent.jsx'
 import CopyEvent from './pages/CopyEvent.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { LocationProvider } from './context/LocationContext.jsx'
+import { I18nProvider } from './i18n.tsx'
 import RouteTracker from './components/RouteTracker.jsx'
 
 // Initialize analytics and UTM tracking
@@ -30,9 +31,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
       <LocationProvider>
-        <BrowserRouter>
-          <RouteTracker />
-          <Routes>
+        <I18nProvider>
+          <BrowserRouter>
+            <RouteTracker />
+            <Routes>
             <Route path="/" element={<App />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
@@ -48,6 +50,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path="/copy-event" element={<CopyEvent />} />
           </Routes>
         </BrowserRouter>
+        </I18nProvider>
       </LocationProvider>
     </AuthProvider>
   </React.StrictMode>

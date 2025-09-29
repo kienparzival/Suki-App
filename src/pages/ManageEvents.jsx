@@ -5,6 +5,7 @@ import { Edit, Trash2, Eye, Calendar, MoreVertical, List, CalendarDays, Link, Co
 import { supabase } from '../lib/supabase'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
+import { T, LangToggle } from '../i18n.tsx'
 
 export default function ManageEvents() {
   const { user } = useAuth()
@@ -155,7 +156,7 @@ export default function ManageEvents() {
   }
 
   const handleDeleteEvent = async (eventId) => {
-    if (!window.confirm("event Form delete Confirm")) return
+    if (!window.confirm("Are you sure you want to delete this event?")) return
     
     try {
       const { error } = await supabase
@@ -262,8 +263,8 @@ export default function ManageEvents() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Manage Events</h1>
-          <p className="text-lg text-gray-600">Monitor and manage your events and make updates</p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4"><T>Manage Events</T></h1>
+          <p className="text-lg text-gray-600"><T>Monitor and manage your events and make updates</T></p>
         </div>
 
         {/* View Mode Toggle */}
@@ -278,7 +279,7 @@ export default function ManageEvents() {
               }`}
             >
               <List className="w-4 h-4" />
-              List View
+              <T>List View</T>
             </button>
             <button
               onClick={() => setViewMode('calendar')}
@@ -289,28 +290,29 @@ export default function ManageEvents() {
               }`}
             >
               <CalendarDays className="w-4 h-4" />
-              Calendar View
+              <T>Calendar View</T>
             </button>
           </div>
           
           <a href="/create" className="btn btn-primary">
-            Create New Event
+            <T>Create New Event</T>
           </a>
+          <LangToggle className="ml-4" />
         </div>
 
         {loading ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="loading loading-spinner loading-lg"></div>
-            <p className="mt-4 text-gray-600">Loading your events...</p>
+            <p className="mt-4 text-gray-600"><T>Loading your events...</T></p>
           </div>
         ) : myEvents.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-8 text-center">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Calendar className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events yet</h3>
-            <p className="text-gray-600 mb-4">You haven't created any events yet. Start by creating your first event!</p>
-            <a href="/create" className="btn btn-primary">Create Your First Event</a>
+            <h3 className="text-lg font-medium text-gray-900 mb-2"><T>No events yet</T></h3>
+            <p className="text-gray-600 mb-4"><T>You haven't created any events yet. Start by creating your first event!</T></p>
+            <a href="/create" className="btn btn-primary"><T>Create Your First Event</T></a>
           </div>
         ) : viewMode === 'list' ? (
           /* List View - Table */
@@ -319,9 +321,9 @@ export default function ManageEvents() {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><T>Event</T></th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><T>Status</T></th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><T>Actions</T></th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -357,7 +359,7 @@ export default function ManageEvents() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(status)}`}>
-                            {status}
+                            <T>{status}</T>
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -379,35 +381,35 @@ export default function ManageEvents() {
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Eye className="w-4 h-4 mr-2" />
-                                  View
+                                  <T>View</T>
                                 </button>
                                 <button
                                   onClick={() => handleEditEvent(event)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Edit className="w-4 h-4 mr-2" />
-                                  Edit
+                                  <T>Edit</T>
                                 </button>
                                 <button
                                   onClick={() => copyEventLink(event.id)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <Link className="w-4 h-4 mr-2" />
-                                  Copy Link
+                                  <T>Copy Link</T>
                                 </button>
                                 <button
                                   onClick={() => copyEvent(event)}
                                   className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                                 >
                                   <CopyIcon className="w-4 h-4 mr-2" />
-                                  Copy
+                                  <T>Copy</T>
                                 </button>
                                 <button
                                   onClick={() => handleDeleteEvent(event.id)}
                                   className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
-                                  Delete
+                                  <T>Delete</T>
                                 </button>
                               </div>
                             )}
@@ -426,8 +428,8 @@ export default function ManageEvents() {
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CalendarDays className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Calendar View</h3>
-            <p className="text-gray-600">Calendar view coming soon!</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2"><T>Calendar View</T></h3>
+            <p className="text-gray-600"><T>Calendar view coming soon!</T></p>
           </div>
         )}
 
