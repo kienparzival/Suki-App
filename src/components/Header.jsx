@@ -4,6 +4,7 @@ import { MapPin, Ticket, Heart, Star, Plus, User, LogIn, ChevronDown, Search } f
 import { useAuth } from '../context/AuthContext.jsx'
 import { useLocation } from '../context/LocationContext.jsx'
 import { trackSearch } from '../lib/analytics.js'
+import { LangToggle, T } from '../i18n.tsx'
 
 const cities = [
   // Major Cities & Provinces
@@ -450,19 +451,22 @@ export default function Header({ searchTerm, setSearchTerm }) {
         <nav className="flex items-center gap-1">
           <NavLink to="/" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
             <Star className="w-5 h-5 mb-1" />
-            <span className="text-xs">Discover</span>
+            <span className="text-xs"><T>Discover</T></span>
           </NavLink>
           {/* Tickets removed */}
           {user && (
             <NavLink to="/saved" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
               <Heart className="w-5 h-5 mb-1"/> 
-              <span className="text-xs">Saved</span>
+              <span className="text-xs"><T>Saved</T></span>
             </NavLink>
           )}
           <NavLink to="/create" className="btn btn-ghost" style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}>
             <Plus className="w-5 h-5 mb-1"/> 
-            <span className="text-xs">Create Event</span>
+            <span className="text-xs"><T>Create Event</T></span>
           </NavLink>
+          
+          {/* Language Toggle */}
+          <LangToggle className="btn btn-ghost" />
           
           {/* Profile/Sign In Section */}
           {user ? (
@@ -501,35 +505,35 @@ export default function Header({ searchTerm, setSearchTerm }) {
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      Browse Events
+                      <T>Browse Events</T>
                     </NavLink>
                     <NavLink 
                       to="/manage-events" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      Manage My Events
+                      <T>Manage My Events</T>
                     </NavLink>
                     <NavLink 
                       to="/saved" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      Saved
+                      <T>Saved</T>
                     </NavLink>
                     <NavLink 
                       to="/profile" 
                       className="flex items-center px-4 py-3 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
                       onClick={() => setProfileDropdownOpen(false)}
                     >
-                      Account Settings
+                      <T>Account Settings</T>
                     </NavLink>
                     <hr className="my-2 border-neutral-200" />
                     <button
                       onClick={handleSignOut}
                       className="flex items-center w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
                     >
-                      Log Out
+                      <T>Log Out</T>
                     </button>
                   </div>
                 </div>
@@ -537,7 +541,7 @@ export default function Header({ searchTerm, setSearchTerm }) {
             </div>
           ) : (
             <NavLink to="/auth" className="btn btn-ghost">
-              <LogIn className="size-4 mr-1"/> Sign In
+              <LogIn className="size-4 mr-1"/> <T>Sign In</T>
             </NavLink>
           )}
         </nav>

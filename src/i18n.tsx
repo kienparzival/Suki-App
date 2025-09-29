@@ -110,8 +110,9 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className }) => {
       onClick={() => setLang(lang === "en" ? "vi" : "en")}
       aria-label="Toggle language"
       title={lang === "en" ? "Switch to Vietnamese" : "Chuyển sang tiếng Anh"}
+      style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}
     >
-      {lang === "en" ? "VI" : "EN"}
+      <span className="text-xs font-medium">{lang === "en" ? "VI" : "EN"}</span>
     </button>
   );
 };
