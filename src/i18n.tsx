@@ -42,14 +42,61 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // load curated/auto VI once
   useEffect(() => {
     (async () => {
-      const cached = localStorage.getItem("vi_dict");
-      if (cached) setViDict(JSON.parse(cached));
-      const { data, error } = await supabase.from("app_translations").select("key, vi");
-      if (!error && data) {
-        const dict: Dict = {};
-        for (const row of data) dict[row.key] = row.vi;
-        setViDict(dict);
-        localStorage.setItem("vi_dict", JSON.stringify(dict));
+      try {
+        const cached = localStorage.getItem("vi_dict");
+        if (cached) {
+          const parsedCache = JSON.parse(cached);
+          setViDict(parsedCache);
+          console.log("[i18n] Loaded cached translations:", parsedCache);
+        }
+        
+        const { data, error } = await supabase.from("app_translations").select("key, vi");
+        if (error) {
+          console.error("[i18n] Error loading translations:", error);
+          // If table doesn't exist, create some basic translations
+          const basicTranslations = {
+            "Discover": "Khám phá",
+            "Saved": "Đã lưu", 
+            "Create Event": "Tạo sự kiện",
+            "Browse Events": "Duyệt sự kiện",
+            "Manage My Events": "Quản lý sự kiện của tôi",
+            "Account Settings": "Cài đặt tài khoản",
+            "Log Out": "Đăng xuất",
+            "Sign In": "Đăng nhập",
+            "Manage Events": "Quản lý sự kiện",
+            "Monitor and manage your events and make updates": "Theo dõi và quản lý các sự kiện của bạn và thực hiện cập nhật",
+            "List View": "Chế độ xem danh sách",
+            "Calendar View": "Chế độ xem lịch",
+            "Create New Event": "Tạo sự kiện mới",
+            "Loading your events...": "Đang tải sự kiện của bạn...",
+            "No events yet": "Chưa có sự kiện nào",
+            "You haven't created any events yet. Start by creating your first event!": "Bạn chưa tạo sự kiện nào. Hãy bắt đầu bằng cách tạo sự kiện đầu tiên!",
+            "Create Your First Event": "Tạo sự kiện đầu tiên của bạn",
+            "Event": "Sự kiện",
+            "Status": "Trạng thái",
+            "Actions": "Hành động",
+            "View": "Xem",
+            "Edit": "Chỉnh sửa",
+            "Copy Link": "Sao chép liên kết",
+            "Copy": "Sao chép",
+            "Delete": "Xóa",
+            "Calendar view coming soon!": "Chế độ xem lịch sắp ra mắt!",
+            "Published": "Đã xuất bản",
+            "Draft": "Bản nháp",
+            "Past": "Đã qua",
+            "Cancelled": "Đã hủy"
+          };
+          setViDict(basicTranslations);
+          localStorage.setItem("vi_dict", JSON.stringify(basicTranslations));
+        } else if (data) {
+          const dict: Dict = {};
+          for (const row of data) dict[row.key] = row.vi;
+          setViDict(dict);
+          localStorage.setItem("vi_dict", JSON.stringify(dict));
+          console.log("[i18n] Loaded translations from Supabase:", dict);
+        }
+      } catch (err) {
+        console.error("[i18n] Error in translation loading:", err);
       }
     })();
   }, []);
@@ -78,10 +125,21 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const t = useMemo(() => {
     return (key: string, vars?: Record<string, any>) => {
-      if (lang === "en") return interpolate(key, vars);
+      console.log(`[i18n] Translating "${key}" in language: ${lang}`);
+      
+      if (lang === "en") {
+        console.log(`[i18n] Returning English: "${key}"`);
+        return interpolate(key, vars);
+      }
+      
       const hit = viDict[key];
-      if (hit) return interpolate(hit, vars);
+      if (hit) {
+        console.log(`[i18n] Found Vietnamese translation: "${hit}"`);
+        return interpolate(hit, vars);
+      }
+      
       // not found -> log, translate once, and show result immediately when it arrives
+      console.log(`[i18n] Missing translation for: "${key}"`);
       recordMiss(key);
       // optimistic: show EN first render, then swap; or block until translated:
       // Here we optimistically return EN, but you can wrap <T> to suspense if desired.
@@ -104,10 +162,17 @@ export const T: React.FC<{ k?: string; children?: string; vars?: Record<string, 
 
 export const LangToggle: React.FC<{ className?: string }> = ({ className }) => {
   const { lang, setLang } = useI18n();
+  
+  const handleToggle = () => {
+    const newLang = lang === "en" ? "vi" : "en";
+    console.log(`[i18n] Switching language from ${lang} to ${newLang}`);
+    setLang(newLang);
+  };
+  
   return (
     <button
       className={className ?? "px-3 py-1 rounded-xl border text-sm"}
-      onClick={() => setLang(lang === "en" ? "vi" : "en")}
+      onClick={handleToggle}
       aria-label="Toggle language"
       title={lang === "en" ? "Switch to Vietnamese" : "Chuyển sang tiếng Anh"}
       style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}
