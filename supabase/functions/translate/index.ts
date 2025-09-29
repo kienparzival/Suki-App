@@ -1,9 +1,9 @@
-// deno deploy / supabase edge function
+// supabase/functions/translate/index.ts
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SERVICE_SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const TRANSLATE_API_KEY = Deno.env.get("GOOGLE_TRANSLATE_API_KEY")!; // or your provider
+const TRANSLATE_API_KEY = Deno.env.get("GOOGLE_TRANSLATE_API_KEY")!;
 
 type Payload = { key: string; targetLang: "vi" };
 
@@ -14,10 +14,10 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Bad request" }), { status: 400 });
     }
 
-    // 1) Call your translation provider (Google example)
+    // Call Google Translate
     const translated = await translateWithGoogle(key, "en", "vi", TRANSLATE_API_KEY);
 
-    // 2) Upsert into app_translations
+    // Upsert into app_translations using service role
     const res = await fetch(`${SERVICE_SUPABASE_URL}/rest/v1/app_translations`, {
       method: "POST",
       headers: {
