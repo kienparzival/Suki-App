@@ -5,7 +5,7 @@ import { Edit, Trash2, Eye, Calendar, MoreVertical, List, CalendarDays, Link, Co
 import { supabase } from '../lib/supabase'
 import { formatBangkokLabel, formatBangkokDate } from '../helpers/time'
 import { useNavigate } from 'react-router-dom'
-import { T, LangToggle } from '../i18n.tsx'
+import { T } from '../i18n.tsx'
 
 export default function ManageEvents() {
   const { user } = useAuth()
@@ -297,7 +297,6 @@ export default function ManageEvents() {
           <a href="/create" className="btn btn-primary">
             <T>Create New Event</T>
           </a>
-          <LangToggle className="ml-4" />
         </div>
 
         {loading ? (
