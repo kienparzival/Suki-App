@@ -109,16 +109,38 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // fetch on-demand translation from Edge and update cache/db
   const fetchAuto = async (k: string) => {
     try {
-      const r = await fetch("/functions/v1/translate", { method: "POST", body: JSON.stringify({ key: k, targetLang: "vi" }) });
+      const functionsUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`;
+      console.log(`[i18n] Calling Edge Function: ${functionsUrl}`);
+      
+      const r = await fetch(functionsUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY!,
+          "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY!}`,
+        },
+        body: JSON.stringify({ key: k, targetLang: "vi" }),
+      });
+      
+      console.log(`[i18n] Edge Function response status: ${r.status}`);
+      
+      if (!r.ok) {
+        console.error(`[i18n] Edge Function error: ${r.status} ${r.statusText}`);
+        return k;
+      }
+      
       const j = await r.json();
       const v = j?.translated ?? k;
+      console.log(`[i18n] Edge Function translated "${k}" to "${v}"`);
+      
       setViDict((prev) => {
         const next = { ...prev, [k]: v };
         localStorage.setItem("vi_dict", JSON.stringify(next));
         return next;
       });
       return v;
-    } catch {
+    } catch (error) {
+      console.error(`[i18n] Edge Function call failed:`, error);
       return k; // worst case fallback
     }
   };
