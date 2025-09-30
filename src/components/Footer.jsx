@@ -51,7 +51,7 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4 text-sm">
           <div className="space-y-2">
             <div className="font-semibold text-gray-900">Suki</div>
-            <p className="text-gray-600">Suki is your guide to the best events happening in Hanoi this week.</p>
+            <p className="text-gray-600">Suki is your guide to the best events happening near you this week.</p>
           </div>
 
           <div className="space-y-2">
