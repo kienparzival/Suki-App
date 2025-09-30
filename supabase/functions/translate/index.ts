@@ -43,25 +43,38 @@ Deno.serve(async (req) => {
       });
     }
 
+    // 0) Check if row exists & is human
+    const existingRes = await fetch(
+      `${SERVICE_SUPABASE_URL}/rest/v1/app_translations?select=key,vi,source&key=eq.${encodeURIComponent(key)}&limit=1`,
+      {
+        headers: {
+          "apikey": SERVICE_SUPABASE_KEY,
+          "Authorization": `Bearer ${SERVICE_SUPABASE_KEY}`,
+        },
+      }
+    );
+    const existing = await existingRes.json() as Array<{ key: string; vi: string; source: string }>;
+    if (existing.length && existing[0].source === "human") {
+      // return the curated VN and DO NOT write anything
+      return new Response(JSON.stringify({ translated: existing[0].vi }), { headers: corsHeaders });
+    }
+
+    // 1) (No curated row) fetch machine translation
     const translated = await translateWithGoogle(key, "en", "vi", TRANSLATE_API_KEY);
 
-    // Upsert into app_translations
-    const res = await fetch(`${SERVICE_SUPABASE_URL}/rest/v1/app_translations`, {
+    // 2) Insert but never overwrite existing rows
+    await fetch(`${SERVICE_SUPABASE_URL}/rest/v1/app_translations`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "apikey": SERVICE_SUPABASE_KEY,
         "Authorization": `Bearer ${SERVICE_SUPABASE_KEY}`,
-        "Prefer": "resolution=merge-duplicates"
+        "Prefer": "resolution=ignore-duplicates"
       },
       body: JSON.stringify({ key, vi: translated, source: "auto" })
     });
 
-    if (!res.ok) {
-      const txt = await res.text();
-      console.error("Upsert failed:", txt);
-    }
-
+    // Return the machine translation for immediate display
     return new Response(JSON.stringify({ translated }), { headers: corsHeaders });
   } catch (e) {
     return new Response(JSON.stringify({ error: String(e) }), {
