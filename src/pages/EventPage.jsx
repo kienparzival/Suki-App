@@ -327,7 +327,7 @@ export default function EventPage() {
             <span>{event.status}</span>
           </div>
           
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight break-anywhere">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 leading-tight break-anywhere" data-no-translate>
             {event.title}
           </h1>
           
@@ -430,7 +430,7 @@ export default function EventPage() {
             )}
 
             {/* About Section */}
-            <section className="prose prose-sm sm:prose max-w-none prose-a:underline prose-a:text-blue-600 break-anywhere">
+            <section className="prose prose-sm sm:prose max-w-none prose-a:underline prose-a:text-blue-600 break-anywhere" data-no-translate>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About</h2>
               <DescriptionBlock text={event.description} />
             </section>

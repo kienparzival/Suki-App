@@ -224,6 +224,29 @@ export const GlobalAutoTranslate: React.FC = () => {
           const parent = (n as Text).parentElement;
           if (!parent) return NodeFilter.FILTER_REJECT;
           if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+          
+          // Skip event-specific content (titles, descriptions)
+          // Check if parent or any ancestor has event content markers
+          let el = parent;
+          while (el) {
+            // Skip elements with data-no-translate attribute
+            if (el.hasAttribute && el.hasAttribute('data-no-translate')) return NodeFilter.FILTER_REJECT;
+            
+            // Skip event titles and descriptions by class/id patterns
+            const className = el.className || '';
+            const id = el.id || '';
+            if (
+              className.includes('event-title') ||
+              className.includes('event-name') ||
+              className.includes('event-description') ||
+              className.includes('event-details') ||
+              id.includes('event-title') ||
+              id.includes('event-description')
+            ) return NodeFilter.FILTER_REJECT;
+            
+            el = el.parentElement;
+          }
+          
           const cs = getComputedStyle(parent);
           if (cs.visibility === "hidden" || cs.display === "none") return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;

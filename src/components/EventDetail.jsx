@@ -31,7 +31,7 @@ export default function EventDetail({ event, remaining, onClose }) {
     <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm grid place-items-center p-4">
       <div className="w-full max-w-3xl card overflow-hidden">
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 bg-white">
-          <h2 className="text-xl font-semibold">{event.title}</h2>
+          <h2 className="text-xl font-semibold" data-no-translate>{event.title}</h2>
           <button className="btn btn-ghost" onClick={onClose}><X className="size-5"/></button>
         </div>
 
@@ -44,7 +44,7 @@ export default function EventDetail({ event, remaining, onClose }) {
                 : <div className="w-full h-full grid place-items-center text-neutral-500">No image</div>
               }
             </div>
-            <div className="text-sm text-neutral-700 leading-relaxed break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            <div className="text-sm text-neutral-700 leading-relaxed break-words" style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }} data-no-translate>
               {(event.description || '').slice(0, 240)}{(event.description || '').length > 240 ? '…' : ''}
             </div>
           </div>

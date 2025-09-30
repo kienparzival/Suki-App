@@ -56,8 +56,8 @@ export default function EventCard({ event }) {
           {/* Ticketing removed; optional external badge */}
         </div>
         <Link to={`/events/${event.id}`} className="block">
-          <h3 className="text-lg font-semibold text-neutral-900">{event.title}</h3>
-          <p className="text-sm text-neutral-600 line-clamp-2">{teaser}{(event.description || '').length > 160 ? '…' : ''}</p>
+          <h3 className="text-lg font-semibold text-neutral-900" data-no-translate>{event.title}</h3>
+          <p className="text-sm text-neutral-600 line-clamp-2" data-no-translate>{teaser}{(event.description || '').length > 160 ? '…' : ''}</p>
           <div className="flex items-center gap-4 text-sm text-neutral-700">
           <div className="flex items-center gap-1"><CalendarDays className="size-4" /> {dateFmt}</div>
           <div className="flex items-start gap-1">
