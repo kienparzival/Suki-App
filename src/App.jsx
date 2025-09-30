@@ -363,7 +363,7 @@ function App() {
                 transform: 'translateZ(0)'             // own layer
               }}
             >
-              Discover Amazing Events in Hanoi
+              Discover Amazing Events near you
             </h1>
             <p
               className="
