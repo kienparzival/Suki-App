@@ -70,7 +70,7 @@ export default function EmailCapture({ onSubscribed }) {
           Get the <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-sky-500">Suki Weekly</span>
         </h3>
         <p className="mt-1.5 text-sm text-slate-600">
-          A short Friday email with the best events in Hà Nội. No spam. Unsubscribe anytime.
+          A short Friday email with the best events near you. No spam. Unsubscribe anytime.
         </p>
 
         {!ok ? (
