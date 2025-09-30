@@ -110,8 +110,6 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchAuto = async (k: string) => {
     try {
       const functionsUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`;
-      console.log(`[i18n] Calling Edge Function: ${functionsUrl}`);
-      
       const r = await fetch(functionsUrl, {
         method: "POST",
         headers: {
@@ -121,47 +119,25 @@ export const I18nProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         body: JSON.stringify({ key: k, targetLang: "vi" }),
       });
-      
-      console.log(`[i18n] Edge Function response status: ${r.status}`);
-      
-      if (!r.ok) {
-        console.error(`[i18n] Edge Function error: ${r.status} ${r.statusText}`);
-        return k;
-      }
-      
       const j = await r.json();
       const v = j?.translated ?? k;
-      console.log(`[i18n] Edge Function translated "${k}" to "${v}"`);
-      
       setViDict((prev) => {
         const next = { ...prev, [k]: v };
         localStorage.setItem("vi_dict", JSON.stringify(next));
         return next;
       });
       return v;
-    } catch (error) {
-      console.error(`[i18n] Edge Function call failed:`, error);
+    } catch {
       return k; // worst case fallback
     }
   };
 
   const t = useMemo(() => {
     return (key: string, vars?: Record<string, any>) => {
-      console.log(`[i18n] Translating "${key}" in language: ${lang}`);
-      
-      if (lang === "en") {
-        console.log(`[i18n] Returning English: "${key}"`);
-        return interpolate(key, vars);
-      }
-      
+      if (lang === "en") return interpolate(key, vars);
       const hit = viDict[key];
-      if (hit) {
-        console.log(`[i18n] Found Vietnamese translation: "${hit}"`);
-        return interpolate(hit, vars);
-      }
-      
+      if (hit) return interpolate(hit, vars);
       // not found -> log, translate once, and show result immediately when it arrives
-      console.log(`[i18n] Missing translation for: "${key}"`);
       recordMiss(key);
       // optimistic: show EN first render, then swap; or block until translated:
       // Here we optimistically return EN, but you can wrap <T> to suspense if desired.
@@ -184,17 +160,10 @@ export const T: React.FC<{ k?: string; children?: string; vars?: Record<string, 
 
 export const LangToggle: React.FC<{ className?: string }> = ({ className }) => {
   const { lang, setLang } = useI18n();
-  
-  const handleToggle = () => {
-    const newLang = lang === "en" ? "vi" : "en";
-    console.log(`[i18n] Switching language from ${lang} to ${newLang}`);
-    setLang(newLang);
-  };
-  
   return (
     <button
       className={className ?? "px-3 py-1 rounded-xl border text-sm"}
-      onClick={handleToggle}
+      onClick={() => setLang(lang === "en" ? "vi" : "en")}
       aria-label="Toggle language"
       title={lang === "en" ? "Switch to Vietnamese" : "Chuyển sang tiếng Anh"}
       style={{flexDirection: 'column', height: 'auto', padding: '0.5rem 0.75rem'}}
@@ -217,6 +186,7 @@ export const GlobalAutoTranslate: React.FC = () => {
     const translateTextNode = async (node: Text) => {
       const original = node.nodeValue ?? "";
       const text = original.trim();
+
       // Skip empty/URLs/emails/numbers/mostly symbols
       if (
         text.length < 2 ||
@@ -242,11 +212,9 @@ export const GlobalAutoTranslate: React.FC = () => {
         });
         const j = await r.json();
         const vi = j?.translated ?? text;
-        if (!stopped && node.nodeValue === original) {
-          node.nodeValue = vi;
-        }
+        if (!stopped && node.nodeValue === original) node.nodeValue = vi;
       } catch {
-        /* noop: keep EN if failure */
+        /* keep EN on failure */
       }
     };
 
@@ -256,9 +224,8 @@ export const GlobalAutoTranslate: React.FC = () => {
           const parent = (n as Text).parentElement;
           if (!parent) return NodeFilter.FILTER_REJECT;
           if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
-          if (getComputedStyle(parent).visibility === "hidden" || getComputedStyle(parent).display === "none") {
-            return NodeFilter.FILTER_REJECT;
-          }
+          const cs = getComputedStyle(parent);
+          if (cs.visibility === "hidden" || cs.display === "none") return NodeFilter.FILTER_REJECT;
           return NodeFilter.FILTER_ACCEPT;
         }
       });
@@ -266,10 +233,10 @@ export const GlobalAutoTranslate: React.FC = () => {
       while ((node = walker.nextNode())) translateTextNode(node as Text);
     };
 
-    // Initial pass
+    // initial pass
     walk(document.body);
 
-    // React re-renders / route changes
+    // observe future DOM changes (routing, lazy loads, etc.)
     const mo = new MutationObserver((muts) => {
       for (const m of muts) {
         m.addedNodes?.forEach((n) => {
