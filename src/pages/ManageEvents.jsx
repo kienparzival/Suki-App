@@ -347,7 +347,7 @@ export default function ManageEvents() {
                               )}
                             </div>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-gray-900" data-no-translate>
                                 {event.title}
                               </div>
                               <div className="text-sm text-gray-500">
