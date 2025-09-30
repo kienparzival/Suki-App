@@ -42,137 +42,52 @@ export default function Profile() {
     }
   }, [profile.city, updateLocationFromProfile])
 
+  // Load profile from Supabase database
   useEffect(() => {
-    if (user) {
-      // Load existing profile data from localStorage
-      try {
-        const savedProfile = localStorage.getItem(`suki_profile_${user.id}`)
-        if (savedProfile) {
-          const parsed = JSON.parse(savedProfile)
-          // Ensure interests are properly formatted as array
-          if (parsed.interests && typeof parsed.interests === 'string') {
-              parsed.interests = parsed.interests.split(',').map(s => s.trim()).filter(Boolean)
-          } else if (!parsed.interests) {
-            parsed.interests = []
-          }
-          
-          // Load profile photo from localStorage first (highest priority)
-          let profilePhoto = null
-          try {
-            const photoKey = `suki_profile_photo_${user.id}`
-            const storedPhoto = localStorage.getItem(photoKey)
-            console.log('[Profile] Looking for profile photo with key:', photoKey)
-            console.log('[Profile] Found photo in localStorage:', !!storedPhoto)
-            
-            if (storedPhoto) {
-              profilePhoto = storedPhoto
-              console.log('[Profile] Successfully loaded photo from localStorage for user:', user.id)
-            } else {
-              console.log('[Profile] No photo found in localStorage for user:', user.id)
-            }
-          } catch (error) {
-            console.warn('Could not load profile photo from localStorage:', error)
-          }
-          
-          // If no photo in localStorage, try user metadata
-          if (!profilePhoto && user.profilePhoto) {
-            profilePhoto = user.profilePhoto
-            console.log('[Profile] Loaded photo from user metadata for user:', user.id)
-          }
-          
-          // Set the profile with photo included
-          const profileWithPhoto = { ...parsed, profilePhoto }
-          setProfile(profileWithPhoto)
-          
-          // Update user state to include the photo so header can display it
-          if (profilePhoto) {
-            user.profilePhoto = profilePhoto
-            console.log('[Profile] Profile photo set successfully for user:', user.id)
-          } else {
-            console.log('[Profile] No profile photo found for user:', user.id)
-          }
-        } else {
-          // Set default values from user profile
-          setProfile(prev => ({ 
-            ...prev, 
-            city: user.city || 'HCMC',
-            interests: user.interests || []
-          }))
-          
-          // Load profile photo from localStorage first (highest priority)
-          let profilePhoto = null
-          try {
-            const photoKey = `suki_profile_photo_${user.id}`
-            const storedPhoto = localStorage.getItem(photoKey)
-            console.log('[Profile] Looking for profile photo with key:', photoKey)
-            console.log('[Profile] Found photo in localStorage:', !!storedPhoto)
-            
-            if (storedPhoto) {
-              profilePhoto = storedPhoto
-              console.log('[Profile] Successfully loaded photo from localStorage for user:', user.id)
-            } else {
-              console.log('[Profile] No photo found in localStorage for user:', user.id)
-            }
-          } catch (error) {
-            console.warn('Could not load profile photo from localStorage:', error)
-          }
-          
-          // If no photo in localStorage, try user metadata
-          if (!profilePhoto && user.profilePhoto) {
-            profilePhoto = user.profilePhoto
-            console.log('[Profile] Loaded photo from user metadata for user:', user.id)
-          }
-          
-          // Set the profile with photo included
-          if (profilePhoto) {
-            setProfile(prev => ({ ...prev, profilePhoto }))
-            // Update user state to include the photo so header can display it
-            user.profilePhoto = profilePhoto
-            console.log('[Profile] Profile photo set successfully for user:', user.id)
-          } else {
-            console.log('[Profile] No profile photo found for user:', user.id)
-          }
-        }
+    if (!user) return;
 
-      } catch (error) {
-        console.warn('Error loading profile from localStorage:', error)
-        // Fallback to user metadata
-        setProfile(prev => ({ 
-          ...prev, 
-          city: user.city || 'HCMC',
-          profilePhoto: user.profilePhoto || null,
-          interests: user.interests || []
-        }))
-      }
-    }
-  }, [user])
+    (async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select(`
+          prefix, first_name, last_name, suffix,
+          home_phone, cell_phone, job_title, company,
+          website, blog,
+          address, address2, city, country, zip_code, state,
+          interests, avatar_url
+        `)
+        .eq('id', user.id)
+        .single();
 
-  // Load avatar_url from database
-  useEffect(() => {
-    if (user) {
-      const loadAvatar = async () => {
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select("avatar_url")
-            .eq('id', user.id)
-            .single()
-          
-          if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-            console.error('Error loading avatar:', error)
-            return
-          }
-          
-          if (data?.avatar_url) {
-            setProfile(prev => ({ ...prev, avatar_url: data.avatar_url }))
-          }
-        } catch (error) {
-          console.error('Error loading avatar from database:', error)
-        }
+      if (error && error.code !== 'PGRST116') {
+        console.error('[Profile] Load error', error);
+        return;
       }
-      
-      loadAvatar()
-    }
+
+      if (data) {
+        setProfile(prev => ({
+          ...prev,
+          prefix: data.prefix ?? 'Mr.',
+          firstName: data.first_name ?? '',
+          lastName: data.last_name ?? '',
+          suffix: data.suffix ?? '',
+          homePhone: data.home_phone ?? '',
+          cellPhone: data.cell_phone ?? '',
+          jobTitle: data.job_title ?? '',
+          company: data.company ?? '',
+          website: data.website ?? '',
+          blog: data.blog ?? '',
+          address: data.address ?? '',
+          address2: data.address2 ?? '',
+          city: data.city ?? '',
+          country: data.country ?? 'Vietnam',
+          zipCode: data.zip_code ?? '',
+          state: data.state ?? '',
+          interests: Array.isArray(data.interests) ? data.interests : [],
+          avatar_url: data.avatar_url ?? null,
+        }));
+      }
+    })();
   }, [user])
 
   const handleInputChange = (field, value) => {
@@ -235,72 +150,55 @@ export default function Profile() {
   }
 
   const handleSave = async () => {
-    if (user) {
-      setSaving(true)
-      try {
-        // Prepare the profile data to save to Supabase
-        const profileData = {
-          city: profile.city,
-          interests: profile.interests || [],
-          profilePhoto: profile.profilePhoto,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          prefix: profile.prefix,
-          suffix: profile.suffix,
-          homePhone: profile.homePhone,
-          cellPhone: profile.cellPhone,
-          jobTitle: profile.jobTitle,
-          company: profile.company,
-          website: profile.website,
-          blog: profile.blog,
-          address: profile.address,
-          address2: profile.address2,
-          country: profile.country,
-          zipCode: profile.zipCode,
-          state: profile.state
-        }
+    if (!user) return;
+    setSaving(true);
+    try {
+      // Ensure interests is an array of strings
+      const interests = Array.isArray(profile.interests) ? profile.interests : [];
 
-        // Update user metadata in Supabase
-        await updateProfile(profileData)
-        
-        // Update location system if city changed
-        if (profile.city && profile.city.trim()) {
-          updateLocationFromProfile(profile.city.trim())
-        }
-        
-        // Save to localStorage as backup (without large photos to avoid quota issues)
-        try {
-          const profileForStorage = {
-            ...profile,
-            profilePhoto: null // Don't store large photos in localStorage
-          }
-          localStorage.setItem(`suki_profile_${user.id}`, JSON.stringify(profileForStorage))
-          console.log('[Profile] Saved profile metadata to localStorage for user:', user.id)
-        } catch (storageError) {
-          console.warn('localStorage quota exceeded, clearing and retrying...')
-          try {
-            localStorage.clear()
-            const profileForStorage = {
-              ...profile,
-              profilePhoto: null
-            }
-            localStorage.setItem(`suki_profile_${user.id}`, JSON.stringify(profileForStorage))
-          } catch (retryError) {
-            console.warn('Still cannot save to localStorage:', retryError)
-            // Continue without localStorage - Supabase is the source of truth
-          }
-        }
-        
-        setMessage('Profile saved successfully!')
-        setIsEditing(false)
-        setTimeout(() => setMessage(''), 3000)
-      } catch (error) {
-        console.error('Error saving profile:', error)
-        setMessage(`Failed to save profile: ${error.message}`)
-        setTimeout(() => setMessage(''), 5000)
-      } finally {
-        setSaving(false)
+      const payload = {
+        id: user.id,                         // REQUIRED for RLS and upsert on your own row
+        prefix: profile.prefix || null,
+        first_name: profile.firstName || null,
+        last_name: profile.lastName || null,
+        suffix: profile.suffix || null,
+        home_phone: profile.homePhone || null,
+        cell_phone: profile.cellPhone || null,
+        job_title: profile.jobTitle || null,
+        company: profile.company || null,
+        website: profile.website || null,
+        blog: profile.blog || null,
+        address: profile.address || null,
+        address2: profile.address2 || null,
+        city: profile.city || null,
+        country: profile.country || null,
+        zip_code: profile.zipCode || null,
+        state: profile.state || null,
+        interests,
+        avatar_url: profile.avatar_url || null,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(payload, { onConflict: 'id' });
+
+      if (error) throw error;
+
+      // Update location system if city changed
+      if (profile.city && profile.city.trim()) {
+        updateLocationFromProfile(profile.city.trim());
       }
+
+      setMessage('Profile saved successfully!');
+      setIsEditing(false);
+      setTimeout(() => setMessage(''), 3000);
+    } catch (e) {
+      console.error('Error saving profile:', e);
+      setMessage(`Failed to save profile: ${e.message ?? e}`);
+      setTimeout(() => setMessage(''), 5000);
+    } finally {
+      setSaving(false);
     }
   }
 
