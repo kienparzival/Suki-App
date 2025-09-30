@@ -181,6 +181,27 @@ export const LangToggle: React.FC<{ className?: string }> = ({ className }) => {
   );
 };
 
+// Dev helper: clear cached translations to force fresh load from Supabase
+if (typeof window !== 'undefined') {
+  (window as any).clearViCache = () => {
+    localStorage.removeItem("vi_dict");
+    console.log("[i18n] Cleared vi_dict cache; reload the page to refetch from Supabase.");
+    window.location.reload();
+  };
+
+  (window as any).invalidateKey = (k: string) => {
+    const cache = JSON.parse(localStorage.getItem("vi_dict") || "{}");
+    if (k in cache) {
+      delete cache[k];
+      localStorage.setItem("vi_dict", JSON.stringify(cache));
+      console.log(`[i18n] Invalidated cache for key: ${k}. Reload to refetch.`);
+      window.location.reload();
+    } else {
+      console.log(`[i18n] Key "${k}" not found in cache.`);
+    }
+  };
+}
+
 export const GlobalAutoTranslate: React.FC = () => {
   const { lang } = useI18n();
 
