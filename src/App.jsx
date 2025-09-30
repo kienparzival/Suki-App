@@ -441,16 +441,6 @@ function App() {
         </div>
         
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
-            {filtered.length} event{filtered.length !== 1 ? 's' : ''}
-          </h2>
-            {userCity && userCity !== 'All locations' && (
-              <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                in {userCity}
-              </div>
-            )}
-          </div>
         <EventList events={filtered} />
         </div>
       </div>
