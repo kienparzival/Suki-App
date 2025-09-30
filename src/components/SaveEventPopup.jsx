@@ -56,7 +56,7 @@ export default function SaveEventPopup({ event, isOpen, onClose }) {
                   {new Date(event.start_at).toLocaleDateString()} at {new Date(event.start_at).toLocaleTimeString()}
                 </p>
                 <p className="text-xs text-gray-500 line-clamp-2">
-                  {event.venue?.name || 'TBD'}
+                  <span data-no-translate>{event.venue?.name || 'TBD'}</span>
                 </p>
               </div>
             </div>

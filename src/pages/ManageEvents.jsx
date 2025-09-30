@@ -351,7 +351,7 @@ export default function ManageEvents() {
                                 {event.title}
                               </div>
                               <div className="text-sm text-gray-500">
-                                {formatDateTime(event.start_at)} • {event.venue?.name || 'TBD'}
+                                {formatDateTime(event.start_at)} • <span data-no-translate>{event.venue?.name || 'TBD'}</span>
                               </div>
                             </div>
                           </div>

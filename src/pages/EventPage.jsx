@@ -474,7 +474,7 @@ export default function EventPage() {
                     <MapPin className="w-6 h-6 text-blue-600 mt-1" />
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-gray-900 mb-1">
-                        {event.venue?.name || (isOnline ? 'Online Event' : 'TBA')}
+                        <span data-no-translate>{event.venue?.name || (isOnline ? 'Online Event' : 'TBA')}</span>
                       </h3>
                       {event.venue?.address && (
                         <p className="text-gray-600 mb-3">
@@ -516,7 +516,7 @@ export default function EventPage() {
                             <Marker position={[event.venue.latitude, event.venue.longitude]}>
                               <Popup>
                                 <div className="p-2">
-                                  <h3 className="font-semibold text-gray-900">{event.venue.name}</h3>
+                                  <h3 className="font-semibold text-gray-900" data-no-translate>{event.venue.name}</h3>
                                   {event.venue.address && (
                                     <p className="text-sm text-gray-600 mt-1">{event.venue.address}</p>
                                   )}

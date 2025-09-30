@@ -232,7 +232,7 @@ export const GlobalAutoTranslate: React.FC = () => {
             // Skip elements with data-no-translate attribute
             if (el.hasAttribute && el.hasAttribute('data-no-translate')) return NodeFilter.FILTER_REJECT;
             
-            // Skip event titles and descriptions by class/id patterns
+            // Skip event titles, descriptions, and venue names by class/id patterns
             const className = el.className || '';
             const id = el.id || '';
             if (
@@ -240,8 +240,10 @@ export const GlobalAutoTranslate: React.FC = () => {
               className.includes('event-name') ||
               className.includes('event-description') ||
               className.includes('event-details') ||
+              className.includes('venue-name') ||
               id.includes('event-title') ||
-              id.includes('event-description')
+              id.includes('event-description') ||
+              id.includes('venue-name')
             ) return NodeFilter.FILTER_REJECT;
             
             el = el.parentElement;

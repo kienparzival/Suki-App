@@ -52,7 +52,7 @@ export default function EventDetail({ event, remaining, onClose }) {
           <div className="space-y-4">
             <div className="space-y-2 text-sm">
               <div className="flex items-center gap-2 text-neutral-700"><CalendarDays className="size-4" /> {formatBangkokLabel(event.start_at)} – {formatBangkokLabel(event.end_at || event.start_at, { hour: '2-digit', minute: '2-digit' })}</div>
-              <div className="flex items-center gap-2 text-neutral-700"><MapPin className="size-4" /> {event.venue?.name} {mapsHref && (
+              <div className="flex items-center gap-2 text-neutral-700"><MapPin className="size-4" /> <span data-no-translate>{event.venue?.name}</span> {mapsHref && (
                 <a className="inline-flex items-center gap-1 text-brand-600 hover:text-brand-700" href={mapsHref} target="_blank" rel="noreferrer">
                   Open in Maps <ExternalLink className="size-3"/>
                 </a>

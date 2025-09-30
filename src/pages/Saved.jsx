@@ -165,7 +165,7 @@ export default function SavedPage() {
                         {dateStr}, {timeStr}
                       </div>
                       <div className="text-sm text-gray-600 mb-1">
-                        {e.venue?.name || 'TBD'}
+                        <span data-no-translate>{e.venue?.name || 'TBD'}</span>
                         {e.venue?.address && `, ${e.venue.address}`}
                       </div>
                       

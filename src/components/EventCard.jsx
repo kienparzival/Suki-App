@@ -63,7 +63,7 @@ export default function EventCard({ event }) {
           <div className="flex items-start gap-1">
             <MapPin className="size-4 mt-0.5 flex-shrink-0" />
             <div>
-              <div className="font-medium">{event.venue?.name || 'TBA'}</div>
+              <div className="font-medium" data-no-translate>{event.venue?.name || 'TBA'}</div>
               {event.venue?.address && (
                 <div className="text-xs text-neutral-500 mt-0.5">{event.venue.address}</div>
               )}
