@@ -2,7 +2,7 @@
 
 ## Overview
 
-Event titles and descriptions are now protected from automatic translation, ensuring that organizer-created content remains exactly as they typed it, regardless of the selected language.
+Event titles, descriptions, and venue names are now protected from automatic translation, ensuring that organizer-created content remains exactly as they typed it, regardless of the selected language.
 
 ## What's Protected
 
@@ -15,6 +15,15 @@ Event titles and descriptions are now protected from automatic translation, ensu
 - ✅ Event card descriptions/teasers (EventCard component)
 - ✅ Event detail modal descriptions (EventDetail component)
 - ✅ Event page full descriptions (EventPage component)
+
+### Venue Names
+- ✅ Event card venue names (EventCard component)
+- ✅ Event detail modal venue names (EventDetail component)
+- ✅ Event page venue names (EventPage component)
+- ✅ Manage events venue names (ManageEvents component)
+- ✅ Saved events venue names (Saved component)
+- ✅ Save event popup venue names (SaveEventPopup component)
+- ✅ Map popup venue names (EventPage map markers)
 
 ## How It Works
 
@@ -35,6 +44,7 @@ As an additional safeguard, elements with these class or ID patterns are also sk
 - `event-name`
 - `event-description`
 - `event-details`
+- `venue-name`
 
 ## What Still Gets Translated
 
@@ -56,8 +66,8 @@ As an additional safeguard, elements with these class or ID patterns are also sk
 ❌ **User Content** (NOT translated):
 - Event titles
 - Event descriptions
+- Venue names
 - Organizer names (preserved)
-- Venue names (preserved)
 
 ## Components Updated
 
@@ -69,6 +79,9 @@ As an additional safeguard, elements with these class or ID patterns are also sk
 <p className="text-sm text-neutral-600 line-clamp-2" data-no-translate>
   {teaser}
 </p>
+<div className="font-medium" data-no-translate>
+  {event.venue?.name || 'TBA'}
+</div>
 ```
 
 ### EventDetail.jsx
@@ -79,6 +92,7 @@ As an additional safeguard, elements with these class or ID patterns are also sk
 <div className="text-sm text-neutral-700 leading-relaxed" data-no-translate>
   {event.description}
 </div>
+<span data-no-translate>{event.venue?.name}</span>
 ```
 
 ### EventPage.jsx
@@ -89,6 +103,7 @@ As an additional safeguard, elements with these class or ID patterns are also sk
 <section className="prose" data-no-translate>
   <DescriptionBlock text={event.description} />
 </section>
+<span data-no-translate>{event.venue?.name || 'TBA'}</span>
 ```
 
 ## GlobalAutoTranslate Logic
@@ -111,8 +126,10 @@ while (el) {
     className.includes('event-name') ||
     className.includes('event-description') ||
     className.includes('event-details') ||
+    className.includes('venue-name') ||
     id.includes('event-title') ||
-    id.includes('event-description')
+    id.includes('event-description') ||
+    id.includes('venue-name')
   ) {
     return NodeFilter.FILTER_REJECT;
   }
