@@ -217,13 +217,13 @@ export const GlobalAutoTranslate: React.FC = () => {
     const translateTextNode = async (node: Text) => {
       const original = node.nodeValue ?? "";
       const text = original.trim();
-      // Heuristics: skip empty, short symbols, emails/URLs, mostly digits
+      // Skip empty/URLs/emails/numbers/mostly symbols
       if (
         text.length < 2 ||
         !/[A-Za-z]/.test(text) ||
         /^https?:\/\//.test(text) ||
         /@/.test(text) ||
-        /^[\d\s.,:/-]+$/.test(text)
+        /^[\d\s.,:/\-–—()]+$/.test(text)
       ) return;
 
       if (seen.has(text)) return;
@@ -269,15 +269,13 @@ export const GlobalAutoTranslate: React.FC = () => {
     // Initial pass
     walk(document.body);
 
-    // Watch for route changes / updates
+    // React re-renders / route changes
     const mo = new MutationObserver((muts) => {
       for (const m of muts) {
-        if (m.addedNodes) {
-          m.addedNodes.forEach((n) => {
-            if (n.nodeType === Node.TEXT_NODE) translateTextNode(n as Text);
-            else if ((n as Element).nodeType === Node.ELEMENT_NODE) walk(n as Element);
-          });
-        }
+        m.addedNodes?.forEach((n) => {
+          if (n.nodeType === Node.TEXT_NODE) translateTextNode(n as Text);
+          else if ((n as Element).nodeType === Node.ELEMENT_NODE) walk(n as Element);
+        });
         if (m.type === "characterData") translateTextNode(m.target as Text);
       }
     });
