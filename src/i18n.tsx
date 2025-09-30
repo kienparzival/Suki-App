@@ -177,10 +177,8 @@ export const GlobalAutoTranslate: React.FC = () => {
   const { lang } = useI18n();
 
   useEffect(() => {
-    if (lang !== "vi") return;
-
     const SKIP_TAGS = new Set(["SCRIPT","STYLE","NOSCRIPT","CODE","PRE","TEXTAREA","SVG","IMG","VIDEO","CANVAS"]);
-    const seen = new Set<string>();
+    const translationMap = new Map<Text, string>(); // Store original English text
     let stopped = false;
 
     const translateTextNode = async (node: Text) => {
@@ -196,25 +194,39 @@ export const GlobalAutoTranslate: React.FC = () => {
         /^[\d\s.,:/\-–—()]+$/.test(text)
       ) return;
 
-      if (seen.has(text)) return;
-      seen.add(text);
+      // Store original English text
+      if (!translationMap.has(node)) {
+        translationMap.set(node, original);
+      }
 
-      try {
-        const functionsUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`;
-        const r = await fetch(functionsUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY!,
-            "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY!}`,
-          },
-          body: JSON.stringify({ key: text, targetLang: "vi" }),
-        });
-        const j = await r.json();
-        const vi = j?.translated ?? text;
-        if (!stopped && node.nodeValue === original) node.nodeValue = vi;
-      } catch {
-        /* keep EN on failure */
+      if (lang === "en") {
+        // Restore original English
+        const originalText = translationMap.get(node);
+        if (originalText && node.nodeValue !== originalText) {
+          node.nodeValue = originalText;
+        }
+        return;
+      }
+
+      // Only translate if we haven't already translated this node
+      if (translationMap.get(node) === original) {
+        try {
+          const functionsUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/translate`;
+          const r = await fetch(functionsUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY!,
+              "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY!}`,
+            },
+            body: JSON.stringify({ key: text, targetLang: "vi" }),
+          });
+          const j = await r.json();
+          const vi = j?.translated ?? text;
+          if (!stopped && node.nodeValue === original) node.nodeValue = vi;
+        } catch {
+          /* keep EN on failure */
+        }
       }
     };
 
@@ -258,7 +270,7 @@ export const GlobalAutoTranslate: React.FC = () => {
       while ((node = walker.nextNode())) translateTextNode(node as Text);
     };
 
-    // initial pass
+    // Process all text nodes on language change
     walk(document.body);
 
     // observe future DOM changes (routing, lazy loads, etc.)

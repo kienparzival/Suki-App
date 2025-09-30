@@ -363,7 +363,7 @@ function App() {
                 transform: 'translateZ(0)'             // own layer
               }}
             >
-              Discover Amazing Events near you
+              Discover Amazing Events Near You
             </h1>
             <p
               className="
