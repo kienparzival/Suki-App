@@ -169,7 +169,7 @@ export default function CreateEventPage() {
     )
   }
 
-  const descMax = 4000
+  const descMax = 10000
   const descCount = (description || '').length
 
   const onSelectMedia = async (e) => {

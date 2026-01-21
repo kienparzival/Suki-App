@@ -451,7 +451,7 @@ export default function EditEvent() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={8}
-                maxLength={4000}
+                maxLength={10000}
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:outline-none transition-colors resize-none"
                 placeholder="About this event (up to 4,000 characters)"
               />

@@ -71,7 +71,7 @@ export default function CopyEvent() {
   const [loading, setLoading] = useState(false)
 
   // Description character limits
-  const descMax = 4000
+  const descMax = 10000
   const descCount = description.length
 
   useEffect(() => {
