@@ -395,6 +395,12 @@ function App() {
             browsingLocation={userCity || 'All locations'}
             onLocationChange={async (loc) => {
               console.log('Location change requested:', loc)
+
+              if (!loc || loc?.mode === 'all' || loc?.city === 'All locations') {
+                setUserLocation({ lat: null, lng: null, city: 'All locations', mode: 'all' })
+                setUserCity('All locations')
+                return
+              }
               
               // Expected shapes from FilterBar:
               // - Current location: { mode: 'current', city: 'Current Location', lat, lng }
